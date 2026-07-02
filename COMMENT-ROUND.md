@@ -1,7 +1,7 @@
 # AEP v1.0.3 — Ecosystem Comment Round
 
-**Draft under review:** [v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html) ([rendered](https://aep.a-comm.ai/v103-draft)) (2026-07-02)
-**Status:** OPENING SOON — this file becomes active when the round is announced. Dates below are set at announcement.
+**Draft under review:** [v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html) ([rendered — living draft](https://aep.a-comm.ai/) · [frozen rc.2 snapshot](https://aep.a-comm.ai/v1.0.3-rc.2) for stable section references) (2026-07-02)
+**Status: OPEN — July 2 – August 1, 2026.** Every comment receives a public disposition in the log below.
 
 ## Scope of this round
 
@@ -34,7 +34,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 
 ## Process
 
-- **Review window:** 30 days from announcement.
+- **Review window:** July 2 – August 1, 2026 (30 days).
 - **Disposition:** every comment receives a public disposition — `accept` / `accept-with-modification` / `defer (versioned)` / `decline (rationale)` — recorded in the log below.
 - **Output:** dispositions are batched into v1.0.3-final (additive edits) and the v1.0.4/v1.1.0 backlog (deferred items). The changelog (spec Appendix D) records what changed and why.
 - **Conduct:** technical arguments only; no vendor endorsements or marketing. The editors apply the same neutrality rules to themselves — see CONTRIBUTING.md.

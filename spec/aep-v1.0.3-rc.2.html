@@ -9,6 +9,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A-Comm Evidence Protocol (AEP) — Specification v1.0.3-rc.2 (Draft)</title>
+
+  <meta name="description" content="The open, Apache-2.0 evidence standard for agentic commerce: a tamper-evident hash chain of transaction artifacts with dispute-grade export. Draft v1.0.3-rc.2 — public comment period July 2 – August 1, 2026." />
+  <link rel="canonical" href="https://aep.a-comm.ai/v1.0.3-rc.2" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="A-Comm Evidence Protocol" />
+  <meta property="og:title" content="A-Comm Evidence Protocol (AEP) — Public Comment Draft" />
+  <meta property="og:description" content="The open evidence standard for agentic commerce. Draft v1.0.3-rc.2 is open for ecosystem comment through August 1, 2026 — payment networks, issuers, acquirers, PSPs, merchants, and agent platforms welcome." />
+  <meta property="og:url" content="https://aep.a-comm.ai/v1.0.3-rc.2" />
+  <meta property="og:image" content="https://aep.a-comm.ai/og-aep.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="A-Comm Evidence Protocol (AEP) — Public Comment Draft" />
+  <meta name="twitter:description" content="The open evidence standard for agentic commerce. Draft v1.0.3-rc.2 is open for comment through August 1, 2026." />
+  <meta name="twitter:image" content="https://aep.a-comm.ai/og-aep.png" />
+
   <style>
     /* ── Reset & Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -630,13 +650,41 @@
       .sidebar { display: none; }
       .main { padding: 24px 20px 60px; }
     }
+    /* ── Public comment banner ── */
+    .comment-banner {
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .comment-banner strong { font-weight: 700; }
+    .comment-banner a {
+      color: #74c0fc;
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: 14px;
+      white-space: nowrap;
+    }
+    .comment-banner a:hover { text-decoration: underline; }
+    @media (max-width: 720px) {
+      .comment-banner { font-size: 13px; padding: 10px 14px; }
+      .comment-banner a { display: inline-block; margin: 4px 8px 0 8px; }
+    }
   </style>
 </head>
 <body>
 
-<!-- NOTE: the email access-request gate present on aep-spec-full.html has been intentionally
-     REMOVED from this DRAFT page for internal review (the preview deployment is protected by
-     Vercel password protection). RESTORE THE GATE before publishing this page on production. -->
+<!-- NOTE: this file is the IMMUTABLE rc.2 snapshot for stable section references; do not edit. Original note: this page is the LIVING current draft, published intentionally without an access
+     gate for the open comment round (decision 2026-07-02). The frozen rc.2 snapshot lives
+     at /v1.0.3-rc.2 for stable section references. -->
+
+<div class="comment-banner" role="region" aria-label="Public comment period">
+  <strong>Frozen rc.2 snapshot</strong> &mdash; the living current draft is at <a href="https://aep.a-comm.ai/">aep.a-comm.ai</a>. Public comment period: July 2 &ndash; August 1, 2026.
+  <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/issues/new/choose">Comment on GitHub &rarr;</a>
+  <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/blob/main/COMMENT-ROUND.md">How to comment</a>
+</div>
 
 <div class="layout">
 
@@ -785,7 +833,7 @@
           <div class="callout-icon">&#9432;</div>
           <div class="callout-body">
             <strong>Draft Standard — v1.0.3-rc.2 (ecosystem comment round)</strong>
-            This is AEP v1.0.3-rc.2 (Draft), an additive MINOR revision over v1.0.2 under AEP's SemVer policy (&sect;0.2): it adds sub-wrappers and optional fields, all gated by <code>spec_version</code>. v1.0.2 chains remain verifiable under v1.0.2 rules; verifiers MUST gate behavior by <code>spec_version</code> per &sect;2.7. This revision aligns AEP with Skyfire KYA / KYA Pay (<code>draft-skyfire-kyapayprofile-02</code>, 2026-06-20) and Web Bot Auth (<code>draft-meunier-web-bot-auth-architecture-05</code>), in addition to the v1.0.2 protocol set (AP2 v0.2, A2A v1.0.1, UCP 2026-04-08, ACP 2026-04-17, TAP v0, MCP 2025-11-25, x402 v2, Mastercard Verifiable Intent v0.1-draft). The Mastercard VI (&sect;3.9.15) and Visa IC (&sect;3.9.13) wrappers are re-marked <strong style="display:inline;">PROVISIONAL</strong> pending primary-spec confirmation. A v1.1.0 stabilization release is reserved for after this comment round. Feedback and interoperability reports are welcome via the public repository at <a href="https://github.com/A-Comm-Tech/aep-spec">github.com/A-Comm-Tech/aep-spec</a> (issues and discussions). This specification is published under Apache License 2.0.
+            This is AEP v1.0.3-rc.2 (Draft), an additive MINOR revision over v1.0.2 under AEP's SemVer policy (&sect;0.2): it adds sub-wrappers and optional fields, all gated by <code>spec_version</code>. v1.0.2 chains remain verifiable under v1.0.2 rules; verifiers MUST gate behavior by <code>spec_version</code> per &sect;2.7. This revision aligns AEP with Skyfire KYA / KYA Pay (<code>draft-skyfire-kyapayprofile-02</code>, 2026-06-20) and Web Bot Auth (<code>draft-meunier-web-bot-auth-architecture-05</code>), in addition to the v1.0.2 protocol set (AP2 v0.2, A2A v1.0.1, UCP 2026-04-08, ACP 2026-04-17, TAP v0, MCP 2025-11-25, x402 v2, Mastercard Verifiable Intent v0.1-draft). The Mastercard VI (&sect;3.9.15) and Visa IC (&sect;3.9.13) wrappers are re-marked <strong style="display:inline;">PROVISIONAL</strong> pending primary-spec confirmation. A v1.1.0 stabilization release is reserved for after this comment round. The <strong style="display:inline;">public comment period for this draft runs July 2 &ndash; August 1, 2026</strong>: feedback and interoperability reports are welcome via the public repository at <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol">github.com/A-Comm-Tech/a-comm-evidence-protocol</a> (issues and discussions; see <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/blob/main/COMMENT-ROUND.md">COMMENT-ROUND.md</a> for the process and the public disposition log). This URL always serves the current version of the specification; the immutable rc.2 snapshot for stable section references is at <a href="https://aep.a-comm.ai/v1.0.3-rc.2">aep.a-comm.ai/v1.0.3-rc.2</a>. This specification is published under Apache License 2.0.
           </div>
         </div>
         <p>A-Comm Technologies, Inc. maintains the reference implementation. The protocol itself is open and implementable by any party without restriction, royalty, or permission from A-Comm Technologies, Inc.</p>
@@ -857,7 +905,7 @@
         </ol>
 
         <h4>Backward-Compatibility Window</h4>
-        <p>Every published <code>spec_version</code> MUST remain verifiable for at least <strong>24 months</strong> after the next MAJOR is released. Maintainers of A-Comm Technologies, Inc.'s reference implementation MUST publish a tagged release of the verifier per <code>spec_version</code> and keep the tagged verifier available at <a href="https://github.com/A-Comm-Tech/aep-spec/releases">github.com/A-Comm-Tech/aep-spec/releases</a> for at least the backward-compat window.</p>
+        <p>Every published <code>spec_version</code> MUST remain verifiable for at least <strong>24 months</strong> after the next MAJOR is released. Maintainers of A-Comm Technologies, Inc.'s reference implementation MUST publish a tagged release of the verifier per <code>spec_version</code> and keep the tagged verifier available at <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/releases">github.com/A-Comm-Tech/a-comm-evidence-protocol/releases</a> for at least the backward-compat window.</p>
 
         <h4>Pre-SemVer History</h4>
         <p>The v1.0.1 "+ / ++ / +++" suffixes used between 2026-03-31 and 2026-04-23 (see Appendix D footnote) are NOT SemVer-conformant and are preserved in the changelog for historical reference only. From v1.0.2 forward, suffix-style versioning is deprecated; pre-release identifiers MUST use SemVer <code>-rc.N</code> or <code>-alpha.N</code> syntax (e.g., <code>v1.1.0-rc.1</code>).</p>
@@ -2990,7 +3038,7 @@
         <p>A bundle's verification result also carries a verification class per &sect;5 and &sect;4.3: a self-verified, unanchored bundle is Asserted as a whole; an externally anchored, independently verified bundle carries a higher class.</p>
 
         <h3>6.3 Test Vectors</h3>
-        <p>Conformant implementations MUST verify their canonicalization, signing, and verification stacks against the AEP test vectors published at <a href="https://github.com/A-Comm-Tech/aep-spec/tree/main/vectors/v1.0.3-rc.2">github.com/A-Comm-Tech/aep-spec/tree/main/vectors/v1.0.3-rc.2</a>. The vector set includes:</p>
+        <p>Conformant implementations MUST verify their canonicalization, signing, and verification stacks against the AEP test vectors published at <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/tree/main/vectors/v1.0.3-rc.2">github.com/A-Comm-Tech/a-comm-evidence-protocol/tree/main/vectors/v1.0.3-rc.2</a>. The vector set includes:</p>
         <ul>
           <li><strong>(a)</strong> a genesis artifact with canonical JSON byte stream + expected SHA-256</li>
           <li><strong>(b)</strong> an 8-artifact chain showing each <code>previous_hash</code></li>
@@ -3941,7 +3989,7 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>Non-breaking additions:</strong> &sect;1.1/&sect;1.2 envelope-consolidation, hash-binding-primitive, and cross-protocol-witness framing. &sect;2.1/&sect;2.2 layer count 7 &rarr; 8; expected artifact count 7/5 &rarr; 8/7/6/5. &sect;2.4 <code>credentials_provider</code> actor. &sect;2.6 protocol table rewrite with steward, license posture, layer, and canonical key-discovery columns; <code>MASTERCARD_VI</code> added; TAP qualified as proprietary; layer-aware composition replaces flat dominance. &sect;2.7 explicit <code>session_id_hash</code> HMAC derivation; 365-day salt rotation with <code>salt_kid</code>; <code>delegation</code> in <code>type</code> enum. &sect;3.5 total-integrity rule promoted to numbered MUST. &sect;3.6 cart&harr;auth amount-match promoted to numbered MUST; stablecoin settlement deferred to v1.0.3. &sect;3.8 <code>delegation</code> row inserted. &sect;3.9.2 strengthened: delegation MUST be present when any covered protocol is in play. &sect;3.9.5 layer-aware dominance. &sect;3.9.9 MCP additive optionals (<code>mcp_protocol_version</code> pinned <code>"2025-11-25"</code>, RFC 8707 canonical URI, OAuth, W3C trace, transport, extensions, expanded <code>mcp_result</code>). &sect;3.9.12 restructured S/A/B/C/D paths; "TAP alone is agent-attributable but NOT user-authorized"; "MCP <code>mcp_result.hash</code> IS the canonical MCP receipt." &sect;4.3 key publication MUST (<code>/.well-known/aep-public-key</code>), 90-day rotation overlap, <code>signing_key_id</code>. &sect;5 verification result adds <code>evidence_tier</code>, <code>protocol_envelopes_verified</code>, <code>cart_payment_binding_verified</code>, <code>spec_version</code>. &sect;6.1 DisputeBundle adds <code>evidenceTier</code>, <code>protocolEnvelopesVerified</code>. &sect;8.2 <code>session_id_hash</code> MUST rule promoted. &sect;9.1 diagram updated for 8 layers. Appendix A glossary additions. Appendix B JSON Schema rewrite (<code>delegation</code>, <code>credentials_provider</code>, 8/7/6/5 <code>expectedArtifactCount</code>, sub-wrapper interfaces). Appendix C 8-artifact sample with evidence tier and protocol envelopes.</p>
                   <p><strong>Reference-implementation migration:</strong> normative notes mandate reference-impl alignment before merchant-facing v1.0.2 ship. Most critical: remove <code>session_token</code> from <code>ReferralPayloadSchema</code> (<code>payload-schemas.ts:87-100</code>, P1.W#5); Intent <code>unit_price</code> string &rarr; integer minor units (P1.W#2); Cart payload v1.0.2 field set with integer types; Authorization payload extended from 6 to 14 fields; new RFC 8785 (JCS) canonicalization library (<code>acls-core/vault/canonical/jcs.ts</code>). Already correct: <code>artifact-hash.ts:85-95</code> (8 types incl. <code>delegation</code>), <code>artifact-hash.ts:155-163</code> (8/7/6/5), <code>chain-rules.ts:18-22</code> (delegation required for agent sessions).</p>
                   <p><strong>Versioning posture:</strong> first AEP release under strict SemVer (per new &sect;0.2). The pre-SemVer suffix series (v1.0.1+, v1.0.1++, v1.0.1+++) is preserved in the historical changelog below for traceability but is deprecated; from v1.0.2 forward, pre-release identifiers use SemVer <code>-rc.N</code> / <code>-alpha.N</code> syntax.</p>
-                  <p><strong>Backward compatibility:</strong> v1.0.1 chains remain verifiable under v1.0.1 rules per &sect;2.7 <code>spec_version</code> enforcement. v1.0.2 verifiers MUST advertise their supported <code>spec_version</code> set (per &sect;0.2) and MUST reject chains outside that set rather than silently downgrade. The &sect;0.2 window requires v1.0.1 chains to remain verifiable for at least 24 months after the next MAJOR release; a v1.0.1-tagged verifier stays published at <code>github.com/A-Comm-Tech/aep-spec/releases</code>.</p>
+                  <p><strong>Backward compatibility:</strong> v1.0.1 chains remain verifiable under v1.0.1 rules per &sect;2.7 <code>spec_version</code> enforcement. v1.0.2 verifiers MUST advertise their supported <code>spec_version</code> set (per &sect;0.2) and MUST reject chains outside that set rather than silently downgrade. The &sect;0.2 window requires v1.0.1 chains to remain verifiable for at least 24 months after the next MAJOR release; a v1.0.1-tagged verifier stays published at <code>github.com/A-Comm-Tech/a-comm-evidence-protocol/releases</code>.</p>
                   <p><strong>Issues closed (Phase 1 self-grade):</strong> W#1 (8-vs-7 artifact contradiction), W#2 (Cart / Authorization payload-schema fields missing in code), W#3 (no RFC 2119 conformance clause), W#4 (zero test vectors), W#5 (Referral schema carries <code>session_token</code>), W#6 (canonicalization rules under-specified), W#7 (A2A in enum without sub-wrapper schema), W#8 (ACP and UCP collapsed), W#9 (no IPR / patent / contributor policy), W#10 (non-SemVer versioning).</p>
                   <p><strong>Deferred to v1.0.3:</strong> Visa Machine Payments Protocol (MPP) sub-wrapper; Mastercard AP4M Permissioning / Transacting / Settling pillars beyond Credentialing (VI); stablecoin variants of &sect;3.6 Authorization for AP4M Polygon / Solana / Base settlement; MCP per-task receipts under the Tasks extension (<code>2026-07-28</code> RC; pinned to MCP <code>2025-11-25</code> stable for v1.0.2); Mastercard AP4M on-chain anchor format.</p>
                   <p class="note-sm"><em>Footnote — pre-SemVer history (informational):</em> the v1.0.1 "+ / ++ / +++" suffix entries below were not SemVer-conformant. They are preserved verbatim for historical reference; their content has been folded into the v1.0.1 baseline that v1.0.2 supersedes.</p>

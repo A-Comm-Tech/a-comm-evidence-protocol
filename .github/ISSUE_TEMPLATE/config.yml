@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Normative proposal / design discussion
+    url: https://github.com/A-Comm-Tech/a-comm-evidence-protocol/discussions
+    about: New artifact types, sub-wrappers, verification rules, or export profiles — discuss before drafting text (CONTRIBUTING.md).
+  - name: Security report (private)
+    url: https://github.com/A-Comm-Tech/a-comm-evidence-protocol/security/advisories/new
+    about: Evidence forgery, canonicalization, key-handling, or PII/PAN issues — report privately per SECURITY.md.
+  - name: Rendered specification
+    url: https://aep-spec.vercel.app/v103-draft
+    about: Read the current draft in the browser.

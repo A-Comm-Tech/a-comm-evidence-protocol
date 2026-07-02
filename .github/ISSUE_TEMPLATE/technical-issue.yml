@@ -1,0 +1,42 @@
+name: "Technical issue"
+description: "A bug, contradiction, security concern, or unimplementable requirement in the specification"
+title: "[bug] "
+labels: ["technical-issue"]
+body:
+  - type: input
+    id: sections
+    attributes:
+      label: "Affected section(s)"
+      placeholder: "§4.1, Appendix B"
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "Severity"
+      options:
+        - "Blocker — spec cannot be implemented correctly as written"
+        - "Major — implementations will diverge or carry real risk"
+        - "Minor — inconsistency or gap with a workaround"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "What the spec says, why it is wrong or contradictory, and how you found it. For interop bugs, include the two readings that diverge."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "Proposed resolution"
+      description: "Replacement text or rule, if you have one."
+    validations:
+      required: false
+  - type: checkboxes
+    id: security
+    attributes:
+      label: "Security"
+      options:
+        - label: "This issue has security implications (evidence forgery, PII/PAN exposure, replay, key handling)"

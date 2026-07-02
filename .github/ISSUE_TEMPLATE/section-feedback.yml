@@ -1,0 +1,47 @@
+name: "Comment round: section feedback"
+description: "Feedback on a specific section of the AEP draft specification"
+title: "[§X.Y] "
+labels: ["comment-round", "section-feedback"]
+body:
+  - type: input
+    id: section
+    attributes:
+      label: "Spec section"
+      description: "Section number and title (e.g., §8.2.1 Two-plane evidence model)"
+      placeholder: "§"
+    validations:
+      required: true
+  - type: input
+    id: reviewer-role
+    attributes:
+      label: "Your perspective"
+      description: "The actor class you review from (network, issuer, acquirer, PSP, merchant, agent platform, identity/trust provider, bank rails, implementer, researcher, other). Organization name optional."
+      placeholder: "e.g., PSP integration engineer"
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: "Kind of feedback"
+      options:
+        - "Requirement is wrong or overclaims"
+        - "Requirement is unimplementable or too costly"
+        - "Ambiguity / two readings possible"
+        - "Missing capability or field"
+        - "Editorial / clarity"
+    validations:
+      required: true
+  - type: textarea
+    id: comment
+    attributes:
+      label: "Comment"
+      description: "Quote the sentence(s) at issue, state the problem, and — if you can — propose replacement text. Claims about external protocols or network rules should cite a primary source."
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: "Impact if unchanged"
+      description: "What breaks, who is blocked, or what risk is created if the draft ships as written?"
+    validations:
+      required: false

@@ -1,6 +1,6 @@
 # AEP v1.0.3 — Ecosystem Comment Round
 
-**Draft under review:** [v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html) ([rendered](https://aep-spec.vercel.app/v103-draft)) (2026-07-02)
+**Draft under review:** [v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html) ([rendered](https://aep.a-comm.ai/v103-draft)) (2026-07-02)
 **Status:** OPENING SOON — this file becomes active when the round is announced. Dates below are set at announcement.
 
 ## Scope of this round

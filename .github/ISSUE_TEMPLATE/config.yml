@@ -7,5 +7,5 @@ contact_links:
     url: https://github.com/A-Comm-Tech/a-comm-evidence-protocol/security/advisories/new
     about: Evidence forgery, canonicalization, key-handling, or PII/PAN issues — report privately per SECURITY.md.
   - name: Rendered specification
-    url: https://aep-spec.vercel.app/v103-draft
+    url: https://aep.a-comm.ai/v103-draft
     about: Read the current draft in the browser.

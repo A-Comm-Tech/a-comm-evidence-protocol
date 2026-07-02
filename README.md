@@ -2,7 +2,7 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Spec: v1.0.3-rc.2 draft](https://img.shields.io/badge/spec-v1.0.3--rc.2_draft-orange.svg)](spec/aep-v1.0.3-rc.2.html)
-[![Comment round](https://img.shields.io/badge/comment_round-Jul_6_to_Aug_5_2026-brightgreen.svg)](COMMENT-ROUND.md)
+[![Comment round](https://img.shields.io/badge/comment_round-Jul_13_to_Aug_14_2026-brightgreen.svg)](COMMENT-ROUND.md)
 
 **The open evidence standard for agentic commerce.**
 

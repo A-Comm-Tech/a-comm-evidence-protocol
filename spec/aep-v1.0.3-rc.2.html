@@ -1068,7 +1068,7 @@
             <div class="callout-icon">&#9432;</div>
             <div class="callout-body">
               <strong>Editorial note — layer count</strong>
-              v1.0.1 described seven layers and listed <code>delegation</code> only inside &sect;3.9 prose; the artifact-type enum in Appendix B omitted it. v1.0.2 promotes <code>delegation</code> to a first-class layer in the journey, consistent with the reference implementation (<code>acls-core/vault/integrity/artifact-hash.ts:85-95</code>).
+              v1.0.1 described seven layers and listed <code>delegation</code> only inside &sect;3.9 prose; the artifact-type enum in Appendix B omitted it. v1.0.2 promotes <code>delegation</code> to a first-class layer in the journey.
             </div>
           </div>
         </section>
@@ -1684,7 +1684,7 @@
             <div class="callout-icon">&#9888;</div>
             <div class="callout-body">
               <strong>Migration required — reference implementation only</strong>
-              Reference implementation <code>payload-schemas.ts:87-100</code> (v1.0.1) still carries <code>session_token</code> in the Referral payload, contradicting the v1.0.1++ spec change. This is a <strong style="display:inline;">credential leak when DisputeBundles are exported to PSPs or card networks</strong> (P1.W#5). Conformant v1.0.2+ implementations MUST migrate the Referral payload to remove <code>session_token</code> before merchant-facing v1.0.2 ship.
+              The Referral payload MUST NOT carry <code>session_token</code>: persisting a raw session token here is a <strong style="display:inline;">credential leak when DisputeBundles are exported to PSPs or card networks</strong>. Session continuity is carried instead by <code>session_id_hash</code> at the chain level (&sect;2.7).
             </div>
           </div>
 
@@ -1818,7 +1818,7 @@
             <div class="callout-icon">&#9432;</div>
             <div class="callout-body">
               <strong>Reference-implementation note</strong>
-              Reference implementation <code>payload-schemas.ts</code> (v1.0.1) ships <code>total</code>, <code>subtotal</code>, <code>shipping</code>, <code>tax</code>, <code>discounts</code>, and <code>items[*].unit_price</code> as <code>string</code> (P1.W#2). The v1.0.2+ reference implementation MUST migrate to integer minor units consistent with the spec text. Verifiers MUST reject Cart payloads whose numeric fields are not integers.
+              Cart monetary fields — <code>total</code>, <code>subtotal</code>, <code>shipping</code>, <code>tax</code>, <code>discounts</code>, and <code>items[*].unit_price</code> — MUST be integer minor units, not strings. Verifiers MUST reject Cart payloads whose numeric fields are not integers.
             </div>
           </div>
         </section>
@@ -1937,7 +1937,7 @@
             <div class="callout-icon">&#9432;</div>
             <div class="callout-body">
               <strong>Reference-implementation note</strong>
-              Reference implementation <code>payload-schemas.ts:414-432</code> (v1.0.1) ships only 6 of the 14 representment fields defined in this section (P1.W#2). The v1.0.2+ reference implementation MUST extend the Authorization payload schema to the full &sect;3.6 field set (<code>network_transaction_id</code>, <code>card_brand</code>, <code>card_last4</code>, <code>card_funding</code>, <code>card_country</code>, <code>avs_result</code>, <code>cvv_result</code>, <code>three_ds_result</code>, <code>three_ds_version</code>, <code>fraud_score</code>, <code>fraud_engine</code>, plus the v1.0.1 base 6) before any external partner audit of the engine.
+              Implementations MUST populate the full &sect;3.6 Authorization field set: <code>network_transaction_id</code>, <code>card_brand</code>, <code>card_last4</code>, <code>card_funding</code>, <code>card_country</code>, <code>avs_result</code>, <code>cvv_result</code>, <code>three_ds_result</code>, <code>three_ds_version</code>, <code>fraud_score</code>, and <code>fraud_engine</code>, in addition to the base authorization fields.
             </div>
           </div>
 
@@ -2102,7 +2102,7 @@
               Delegation MUST be omitted when <code>protocol = GENERIC</code> AND no sub-wrapper is populated (traditional web checkout with no agent involvement). Delegation MUST be present when ANY of the following protocols is in play: TAP, AP2, ACP, UCP, MCP, x402, A2A, MASTERCARD_VI. When omitted, the chain proceeds directly from <code>intent</code> to <code>policy</code>.
             </div>
           </div>
-          <p class="note-sm">This resolves the spec-vs-code divergence noted in P1.W#1 (reference implementation <code>chain-rules.ts:18-22</code> already requires delegation for agent sessions per a 2026-05-18 decision).</p>
+          <p class="note-sm">Delegation is required for transaction types that include an agent session (see &sect;3.9.2).</p>
 
           <h4>3.9.3 Permitted Actors</h4>
           <ul>
@@ -2799,7 +2799,7 @@
             <div class="callout-icon">&#9888;</div>
             <div class="callout-body">
               <strong>Ed25519 signature input encoding</strong>
-              The Ed25519 signature input is the 32 raw bytes of the SHA-256 digest — NOT the <code>sha256:</code> prefix + 64-hex-char string form. The string form is for storage, display, and chain-linkage; the raw 32 bytes are the cryptographic input to Ed25519. Implementations that signed the string form in v1.0.1 (P1.D#4 ambiguity) MUST migrate to signing the raw 32 bytes at the v1.0.2 cutover; chains created under either input form remain verifiable under their declared <code>spec_version</code>.
+              The Ed25519 signature input is the 32 raw bytes of the SHA-256 digest — NOT the <code>sha256:</code> prefix + 64-hex-char string form. The string form is for storage, display, and chain-linkage; the raw 32 bytes are the cryptographic input to Ed25519. Implementations MUST sign the raw 32 bytes, not the string form; chains created under either input form remain verifiable under their declared <code>spec_version</code>.
             </div>
           </div>
         </section>
@@ -3208,7 +3208,7 @@
 
 4.  Consumer pays
         → Stripe PaymentIntent created with metadata:
-            { acls_ehc_transaction_id: "txn_...", acls_account_id: "acc_..." }
+            { acomm_ehc_transaction_id: "txn_...", acomm_account_id: "acc_..." }
         → payment_intent.succeeded webhook fires
         → Authorization artifact appended + chain sealed</code></pre>
 
@@ -3269,7 +3269,7 @@ CREATE TRIGGER ehc_artifacts_immutability_delete
             <li>The entire artifact chain must be exportable without exposing any PII that could identify the consumer to a third-party reviewer.</li>
           </ul>
 
-          <p><strong>&sect;8.2 MUST-1: session_id_hash construction.</strong> <code>session_id_hash</code> MUST be HMAC-SHA256 with a per-merchant server-side salt, never the raw token. The salt rotation policy is defined in &sect;2.7. The v1.0.1 reference implementation Referral payload still carries <code>session_token</code> (P1.W#5); the v1.0.2+ reference implementation MUST remove that field before ship.</p>
+          <p><strong>&sect;8.2 MUST-1: session_id_hash construction.</strong> <code>session_id_hash</code> MUST be HMAC-SHA256 with a per-merchant server-side salt, never the raw token. The salt rotation policy is defined in &sect;2.7. The Referral payload MUST NOT carry a raw <code>session_token</code> (&sect;3.2).</p>
 
           <h4 id="s8-2-1">8.2.1 Two-Plane Evidence Model (Evidence Custodian) <span class="badge badge-blue" style="font-size:11px;margin-left:6px;">NEW in rc.2</span></h4>
           <p>AEP evidence is held in two planes:</p>
@@ -3973,7 +3973,7 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>Added:</strong> &sect;3.9.16 <code>kya_identity</code> (Skyfire KYA, identity-transport; ES256 JWT, Skyfire JWKS). &sect;3.9.17 <code>kya_payment</code> (Skyfire KYA Pay, settlement; <code>pay</code>/<code>kya-pay</code> token, <code>sti</code> card-or-USDC, AEP-sealed charge/settlement records). &sect;3.9.18 <code>web_bot_auth</code> (Cloudflare / IETF Web Bot Auth, RFC 9421). &sect;3.9.19 <code>request_binding</code> — NEW optional AEP-original primitive binding a bearer credential to its specific HTTP request (closes the bearer-token replay gap). &sect;3.6 <code>settlement_rail</code> — non-card settlement first-class (<code>card | stablecoin | account | real_time_rails</code>) with stablecoin variant. &sect;2.4 new actor <code>identity_verifier</code>. Protocol enum: <code>SKYFIRE_KYA</code> (one value for the Skyfire protocol family, covering both the <code>kya_identity</code> and <code>kya_payment</code> facets) and <code>WEB_BOT_AUTH</code>, appended at the end of the enum — new protocols are always appended, never alphabetized into the existing list. &sect;3.9.11 rules 9&ndash;12. New informative section "AEP and the ecosystem" (&sect;10).</p>
                   <p><strong>Changed:</strong> &sect;3.9.5/&sect;2.6 identity-transport dominance <code>TAP &asymp; SKYFIRE_KYA &gt; WEB_BOT_AUTH &gt; A2A</code>; <code>SKYFIRE_KYA</code> (via its <code>kya_payment</code> facet) joins settlement as peer to x402. &sect;3.9.12 tiers place KYA / Web Bot Auth (B/C-tier) with "agent-attributable but NOT user-authorized" caveat; KYA Pay treated as constrained spend authorization.</p>
                   <p><strong>Flagged provisional:</strong> &sect;3.9.13 (Visa IC) and &sect;3.9.15 (Mastercard VI) pending primary-spec confirmation.</p>
-                  <p><strong>Release-gate items (engineering, not wire-format):</strong> close reference-impl divergences — Referral <code>session_token</code> removal (P1.W#5), integer minor-unit amounts (P1.W#2), full 14-field Authorization payload (P1.W#2).</p>
+                  <p><strong>Implementation conformance items:</strong> Referral payloads MUST NOT carry <code>session_token</code>; monetary fields MUST be integer minor units; Authorization payloads MUST populate the full &sect;3.6 field set.</p>
                   <p><strong>Notes:</strong> v1.1.0 reserved for post-comment stabilization (sub-wrapper schema freeze, incl. confirming the provisional Visa/Mastercard schemas).</p>
                 </td>
               </tr>
@@ -3987,7 +3987,7 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>Soft breaks (alias one MINOR cycle; deprecation target v1.1.0):</strong> <code>tap_domain</code> &rarr; <code>tap_authority</code>; <code>tap_operation</code> values <code>"payment"</code>/<code>"checkout"</code> &rarr; <code>tap_intent</code>; <code>mcp_server_name</code> &rarr; <code>mcp_server.name</code>; <code>mcp_result_hash</code> &rarr; <code>mcp_result.hash</code>; x402 v1 headers <code>X-PAYMENT</code>/<code>X-PAYMENT-RESPONSE</code> &rarr; <code>x402_payment_signature</code>/<code>x402_payment_response</code>.</p>
                   <p><strong>Behavioral breaks (gated by <code>spec_version</code>):</strong> &sect;3.9.11 rule 3 (TAP authority match + <code>tap_expires &minus; tap_created &le; 480 s</code>); rule 6 (ACP <code>delegated_payment_token</code> cap vs Cart total/currency/timestamp); rule 7 (x402 EIP-712 signer recovery when <code>scheme == "exact"</code> on <code>eip155:</code>); rule 8 (Mastercard VI SD-JWT-VC L1/L2/L3 chain validation + ES256-only <code>alg</code>).</p>
                   <p><strong>Non-breaking additions:</strong> &sect;1.1/&sect;1.2 envelope-consolidation, hash-binding-primitive, and cross-protocol-witness framing. &sect;2.1/&sect;2.2 layer count 7 &rarr; 8; expected artifact count 7/5 &rarr; 8/7/6/5. &sect;2.4 <code>credentials_provider</code> actor. &sect;2.6 protocol table rewrite with steward, license posture, layer, and canonical key-discovery columns; <code>MASTERCARD_VI</code> added; TAP qualified as proprietary; layer-aware composition replaces flat dominance. &sect;2.7 explicit <code>session_id_hash</code> HMAC derivation; 365-day salt rotation with <code>salt_kid</code>; <code>delegation</code> in <code>type</code> enum. &sect;3.5 total-integrity rule promoted to numbered MUST. &sect;3.6 cart&harr;auth amount-match promoted to numbered MUST; stablecoin settlement deferred to v1.0.3. &sect;3.8 <code>delegation</code> row inserted. &sect;3.9.2 strengthened: delegation MUST be present when any covered protocol is in play. &sect;3.9.5 layer-aware dominance. &sect;3.9.9 MCP additive optionals (<code>mcp_protocol_version</code> pinned <code>"2025-11-25"</code>, RFC 8707 canonical URI, OAuth, W3C trace, transport, extensions, expanded <code>mcp_result</code>). &sect;3.9.12 restructured S/A/B/C/D paths; "TAP alone is agent-attributable but NOT user-authorized"; "MCP <code>mcp_result.hash</code> IS the canonical MCP receipt." &sect;4.3 key publication MUST (<code>/.well-known/aep-public-key</code>), 90-day rotation overlap, <code>signing_key_id</code>. &sect;5 verification result adds <code>evidence_tier</code>, <code>protocol_envelopes_verified</code>, <code>cart_payment_binding_verified</code>, <code>spec_version</code>. &sect;6.1 DisputeBundle adds <code>evidenceTier</code>, <code>protocolEnvelopesVerified</code>. &sect;8.2 <code>session_id_hash</code> MUST rule promoted. &sect;9.1 diagram updated for 8 layers. Appendix A glossary additions. Appendix B JSON Schema rewrite (<code>delegation</code>, <code>credentials_provider</code>, 8/7/6/5 <code>expectedArtifactCount</code>, sub-wrapper interfaces). Appendix C 8-artifact sample with evidence tier and protocol envelopes.</p>
-                  <p><strong>Reference-implementation migration:</strong> normative notes mandate reference-impl alignment before merchant-facing v1.0.2 ship. Most critical: remove <code>session_token</code> from <code>ReferralPayloadSchema</code> (<code>payload-schemas.ts:87-100</code>, P1.W#5); Intent <code>unit_price</code> string &rarr; integer minor units (P1.W#2); Cart payload v1.0.2 field set with integer types; Authorization payload extended from 6 to 14 fields; new RFC 8785 (JCS) canonicalization library (<code>acls-core/vault/canonical/jcs.ts</code>). Already correct: <code>artifact-hash.ts:85-95</code> (8 types incl. <code>delegation</code>), <code>artifact-hash.ts:155-163</code> (8/7/6/5), <code>chain-rules.ts:18-22</code> (delegation required for agent sessions).</p>
+                  <p><strong>Conformance:</strong> implementations MUST remove <code>session_token</code> from Referral payloads, represent monetary fields as integer minor units, populate the full &sect;3.6 Authorization field set, and canonicalize per &sect;4.1. Conformance is verified against the published test vectors (&sect;6.3).</p>
                   <p><strong>Versioning posture:</strong> first AEP release under strict SemVer (per new &sect;0.2). The pre-SemVer suffix series (v1.0.1+, v1.0.1++, v1.0.1+++) is preserved in the historical changelog below for traceability but is deprecated; from v1.0.2 forward, pre-release identifiers use SemVer <code>-rc.N</code> / <code>-alpha.N</code> syntax.</p>
                   <p><strong>Backward compatibility:</strong> v1.0.1 chains remain verifiable under v1.0.1 rules per &sect;2.7 <code>spec_version</code> enforcement. v1.0.2 verifiers MUST advertise their supported <code>spec_version</code> set (per &sect;0.2) and MUST reject chains outside that set rather than silently downgrade. The &sect;0.2 window requires v1.0.1 chains to remain verifiable for at least 24 months after the next MAJOR release; a v1.0.1-tagged verifier stays published at <code>github.com/A-Comm-Tech/a-comm-evidence-protocol/releases</code>.</p>
                   <p><strong>Issues closed (Phase 1 self-grade):</strong> W#1 (8-vs-7 artifact contradiction), W#2 (Cart / Authorization payload-schema fields missing in code), W#3 (no RFC 2119 conformance clause), W#4 (zero test vectors), W#5 (Referral schema carries <code>session_token</code>), W#6 (canonicalization rules under-specified), W#7 (A2A in enum without sub-wrapper schema), W#8 (ACP and UCP collapsed), W#9 (no IPR / patent / contributor policy), W#10 (non-SemVer versioning).</p>
@@ -4020,7 +4020,7 @@ Completed: 2026-06-21T14:08:19Z
                 <td><strong>v1.0.1</strong></td>
                 <td>2026-03-31</td>
                 <td>
-                  Reference implementation alignment. Payload schemas: per-artifact Zod validation schemas defined for all 7 artifact types (<code>payload-schemas.ts</code>). Policy artifact: <code>step_up_required</code> → <code>escalated</code>; <code>blocking_rule</code>/<code>step_up_type</code> → <code>reason</code>; added auto-generation note for pilot deployments without a policy engine. Referral artifact: corrected payload schema to match reference implementation (<code>referral_event_id</code>, <code>session_token</code>, <code>product_id</code>, <code>agent</code>, <code>consent_given</code>); corrected actor type from <code>merchant</code> to <code>user</code> (pseudonymized consumer IP). Discovery artifact: removed <code>session_token</code> and <code>model_used</code> fields (strict validation strips unknown fields); added <code>meta</code> to platform enum. Intent artifact: added optional <code>unit_price</code> and <code>currency</code> fields. Fulfillment artifact: updated status enum (<code>pending</code>, <code>in_transit</code>, <code>returned</code> added; <code>processing</code>/<code>shipped</code> consolidated); added <code>platform_order_id</code>. Stripe Appendix C: reordered <code>customer_communication</code> to forward-chronological (discovery → intent → cart). Session linkage: <code>POST /v1/events/referral</code> now returns <code>ehc_transaction_id</code> in response body, enabling session token propagation to Shopify Web Pixel and Checkout Extension. Database: <code>agentic_referral_events.ehc_transaction_id</code> (reverse FK) and <code>transaction_chains.shopify_order_id</code> added (migration 050).
+                  Artifact-schema alignment. Policy artifact: renamed <code>step_up_required</code> → <code>escalated</code> and <code>blocking_rule</code>/<code>step_up_type</code> → <code>reason</code>; added an auto-generation note for pilot deployments without a policy engine. Referral artifact: corrected actor type from <code>merchant</code> to <code>user</code> (pseudonymized consumer). Discovery artifact: strict validation strips unknown fields; added <code>meta</code> to the platform enum. Intent artifact: added optional <code>unit_price</code> and <code>currency</code> fields. Fulfillment artifact: updated status enum (added <code>pending</code>, <code>in_transit</code>, <code>returned</code>; consolidated <code>processing</code>/<code>shipped</code>); added <code>platform_order_id</code>. Appendix C: reordered the customer-communication mapping to forward-chronological (discovery → intent → cart).
                 </td>
               </tr>
               <tr>

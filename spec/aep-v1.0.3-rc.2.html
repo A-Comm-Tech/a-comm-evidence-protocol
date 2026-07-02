@@ -10,14 +10,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A-Comm Evidence Protocol (AEP) — Specification v1.0.3-rc.2 (Draft)</title>
 
-  <meta name="description" content="The open, Apache-2.0 evidence standard for agentic commerce: a tamper-evident hash chain of transaction artifacts with dispute-grade export. Draft v1.0.3-rc.2 — public comment period July 2 – August 1, 2026." />
+  <meta name="description" content="The open, Apache-2.0 evidence standard for agentic commerce: a tamper-evident hash chain of transaction artifacts with dispute-grade export. Draft v1.0.3-rc.2 — public comment period July 6 – August 5, 2026." />
   <link rel="canonical" href="https://aep.a-comm.ai/v1.0.3-rc.2" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="A-Comm Evidence Protocol" />
   <meta property="og:title" content="A-Comm Evidence Protocol (AEP) — Public Comment Draft" />
-  <meta property="og:description" content="The open evidence standard for agentic commerce. Draft v1.0.3-rc.2 is open for ecosystem comment through August 1, 2026 — payment networks, issuers, acquirers, PSPs, merchants, and agent platforms welcome." />
+  <meta property="og:description" content="The open evidence standard for agentic commerce. Draft v1.0.3-rc.2 is open for ecosystem comment through August 5, 2026 — payment networks, issuers, acquirers, PSPs, merchants, and agent platforms welcome." />
   <meta property="og:url" content="https://aep.a-comm.ai/v1.0.3-rc.2" />
   <meta property="og:image" content="https://aep.a-comm.ai/og-aep.png" />
   <meta property="og:image:width" content="1200" />
@@ -26,7 +26,7 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="A-Comm Evidence Protocol (AEP) — Public Comment Draft" />
-  <meta name="twitter:description" content="The open evidence standard for agentic commerce. Draft v1.0.3-rc.2 is open for comment through August 1, 2026." />
+  <meta name="twitter:description" content="The open evidence standard for agentic commerce. Draft v1.0.3-rc.2 is open for comment through August 5, 2026." />
   <meta name="twitter:image" content="https://aep.a-comm.ai/og-aep.png" />
 
   <style>
@@ -681,7 +681,7 @@
      at /v1.0.3-rc.2 for stable section references. -->
 
 <div class="comment-banner" role="region" aria-label="Public comment period">
-  <strong>Frozen rc.2 snapshot</strong> &mdash; the living current draft is at <a href="https://aep.a-comm.ai/">aep.a-comm.ai</a>. Public comment period: July 2 &ndash; August 1, 2026.
+  <strong>Frozen rc.2 snapshot</strong> &mdash; the living current draft is at <a href="https://aep.a-comm.ai/">aep.a-comm.ai</a>. Public comment period: July 6 &ndash; August 5, 2026.
   <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/issues/new/choose">Comment on GitHub &rarr;</a>
   <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/blob/main/COMMENT-ROUND.md">How to comment</a>
 </div>
@@ -833,7 +833,7 @@
           <div class="callout-icon">&#9432;</div>
           <div class="callout-body">
             <strong>Draft Standard — v1.0.3-rc.2 (ecosystem comment round)</strong>
-            This is AEP v1.0.3-rc.2 (Draft), an additive MINOR revision over v1.0.2 under AEP's SemVer policy (&sect;0.2): it adds sub-wrappers and optional fields, all gated by <code>spec_version</code>. v1.0.2 chains remain verifiable under v1.0.2 rules; verifiers MUST gate behavior by <code>spec_version</code> per &sect;2.7. This revision aligns AEP with Skyfire KYA / KYA Pay (<code>draft-skyfire-kyapayprofile-02</code>, 2026-06-20) and Web Bot Auth (<code>draft-meunier-web-bot-auth-architecture-05</code>), in addition to the v1.0.2 protocol set (AP2 v0.2, A2A v1.0.1, UCP 2026-04-08, ACP 2026-04-17, TAP v0, MCP 2025-11-25, x402 v2, Mastercard Verifiable Intent v0.1-draft). The Mastercard VI (&sect;3.9.15) and Visa IC (&sect;3.9.13) wrappers are re-marked <strong style="display:inline;">PROVISIONAL</strong> pending primary-spec confirmation. A v1.1.0 stabilization release is reserved for after this comment round. The <strong style="display:inline;">public comment period for this draft runs July 2 &ndash; August 1, 2026</strong>: feedback and interoperability reports are welcome via the public repository at <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol">github.com/A-Comm-Tech/a-comm-evidence-protocol</a> (issues and discussions; see <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/blob/main/COMMENT-ROUND.md">COMMENT-ROUND.md</a> for the process and the public disposition log). This URL always serves the current version of the specification; the immutable rc.2 snapshot for stable section references is at <a href="https://aep.a-comm.ai/v1.0.3-rc.2">aep.a-comm.ai/v1.0.3-rc.2</a>. This specification is published under Apache License 2.0.
+            This is AEP v1.0.3-rc.2 (Draft), an additive MINOR revision over v1.0.2 under AEP's SemVer policy (&sect;0.2): it adds sub-wrappers and optional fields, all gated by <code>spec_version</code>. v1.0.2 chains remain verifiable under v1.0.2 rules; verifiers MUST gate behavior by <code>spec_version</code> per &sect;2.7. This revision aligns AEP with Skyfire KYA / KYA Pay (<code>draft-skyfire-kyapayprofile-02</code>, 2026-06-20) and Web Bot Auth (<code>draft-meunier-web-bot-auth-architecture-05</code>), in addition to the v1.0.2 protocol set (AP2 v0.2, A2A v1.0.1, UCP 2026-04-08, ACP 2026-04-17, TAP v0, MCP 2025-11-25, x402 v2, Mastercard Verifiable Intent v0.1-draft). The Mastercard VI (&sect;3.9.15) and Visa IC (&sect;3.9.13) wrappers are re-marked <strong style="display:inline;">PROVISIONAL</strong> pending primary-spec confirmation. A v1.1.0 stabilization release is reserved for after this comment round. The <strong style="display:inline;">public comment period for this draft runs July 6 &ndash; August 5, 2026</strong>: feedback and interoperability reports are welcome via the public repository at <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol">github.com/A-Comm-Tech/a-comm-evidence-protocol</a> (issues and discussions; see <a href="https://github.com/A-Comm-Tech/a-comm-evidence-protocol/blob/main/COMMENT-ROUND.md">COMMENT-ROUND.md</a> for the process and the public disposition log). This URL always serves the current version of the specification; the immutable rc.2 snapshot for stable section references is at <a href="https://aep.a-comm.ai/v1.0.3-rc.2">aep.a-comm.ai/v1.0.3-rc.2</a>. This specification is published under Apache License 2.0.
           </div>
         </div>
         <p>A-Comm Technologies, Inc. maintains the reference implementation. The protocol itself is open and implementable by any party without restriction, royalty, or permission from A-Comm Technologies, Inc.</p>

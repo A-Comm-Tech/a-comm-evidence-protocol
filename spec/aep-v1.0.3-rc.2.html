@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   SPDX-License-Identifier: Apache-2.0
-  Copyright 2025-2026 A-Comm Inc. Licensed under the Apache License, Version 2.0.
+  Copyright 2025-2026 A-Comm Technologies, Inc. Licensed under the Apache License, Version 2.0.
   See the LICENSE and NOTICE files in this repository.
 -->
 <html lang="en">
@@ -643,7 +643,7 @@
   <!-- ── Sidebar Navigation ── -->
   <nav class="sidebar" aria-label="Specification navigation">
     <div class="sidebar-header">
-      <div class="sidebar-logo">A-Comm Inc.</div>
+      <div class="sidebar-logo">A-Comm Technologies, Inc.</div>
       <div class="sidebar-title">A-Comm Evidence Protocol</div>
       <div class="sidebar-version">v1.0.3-rc.2 (Draft) — Apache 2.0</div>
     </div>
@@ -765,7 +765,7 @@
         <div class="doc-meta">
           <span class="badge badge-green">v1.0.3-rc.2 (Draft)</span>
           <span class="badge badge-blue">Apache License 2.0</span>
-          <span class="badge badge-gray">Published by A-Comm Inc.</span>
+          <span class="badge badge-gray">Published by A-Comm Technologies, Inc.</span>
           <span class="badge badge-gray">2026-07-02</span>
         </div>
       </div>
@@ -774,7 +774,7 @@
       <section id="abstract" class="section-anchor">
         <h2>Abstract</h2>
         <p>The A-Comm Evidence Protocol (AEP) defines a standard for generating, storing, and verifying cryptographic evidence of agentic commerce transactions. As AI agents increasingly drive product discovery and purchase decisions, merchants and payment processors require a dispute-grade audit trail that can demonstrate the provenance of any transaction — from the AI platform that surfaced the product through to payment authorization and fulfillment.</p>
-        <p>AEP specifies a sequential hash chain of typed artifacts, each immutably linked to its predecessor via SHA-256. The chain spans <strong>eight defined layers</strong>: <strong>discovery, referral, intent, delegation, policy, cart, authorization,</strong> and <strong>fulfillment</strong>. Any insertion, deletion, or modification of an artifact is cryptographically detectable at every subsequent node in the chain. The protocol is designed to be implementable by any PSP, commerce platform, or merchant independently of A-Comm Inc.'s infrastructure, under Apache License 2.0 with explicit Apache &sect;3 patent grant on all claims A-Comm Inc. holds in the Necessary Claims for this specification.</p>
+        <p>AEP specifies a sequential hash chain of typed artifacts, each immutably linked to its predecessor via SHA-256. The chain spans <strong>eight defined layers</strong>: <strong>discovery, referral, intent, delegation, policy, cart, authorization,</strong> and <strong>fulfillment</strong>. Any insertion, deletion, or modification of an artifact is cryptographically detectable at every subsequent node in the chain. The protocol is designed to be implementable by any PSP, commerce platform, or merchant independently of A-Comm Technologies, Inc.'s infrastructure, under Apache License 2.0 with explicit Apache &sect;3 patent grant on all claims A-Comm Technologies, Inc. holds in the Necessary Claims for this specification.</p>
         <p>v1.0.3 extends the &sect;3.9 delegation wrappers to cover <strong>Skyfire KYA</strong> (agent identity, trust/identity-transport layer) and <strong>Skyfire KYA Pay</strong> (identity-linked payment, settlement layer), and the <strong>Web Bot Auth</strong> wire-identity envelope (Cloudflare / IETF <code>draft-meunier-web-bot-auth-architecture</code>). It adds an optional <code>request_binding</code> primitive — a witness-side observation record binding a bearer credential to the specific HTTP request it accompanied — and promotes <strong>non-card settlement</strong> (stablecoin / account / real-time rails) to first-class in &sect;3.6. The cross-protocol witness now spans every shipping agentic-commerce trust and payment artifact known as of 2026-06-29.</p>
       </section>
 
@@ -788,7 +788,7 @@
             This is AEP v1.0.3-rc.2 (Draft), an additive MINOR revision over v1.0.2 under AEP's SemVer policy (&sect;0.2): it adds sub-wrappers and optional fields, all gated by <code>spec_version</code>. v1.0.2 chains remain verifiable under v1.0.2 rules; verifiers MUST gate behavior by <code>spec_version</code> per &sect;2.7. This revision aligns AEP with Skyfire KYA / KYA Pay (<code>draft-skyfire-kyapayprofile-02</code>, 2026-06-20) and Web Bot Auth (<code>draft-meunier-web-bot-auth-architecture-05</code>), in addition to the v1.0.2 protocol set (AP2 v0.2, A2A v1.0.1, UCP 2026-04-08, ACP 2026-04-17, TAP v0, MCP 2025-11-25, x402 v2, Mastercard Verifiable Intent v0.1-draft). The Mastercard VI (&sect;3.9.15) and Visa IC (&sect;3.9.13) wrappers are re-marked <strong style="display:inline;">PROVISIONAL</strong> pending primary-spec confirmation. A v1.1.0 stabilization release is reserved for after this comment round. Feedback and interoperability reports are welcome via the public repository at <a href="https://github.com/A-Comm-Tech/aep-spec">github.com/A-Comm-Tech/aep-spec</a> (issues and discussions). This specification is published under Apache License 2.0.
           </div>
         </div>
-        <p>A-Comm Inc. maintains the reference implementation. The protocol itself is open and implementable by any party without restriction, royalty, or permission from A-Comm Inc.</p>
+        <p>A-Comm Technologies, Inc. maintains the reference implementation. The protocol itself is open and implementable by any party without restriction, royalty, or permission from A-Comm Technologies, Inc.</p>
       </section>
 
       <!-- ── License ── -->
@@ -796,17 +796,17 @@
         <h2>License</h2>
 
         <h3>License.1 Apache 2.0</h3>
-        <p>Copyright 2025&ndash;2026 A-Comm Inc. Licensed under the Apache License, Version 2.0 (the "License"). You may not use this specification except in compliance with the License. You may obtain a copy of the License at <a href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>.</p>
+        <p>Copyright 2025&ndash;2026 A-Comm Technologies, Inc. Licensed under the Apache License, Version 2.0 (the "License"). You may not use this specification except in compliance with the License. You may obtain a copy of the License at <a href="https://www.apache.org/licenses/LICENSE-2.0">https://www.apache.org/licenses/LICENSE-2.0</a>.</p>
         <p>Unless required by applicable law or agreed to in writing, materials distributed under the License are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</p>
 
         <h3>License.2 Patent Grant</h3>
-        <p>A-Comm Inc. grants to every implementer of this specification, under the terms of Apache License 2.0 &sect;3 (Grant of Patent License), a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license under any Necessary Claims (as defined in Apache 2.0) that A-Comm Inc. owns or controls, to make, have made, use, offer to sell, sell, import, and otherwise transfer implementations of AEP, solely to the extent such implementation conforms to the normative requirements of this specification. This grant covers any provisional or issued patent A-Comm Inc. has filed or may file that reads on the AEP wire format, hash-chain construction, signal classification, or evidence-tier ranking.</p>
+        <p>A-Comm Technologies, Inc. grants to every implementer of this specification, under the terms of Apache License 2.0 &sect;3 (Grant of Patent License), a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license under any Necessary Claims (as defined in Apache 2.0) that A-Comm Technologies, Inc. owns or controls, to make, have made, use, offer to sell, sell, import, and otherwise transfer implementations of AEP, solely to the extent such implementation conforms to the normative requirements of this specification. This grant covers any provisional or issued patent A-Comm Technologies, Inc. has filed or may file that reads on the AEP wire format, hash-chain construction, signal classification, or evidence-tier ranking.</p>
 
         <h3>License.3 Contributions</h3>
         <p>Contributions to the AEP specification are accepted under the terms of the Apache License 2.0 &sect;5 (Submission of Contributions). All Contributors MUST sign off on their commits using a Developer Certificate of Origin (DCO) style sign-off (<code>Signed-off-by: Name &lt;email&gt;</code>); pull requests without a DCO sign-off MUST NOT be merged. Substantive normative contributions SHOULD be discussed in a public issue or discussion thread before submission.</p>
 
         <h3>License.4 Trademarks</h3>
-        <p>The protocol name "A-Comm Evidence Protocol" and the abbreviation "AEP" are generic identifiers for this specification and its conformant implementations and are NOT trademarked by A-Comm Inc. "A-Comm", "A-Comm Inc.", "Vault" (when used in the context of A-Comm's reference implementation), and the A-Comm logo are trademarks of A-Comm Inc. Use of these marks in connection with conformant AEP implementations is permitted only as factual references (e.g., "this implementation interoperates with A-Comm Vault") and not as endorsements of unrelated products or services.</p>
+        <p>The protocol name "A-Comm Evidence Protocol" and the abbreviation "AEP" are generic identifiers for this specification and its conformant implementations and are NOT trademarked by A-Comm Technologies, Inc. "A-Comm", "A-Comm Technologies, Inc.", "Vault" (when used in the context of A-Comm's reference implementation), and the A-Comm logo are trademarks of A-Comm Technologies, Inc. Use of these marks in connection with conformant AEP implementations is permitted only as factual references (e.g., "this implementation interoperates with A-Comm Vault") and not as endorsements of unrelated products or services.</p>
       </section>
 
       <!-- ── 0.1 Terminology and Conformance ── -->
@@ -818,7 +818,7 @@
 
         <h4>Defined Roles</h4>
         <ul>
-          <li><strong>Implementer</strong> — any party that produces conformant AEP chains, exports conformant DisputeBundles, or verifies conformant AEP chains, regardless of whether that party uses the A-Comm Inc. reference implementation. Implementers include PSPs, acquirers, commerce platforms, merchants, dispute-management platforms, fraud decisioning systems, and independent verifiers.</li>
+          <li><strong>Implementer</strong> — any party that produces conformant AEP chains, exports conformant DisputeBundles, or verifies conformant AEP chains, regardless of whether that party uses the A-Comm Technologies, Inc. reference implementation. Implementers include PSPs, acquirers, commerce platforms, merchants, dispute-management platforms, fraud decisioning systems, and independent verifiers.</li>
           <li><strong>Verifier</strong> — an Implementer in the verification role. A Verifier MUST advertise the set of <code>spec_version</code> values it supports (per &sect;0.2) and MUST reject any artifact whose <code>spec_version</code> is not in that set.</li>
           <li><strong>Conformant chain</strong> — a transaction chain whose every artifact satisfies the requirements of &sect;2, &sect;3, &sect;4, and &sect;3.9 for the declared <code>spec_version</code>.</li>
           <li><strong>Conformant exporter</strong> — an Implementer that produces DisputeBundles satisfying &sect;6 for the declared <code>spec_version</code>.</li>
@@ -857,7 +857,7 @@
         </ol>
 
         <h4>Backward-Compatibility Window</h4>
-        <p>Every published <code>spec_version</code> MUST remain verifiable for at least <strong>24 months</strong> after the next MAJOR is released. Maintainers of A-Comm Inc.'s reference implementation MUST publish a tagged release of the verifier per <code>spec_version</code> and keep the tagged verifier available at <a href="https://github.com/A-Comm-Tech/aep-spec/releases">github.com/A-Comm-Tech/aep-spec/releases</a> for at least the backward-compat window.</p>
+        <p>Every published <code>spec_version</code> MUST remain verifiable for at least <strong>24 months</strong> after the next MAJOR is released. Maintainers of A-Comm Technologies, Inc.'s reference implementation MUST publish a tagged release of the verifier per <code>spec_version</code> and keep the tagged verifier available at <a href="https://github.com/A-Comm-Tech/aep-spec/releases">github.com/A-Comm-Tech/aep-spec/releases</a> for at least the backward-compat window.</p>
 
         <h4>Pre-SemVer History</h4>
         <p>The v1.0.1 "+ / ++ / +++" suffixes used between 2026-03-31 and 2026-04-23 (see Appendix D footnote) are NOT SemVer-conformant and are preserved in the changelog for historical reference only. From v1.0.2 forward, suffix-style versioning is deprecated; pre-release identifiers MUST use SemVer <code>-rc.N</code> or <code>-alpha.N</code> syntax (e.g., <code>v1.1.0-rc.1</code>).</p>
@@ -892,7 +892,7 @@
             <li><strong>Dispute-grade:</strong> The evidence bundle maps directly to Stripe, Adyen, and card network representment evidence fields.</li>
             <li><strong>PII-minimal:</strong> Consumer identifiers are pseudonymized. No raw card data, no PAN, no personal identifiers in any artifact payload.</li>
             <li><strong>Platform-agnostic:</strong> Works across Shopify, WooCommerce, BigCommerce, Magento, and any PSP.</li>
-            <li><strong>Open:</strong> Apache 2.0. Any implementation can generate and verify AEP chains without dependency on A-Comm Inc.</li>
+            <li><strong>Open:</strong> Apache 2.0. Any implementation can generate and verify AEP chains without dependency on A-Comm Technologies, Inc.</li>
             <li><strong>Attribution-aware:</strong> Bridges AI platform citation events (ChatGPT, Gemini, Perplexity, Copilot) into the cryptographic chain as a first-class artifact type.</li>
             <li><strong>Cross-protocol witness:</strong> An AEP chain is the only evidence artifact that records <em>which</em> protocol(s) carried a given transaction. No competing protocol produces this cross-protocol interoperability record on its own.</li>
             <li><strong>Open/Closed mandate-aware:</strong> Evidence captures the open-mandate vs closed-mandate distinction across AP2 (<code>mandate.checkout.open.1</code> vs <code>mandate.checkout.1</code>) and Mastercard VI (<code>kb-sd-jwt</code> vs <code>kb-sd-jwt+kb</code>). An autonomous-mode agent-signed-only transaction is materially weaker evidence than a user-signed-at-checkout transaction and is explicitly tier-distinguished in &sect;3.9.12.</li>
@@ -2798,7 +2798,7 @@
 
           <p>where <code>sha256_raw_bytes</code> is the 32-byte SHA-256 digest (NOT the <code>sha256:</code> prefix + hex form — see the &sect;4.1 signature input encoding rule).</p>
 
-          <p>The corresponding Ed25519 public key is published by the implementing party (A-Comm Inc. or any independent implementor) to allow third-party verification without access to the private key.</p>
+          <p>The corresponding Ed25519 public key is published by the implementing party (A-Comm Technologies, Inc. or any independent implementor) to allow third-party verification without access to the private key.</p>
 
           <p><strong>Key publication and rotation.</strong> Implementations MUST publish their Ed25519 verification key at a stable URL (<code>/.well-known/aep-public-key</code> or equivalent), tagged with a <code>key_id</code>. Key rotation MUST include an overlap window of at least 90 days during which both old and new keys are published; chains carry <code>signing_key_id</code> at the chain level so verifiers can resolve the correct key.</p>
 
@@ -3351,13 +3351,13 @@ function containsRawPaymentCredentials(payload: Record&lt;string, unknown&gt;): 
       <!-- ══════════════════════════════════════════════ -->
       <section id="s9" class="section-anchor">
         <h2>9. A-Comm's Position in the Transaction Flow</h2>
-        <p>A-Comm Inc. is the maintainer of the AEP reference implementation and the primary evidence custodian for merchants using the A-Comm platform. A-Comm is <strong>adjacent to the payment path, not in it.</strong> A-Comm is the black box recorder for agentic commerce — parallel to the transaction, never gating it. A-Comm does not move money, authorize charges, or hold funds. PSPs and card networks remain in the payment path. A-Comm is the evidence capture layer attached to every step.</p>
+        <p>A-Comm Technologies, Inc. is the maintainer of the AEP reference implementation and the primary evidence custodian for merchants using the A-Comm platform. A-Comm is <strong>adjacent to the payment path, not in it.</strong> A-Comm is the black box recorder for agentic commerce — parallel to the transaction, never gating it. A-Comm does not move money, authorize charges, or hold funds. PSPs and card networks remain in the payment path. A-Comm is the evidence capture layer attached to every step.</p>
 
         <div class="callout callout-note">
           <div class="callout-icon">&#9432;</div>
           <div class="callout-body">
             <strong>Scope of this section</strong>
-            This section describes the operational and regulatory positioning of A-Comm Inc. as the reference AEP implementer. It is non-normative with respect to the protocol itself — any party may implement AEP in any transaction position. The positioning rules below apply to A-Comm's own deployment.
+            This section describes the operational and regulatory positioning of A-Comm Technologies, Inc. as the reference AEP implementer. It is non-normative with respect to the protocol itself — any party may implement AEP in any transaction position. The positioning rules below apply to A-Comm's own deployment.
           </div>
         </div>
 
@@ -3400,7 +3400,7 @@ function containsRawPaymentCredentials(payload: Record&lt;string, unknown&gt;): 
 
         <section id="s9-3">
           <h3>9.3 What AEP / A-Comm Is NOT</h3>
-          <p>The AEP reference implementation, and A-Comm Inc. as its primary operator, is explicitly not in any of the following categories:</p>
+          <p>The AEP reference implementation, and A-Comm Technologies, Inc. as its primary operator, is explicitly not in any of the following categories:</p>
 
           <div class="callout callout-danger">
             <div class="callout-icon">&#10006;</div>
@@ -3986,7 +3986,7 @@ Completed: 2026-06-21T14:08:19Z
           </table>
         </div>
 
-        <p class="note-sm" style="margin-top:24px;">A-Comm Evidence Protocol (AEP) v1.0.3-rc.2 (Draft) — 2026-07-02 — Copyright 2026 A-Comm Inc. — Apache License 2.0 — Published by A-Comm Inc., contact@a-comm.ai</p>
+        <p class="note-sm" style="margin-top:24px;">A-Comm Evidence Protocol (AEP) v1.0.3-rc.2 (Draft) — 2026-07-02 — Copyright 2026 A-Comm Technologies, Inc. — Apache License 2.0 — Published by A-Comm Technologies, Inc., contact@a-comm.ai</p>
       </section>
 
     </div><!-- /content -->

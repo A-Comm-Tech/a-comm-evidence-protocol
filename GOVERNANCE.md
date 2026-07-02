@@ -2,7 +2,7 @@
 
 ## Current model (bootstrap phase)
 
-The specification is edited by a maintainer group stewarded by **A-Comm Inc.**, which publishes the spec under Apache 2.0 with an explicit patent grant (spec License §2) and accepts contributions under DCO (spec License §3). During the bootstrap phase:
+The specification is edited by a maintainer group stewarded by **A-Comm Technologies, Inc.**, which publishes the spec under Apache 2.0 with an explicit patent grant (spec License §2) and accepts contributions under DCO (spec License §3). During the bootstrap phase:
 
 - **Editors** merge changes. All review happens in public (issues, discussions, PRs).
 - **Comment rounds** are the primary decision mechanism for normative releases: every comment receives a public disposition, and the disposition log is the authoritative record.
@@ -11,7 +11,7 @@ The specification is edited by a maintainer group stewarded by **A-Comm Inc.**, 
 
 ## Separation of roles
 
-A-Comm Inc. operates a commercial reference implementation and an Evidence Custodian service. These are deliberately separated from the standard: the spec defines the **Custodian role** generically, conformance is defined by **published test vectors** rather than the reference implementation, and nothing in the specification requires any A-Comm product or service.
+A-Comm Technologies, Inc. operates a commercial reference implementation and an Evidence Custodian service. These are deliberately separated from the standard: the spec defines the **Custodian role** generically, conformance is defined by **published test vectors** rather than the reference implementation, and nothing in the specification requires any A-Comm product or service.
 
 ## Trajectory: neutral stewardship
 

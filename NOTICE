@@ -1,14 +1,14 @@
 A-Comm Evidence Protocol (AEP) Specification
-Copyright 2025-2026 A-Comm Inc.
+Copyright 2025-2026 A-Comm Technologies, Inc.
 
 This specification is licensed under the Apache License, Version 2.0.
 See the LICENSE file for the full license text.
 
-Patent grant: A-Comm Inc. grants implementers a license under any
+Patent grant: A-Comm Technologies, Inc. grants implementers a license under any
 Necessary Claims per Apache License 2.0 Section 3, as described in the
 License section of the specification.
 
 "A-Comm Evidence Protocol" and "AEP" are generic identifiers for this
 specification and its conformant implementations and are not trademarked
-by A-Comm Inc. "A-Comm", "A-Comm Inc.", and the A-Comm logo are
-trademarks of A-Comm Inc.
+by A-Comm Technologies, Inc. "A-Comm", "A-Comm Technologies, Inc.", and the A-Comm logo are
+trademarks of A-Comm Technologies, Inc.

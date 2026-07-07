@@ -941,7 +941,7 @@
             <li><strong>PII-minimal:</strong> Consumer identifiers are pseudonymized. No raw card data, no PAN, no personal identifiers in any artifact payload.</li>
             <li><strong>Platform-agnostic:</strong> Works across Shopify, WooCommerce, BigCommerce, Magento, and any PSP.</li>
             <li><strong>Open:</strong> Apache 2.0. Any implementation can generate and verify AEP chains without dependency on A-Comm Technologies, Inc.</li>
-            <li><strong>Attribution-aware:</strong> Bridges AI platform citation events (ChatGPT, Gemini, Perplexity, Copilot) into the cryptographic chain as a first-class artifact type.</li>
+            <li><strong>Attribution-aware:</strong> Records the inbound AI referral when a consumer arrives from an AI surface (ChatGPT, Gemini, Perplexity, Copilot), plus an optional AI-platform citation attestation when the platform itself reports it. AEP asserts no visibility into the AI surface.</li>
             <li><strong>Cross-protocol witness:</strong> An AEP chain is the only evidence artifact that records <em>which</em> protocol(s) carried a given transaction. No competing protocol produces this cross-protocol interoperability record on its own.</li>
             <li><strong>Open/Closed mandate-aware:</strong> Evidence captures the open-mandate vs closed-mandate distinction across AP2 (<code>mandate.checkout.open.1</code> vs <code>mandate.checkout.1</code>) and Mastercard VI (<code>kb-sd-jwt</code> vs <code>kb-sd-jwt+kb</code>). An autonomous-mode agent-signed-only transaction is materially weaker evidence than a user-signed-at-checkout transaction and is explicitly tier-distinguished in &sect;3.9.12.</li>
             <li><strong>Cryptographic binding over semantic matching:</strong> Cart&harr;payment integrity is verified by hash equivalence (<code>checkout_hash</code> == <code>transaction_id</code>), not by semantic field comparison. Implementations MUST NOT depend on item-name normalization or amount-range tolerances for binding integrity.</li>
@@ -968,10 +968,10 @@
               <div class="artifact-card-title">Discovery <span class="badge badge-blue" style="font-size:11px;margin-left:8px;">ai_referral types only</span></div>
             </div>
             <div class="artifact-card-body">
-              <p>Captures the AI platform citation event — the moment a product was surfaced in a ChatGPT, Gemini, Perplexity, or Copilot response. Records the platform, the consumer's query, the product URL cited, and the attribution method used to link the AI citation to the inbound session.</p>
+              <p>An <strong>optional, platform-attested</strong> record of a product citation inside an AI surface (ChatGPT, Gemini, Perplexity, Copilot). It can be populated <strong>only when the AI platform itself reports the citation</strong> — AEP has no visibility into what happens inside an AI chat surface, so a merchant cannot observe or reconstruct it, and <strong>most chains carry no Discovery artifact</strong>. The observable inbound signal is the Referral artifact (&sect;3.2). Records the cited product URL and the attribution method used to link the AI referral to the inbound session; it never records the consumer's raw query.</p>
               <ul>
-                <li>Actor type: <code>agent</code> (AI platform) or <code>merchant</code> (tracked link)</li>
-                <li>Key payload fields: <code>platform</code>, <code>query</code>, <code>referral_url</code>, <code>citation_position</code>, <code>attribution_method</code></li>
+                <li>Actor type: <code>agent</code> (AI platform, self-reported) — populated only when the platform attests the citation</li>
+                <li>Key payload fields: <code>platform</code>, <code>product_url_cited</code>, <code>attribution_method</code>, <code>attribution_confidence</code>, <code>citation_position</code> (optional) — no raw query</li>
               </ul>
             </div>
           </div>
@@ -1521,13 +1521,13 @@
 
         <section id="s3-discovery">
           <h3>3.1 Discovery Artifact</h3>
-          <p>The discovery artifact bridges the citation monitoring system into the evidence chain. It records the moment an AI platform surfaced a merchant product in a consumer-facing response — before any click, referral, or purchase event.</p>
+          <p>The discovery artifact is an <strong>optional, platform-attested</strong> record of the moment an AI platform surfaced a merchant product in a consumer-facing response. It can be populated <strong>only by the AI platform itself</strong> (see the Minimal Platform Profile, &sect;8.7): AEP has no visibility into an AI chat surface, so this artifact cannot be observed or reconstructed by a merchant and is <strong>absent from most chains</strong>. The consumer-observable signal — arrival from an AI surface — is recorded by the Referral artifact (&sect;3.2), not here.</p>
 
           <div class="callout callout-tip">
             <div class="callout-icon">&#10003;</div>
             <div class="callout-body">
-              <strong>Why discovery matters for disputes</strong>
-              Card network reviewers examining a chargeback on an AI-mediated transaction can trace the chain back to the specific AI platform, query, and product citation that originated the journey. This is the layer that makes agentic commerce disputes provable — not just to the PSP, but to the card network itself.
+              <strong>What Discovery adds &mdash; only when the platform participates</strong>
+              When an AI platform attests a citation, a reviewer can trace an AI-mediated transaction back to the platform and product citation that originated the journey. Because this attestation is optional and platform-supplied, the durable, always-present attribution signal is the Referral artifact (&sect;3.2); Discovery enriches it only when the platform participates.
             </div>
           </div>
 
@@ -1547,12 +1547,11 @@
   "citation_position":      "number — rank in AI response (asserted; only available if agent
                              reports it; OPTIONAL for platform emitters per §8.7)",
 
-  // Asserted — the consumer's query (only if agent leaks it; rare)
-  "query_hash":             "string — 'sha256:...' of the query; MUST use the §2.7 HMAC
-                             construction (never a bare unsalted SHA-256); raw query never
-                             stored. Platform emitters SHOULD NOT emit this field (optional)",
-  "query_category":         "string — coarse query-topic enum; alternative to query_hash
-                             for platform emitters (optional)",
+  // Optional — coarse query topic, platform-supplied only
+  "query_category":         "string — coarse query-topic enum (e.g. 'electronics',
+                             'apparel'), OPTIONAL and platform-supplied only. The consumer's
+                             raw query is a black box to AEP and is NEVER captured or stored;
+                             there is no raw-query or query-hash field.",
 
   // Two-plane device signals (NEW in rc.2 — §8.2.1; SHOULD when available)
   "customer_device_id":          "string — ≥15 chars; clear text in the raw plane (optional)",
@@ -1578,7 +1577,7 @@
 
           <p><strong>Rationale for <code>discovery_source</code>.</strong> The <code>discovery_source</code> block records the <em>catalog protocol</em> that surfaced the product — Klarna Agentic Product Protocol, Google Shopping Feed, Amazon catalog, Shopify, ACP product feed. These are catalog metadata only; they have no handshake, no signatures, no delegation. They are recorded as pre-evidence reference on the discovery artifact, NOT as &sect;3.9 sub-wrappers.</p>
 
-          <p><strong>Purpose limitation (normative; NEW in rc.2).</strong> Recipients of exported bundles MUST NOT aggregate <code>citation_position</code>, <code>query_hash</code>, or platform-attribution fields across chains to reconstruct a platform's ranking or citation behavior; such use is non-conformant. <em>Note (informative):</em> the <code>platform</code> enum is expected to move to a registry process maintained independently of this specification.</p>
+          <p><strong>Purpose limitation (normative; NEW in rc.2).</strong> Recipients of exported bundles MUST NOT aggregate <code>citation_position</code>, <code>query_category</code>, or platform-attribution fields across chains to reconstruct a platform's ranking or citation behavior; such use is non-conformant. <em>Note (informative):</em> the <code>platform</code> enum is expected to move to a registry process maintained independently of this specification.</p>
 
           <h4>AI Platform Coverage</h4>
           <div class="platform-strip">
@@ -3388,7 +3387,7 @@ function containsRawPaymentCredentials(payload: Record&lt;string, unknown&gt;): 
             <li><strong>countersigning the Intent artifact</strong> (&sect;3.3) — product, price, quantity, and agent identity, signed with the platform's existing keys; and/or</li>
             <li><strong>supplying <code>request_binding</code> material</strong> (&sect;3.9.19) for requests its agents originate.</li>
           </ul>
-          <p>A platform under this profile has NO obligation to emit <code>query_hash</code>, <code>citation_position</code>, or any ranking-derived field. Chains carrying a platform-countersigned Intent artifact are eligible for elevated tiers per &sect;3.9.12. The &sect;6.5 named-actor rights and safe-harbor term apply to all platform-emitted artifacts.</p>
+          <p>A platform under this profile has NO obligation to emit <code>query_category</code>, <code>citation_position</code>, or any ranking-derived field. Chains carrying a platform-countersigned Intent artifact are eligible for elevated tiers per &sect;3.9.12. The &sect;6.5 named-actor rights and safe-harbor term apply to all platform-emitted artifacts.</p>
         </section>
       </section>
 

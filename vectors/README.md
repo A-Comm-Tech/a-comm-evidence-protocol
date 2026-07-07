@@ -8,7 +8,7 @@ All test vectors in this directory are licensed under the **Apache License 2.0**
 
 | Version | Directory | Status |
 |---|---|---|
-| v1.0.3-rc.2 | `v1.0.3-rc.2/` | **PENDING — publication is a release gate for v1.0.3-final** (spec §6.3) |
+| v1.0.3-rc.2 | `v1.0.3-rc.2/` | **PARTIAL — (a), (b), (h) + test keys published 2026-07-06**; (c)–(g), (i)–(m) pending (see the directory README). Full publication remains the release gate for v1.0.3-final (spec §6.3) |
 
 ## What will be published (per spec §6.3)
 

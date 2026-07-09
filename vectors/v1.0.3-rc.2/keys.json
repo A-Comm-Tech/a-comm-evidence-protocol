@@ -1,0 +1,7 @@
+{
+  "description": "Deterministic Ed25519 TEST keypair used by these vectors. The seed is published so implementations can reproduce every signature; it must obviously never be used outside test vectors.",
+  "algorithm": "ed25519",
+  "seed_base64": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=",
+  "public_key_base64": "ebVWLo/mVPlAeLES6KmLp5AfhTrmlb7X4OORC60ElmQ=",
+  "signature_input_rule": "sign the RAW 32 bytes of the SHA-256 digest — never the \"sha256:\"+hex string (4.1/4.3)"
+}

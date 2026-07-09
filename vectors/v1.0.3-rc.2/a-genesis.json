@@ -1,0 +1,27 @@
+{
+  "description": "Vector (a): genesis artifact — canonical JSON byte stream and expected SHA-256. previous_hash is null and INSIDE the hash input (4.1). An implementation that does not reproduce expected_sha256 byte-for-byte is non-conformant (6.3).",
+  "spec_version": "aep-1.0.3-rc.2",
+  "hash_input": {
+    "artifact_type": "discovery",
+    "actor_type": "agent",
+    "actor_id": "chatgpt",
+    "interaction_channel": "text_chat",
+    "payload": {
+      "platform": "chatgpt",
+      "attribution_method": "url_params",
+      "attribution_confidence": "high",
+      "product_url_cited": "https://merchant.example/products/prod_001",
+      "captured_at": "2026-07-01T12:00:00Z",
+      "idempotency_key": "vec-discovery-001"
+    },
+    "metadata": {
+      "merchant_id": "acct_vector_merchant",
+      "spec_version": "aep-1.0.3-rc.2"
+    },
+    "previous_hash": null,
+    "timestamp": "2026-07-01T12:00:00Z"
+  },
+  "canonical_json": "{\"actor_id\":\"chatgpt\",\"actor_type\":\"agent\",\"artifact_type\":\"discovery\",\"interaction_channel\":\"text_chat\",\"metadata\":{\"merchant_id\":\"acct_vector_merchant\",\"spec_version\":\"aep-1.0.3-rc.2\"},\"payload\":{\"attribution_confidence\":\"high\",\"attribution_method\":\"url_params\",\"captured_at\":\"2026-07-01T12:00:00Z\",\"idempotency_key\":\"vec-discovery-001\",\"platform\":\"chatgpt\",\"product_url_cited\":\"https://merchant.example/products/prod_001\"},\"previous_hash\":null,\"timestamp\":\"2026-07-01T12:00:00Z\"}",
+  "canonical_utf8_length_bytes": 482,
+  "expected_sha256": "sha256:ffef0d2f26e1a87ce87f89031c3bb982e10f03266f0c5f7736832830cc1045c8"
+}

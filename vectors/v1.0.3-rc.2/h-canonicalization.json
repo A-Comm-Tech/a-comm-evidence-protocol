@@ -1,0 +1,84 @@
+{
+  "description": "Vector (h): JCS canonicalization examples — NFC normalization, UTF-16 code-unit key order, integer representation, verbatim strings. Each case gives input(s), the expected canonical byte string, and its SHA-256.",
+  "spec_version": "aep-1.0.3-rc.2",
+  "cases": [
+    {
+      "name": "nfc-composed-vs-decomposed",
+      "description": "Composed U+00E9 and decomposed U+0065+U+0301 MUST canonicalize to identical bytes (4.1 NFC rule — beyond stock RFC 8785).",
+      "inputs": [
+        {
+          "name": "café"
+        },
+        {
+          "name": "café"
+        }
+      ],
+      "expected_canonical": "{\"name\":\"café\"}",
+      "expected_sha256": "sha256:645fa443126a8954fc6d871912b8fc67bc2ee8feae417efe55546251962ca74d",
+      "all_inputs_must_match": true
+    },
+    {
+      "name": "key-order-utf16-code-units",
+      "description": "Member names sort by UTF-16 code unit: uppercase before lowercase; NOT locale/case-insensitive order.",
+      "inputs": [
+        {
+          "b": 1,
+          "A": 2,
+          "a": 3,
+          "B": 4
+        }
+      ],
+      "expected_canonical": "{\"A\":2,\"B\":4,\"a\":3,\"b\":1}",
+      "expected_sha256": "sha256:3ff5b748c5d1b0a4e7af799db18531d11623638c781d8bfd9e16465fc30b857c",
+      "all_inputs_must_match": false
+    },
+    {
+      "name": "integer-representation",
+      "description": "Money and counts are integer JSON numbers: no decimals, no exponents, no strings (3.5/4.1).",
+      "inputs": [
+        {
+          "amount": 5500,
+          "quantity": 2,
+          "zero": 0
+        }
+      ],
+      "expected_canonical": "{\"amount\":5500,\"quantity\":2,\"zero\":0}",
+      "expected_sha256": "sha256:9bf8400b6df21b5408f1f2aa8d84c7e4ea35102850e495b88eafcf4cb1692bff",
+      "all_inputs_must_match": false
+    },
+    {
+      "name": "strings-verbatim",
+      "description": "Strings (timestamps included) are hashed verbatim — no timezone or precision rewriting.",
+      "inputs": [
+        {
+          "at": "2026-07-01T12:00:00Z",
+          "offset_kept": "2026-07-01T17:00:00+05:00"
+        }
+      ],
+      "expected_canonical": "{\"at\":\"2026-07-01T12:00:00Z\",\"offset_kept\":\"2026-07-01T17:00:00+05:00\"}",
+      "expected_sha256": "sha256:6e25758d6dc05f71a444e29eee8291fafae6427ca4a097cea2c947b67ad6219a",
+      "all_inputs_must_match": false
+    },
+    {
+      "name": "nested-sorting",
+      "description": "Sorting applies at every nesting level; arrays preserve order.",
+      "inputs": [
+        {
+          "z": {
+            "b": 2,
+            "a": 1
+          },
+          "list": [
+            3,
+            1,
+            2
+          ],
+          "A": null
+        }
+      ],
+      "expected_canonical": "{\"A\":null,\"list\":[3,1,2],\"z\":{\"a\":1,\"b\":2}}",
+      "expected_sha256": "sha256:0961d2819ad7a8cee2f63a35f66984019cb45ae2195deb8e70f3672e680cef18",
+      "all_inputs_must_match": false
+    }
+  ]
+}

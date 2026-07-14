@@ -796,7 +796,7 @@
       <div class="nav-section-label">Appendices</div>
       <a class="nav-link" href="#appendix-a">A. Glossary</a>
       <a class="nav-link" href="#appendix-b">B. JSON Schema</a>
-      <a class="nav-link" href="#appendix-c">C. Stripe Evidence Mapping</a>
+      <a class="nav-link" href="#appendix-c">C. PSP Dispute-Evidence Mapping</a>
       <a class="nav-link" href="#appendix-d">D. Changelog</a>
     </div>
   </nav>
@@ -921,7 +921,7 @@
 
         <section id="s1-1">
           <h3>1.1 Problem Statement</h3>
-          <p>AI-mediated commerce is growing rapidly. Consumers increasingly discover and purchase products through AI chat interfaces — ChatGPT, Google Gemini, Perplexity, Microsoft Copilot — where product recommendations drive real transactions. This creates a new class of dispute risk:</p>
+          <p>AI-mediated commerce is growing rapidly. Consumers increasingly discover and purchase products through AI chat interfaces where product recommendations drive real transactions. This creates a new class of dispute risk:</p>
           <ul>
             <li>The consumer interacted with an AI agent, not a human or traditional web UI</li>
             <li>No browser-native referrer chain is reliable across AI platforms</li>
@@ -937,11 +937,11 @@
           <h3>1.2 Design Goals</h3>
           <ul>
             <li><strong>Tamper-evident:</strong> Any modification to any artifact in the chain is detectable at all subsequent nodes without requiring a trusted third party.</li>
-            <li><strong>Dispute-grade:</strong> The evidence bundle maps directly to Stripe, Adyen, and card network representment evidence fields.</li>
+            <li><strong>Dispute-grade:</strong> The evidence bundle maps directly to PSP and card-network representment evidence fields.</li>
             <li><strong>PII-minimal:</strong> Consumer identifiers are pseudonymized. No raw card data, no PAN, no personal identifiers in any artifact payload.</li>
-            <li><strong>Platform-agnostic:</strong> Works across Shopify, WooCommerce, BigCommerce, Magento, and any PSP.</li>
+            <li><strong>Platform-agnostic:</strong> Works across any commerce platform and any PSP.</li>
             <li><strong>Open:</strong> Apache 2.0. Any implementation can generate and verify AEP chains without dependency on A-Comm Technologies, Inc.</li>
-            <li><strong>Attribution-aware:</strong> Records the inbound AI referral when a consumer arrives from an AI surface (ChatGPT, Gemini, Perplexity, Copilot), plus an optional AI-platform citation attestation when the platform itself reports it. AEP asserts no visibility into the AI surface.</li>
+            <li><strong>Attribution-aware:</strong> Records the inbound AI referral when a consumer arrives from an AI surface, plus an optional AI-platform citation attestation when the platform itself reports it. AEP asserts no visibility into the AI surface.</li>
             <li><strong>Cross-protocol witness:</strong> An AEP chain is the only evidence artifact that records <em>which</em> protocol(s) carried a given transaction. No competing protocol produces this cross-protocol interoperability record on its own.</li>
             <li><strong>Open/Closed mandate-aware:</strong> Evidence captures the open-mandate vs closed-mandate distinction across AP2 (<code>mandate.checkout.open.1</code> vs <code>mandate.checkout.1</code>) and Mastercard VI (<code>kb-sd-jwt</code> vs <code>kb-sd-jwt+kb</code>). An autonomous-mode agent-signed-only transaction is materially weaker evidence than a user-signed-at-checkout transaction and is explicitly tier-distinguished in &sect;3.9.12.</li>
             <li><strong>Cryptographic binding over semantic matching:</strong> Cart&harr;payment integrity is verified by hash equivalence (<code>checkout_hash</code> == <code>transaction_id</code>), not by semantic field comparison. Implementations MUST NOT depend on item-name normalization or amount-range tolerances for binding integrity.</li>
@@ -968,7 +968,7 @@
               <div class="artifact-card-title">Discovery <span class="badge badge-blue" style="font-size:11px;margin-left:8px;">ai_referral types only</span></div>
             </div>
             <div class="artifact-card-body">
-              <p>An <strong>optional, platform-attested</strong> record of a product citation inside an AI surface (ChatGPT, Gemini, Perplexity, Copilot). It can be populated <strong>only when the AI platform itself reports the citation</strong> — AEP has no visibility into what happens inside an AI chat surface, so a merchant cannot observe or reconstruct it, and <strong>most chains carry no Discovery artifact</strong>. The observable inbound signal is the Referral artifact (&sect;3.2). Records the cited product URL and the attribution method used to link the AI referral to the inbound session; it never records the consumer's raw query.</p>
+              <p>An <strong>optional, platform-attested</strong> record of a product citation inside an AI surface. It can be populated <strong>only when the AI platform itself reports the citation</strong> — AEP has no visibility into what happens inside an AI chat surface, so a merchant cannot observe or reconstruct it, and <strong>most chains carry no Discovery artifact</strong>. The observable inbound signal is the Referral artifact (&sect;3.2). Records the cited product URL and the attribution method used to link the AI referral to the inbound session; it never records the consumer's raw query.</p>
               <ul>
                 <li>Actor type: <code>agent</code> (AI platform, self-reported) — populated only when the platform attests the citation</li>
                 <li>Key payload fields: <code>platform</code>, <code>product_url_cited</code>, <code>attribution_method</code>, <code>attribution_confidence</code>, <code>citation_position</code> (optional) — no raw query</li>
@@ -1091,7 +1091,7 @@
               <tbody>
                 <tr>
                   <td><code>ai_referral_agent_session</code></td>
-                  <td>External AI (ChatGPT, Gemini, etc.)</td>
+                  <td>External AI surface</td>
                   <td>Merchant voice/chat agent</td>
                   <td><strong>8</strong></td>
                   <td>All layers present including delegation. Full discovery + referral + agent interaction trail.</td>
@@ -1099,7 +1099,7 @@
                 <tr>
                   <td><code>ai_referral_standard_checkout</code></td>
                   <td>External AI referral</td>
-                  <td>Standard storefront checkout (Shopify, WooCommerce, etc.)</td>
+                  <td>Standard storefront checkout (any commerce platform)</td>
                   <td><strong>7</strong></td>
                   <td>Delegation present; cart and auth sourced from platform webhook.</td>
                 </tr>
@@ -1824,7 +1824,7 @@
 
         <section id="s3-authorization">
           <h3>3.6 Authorization Artifact</h3>
-          <p>Records the PSP authorization result. This artifact is the <strong>seal point</strong>. Its <code>current_hash</code> becomes <code>sealed_bundle_hash</code> on the transaction chain. The fields in this artifact are specifically chosen to map to card-network representment evidence schemas (Visa CE 3.0, Mastercard Second Presentment (First Chargeback cycle) evidence, Stripe Evidence API, Adyen RevenueProtect). Mapping profiles are defined in &sect;6 and Appendix C; several network evidence programs require raw-plane values per &sect;8.2.1.</p>
+          <p>Records the PSP authorization result. This artifact is the <strong>seal point</strong>. Its <code>current_hash</code> becomes <code>sealed_bundle_hash</code> on the transaction chain. The fields in this artifact are specifically chosen to map to card-network representment evidence schemas (Visa CE 3.0, Mastercard Second Presentment (First Chargeback cycle) evidence, and PSP dispute-evidence APIs). Mapping profiles are defined in &sect;6 and Appendix C; several network evidence programs require raw-plane values per &sect;8.2.1.</p>
 
           <div class="callout callout-danger">
             <div class="callout-icon">&#128683;</div>
@@ -1896,7 +1896,7 @@
   "liability_shift":         "'issuer' | 'merchant' | 'none' | null (optional)",
 
   // Attested — fraud decisioning output (model output attested by its producer; §2.8)
-  "fraud_score":             "number — PSP's fraud score (e.g. Stripe Radar score) (optional)",
+  "fraud_score":             "number — PSP's fraud score (optional)",
   "fraud_engine":            "string — e.g. 'stripe_radar', 'adyen_revenueprotect' (optional)",
 
   // Settlement rail (NEW in v1.0.3 — non-card settlement first-class)
@@ -1918,7 +1918,7 @@
             <div class="callout-icon">&#9432;</div>
             <div class="callout-body">
               <strong>Representment-field coverage by PSP</strong>
-              All 14 card-network fields in this schema are returned in the standard webhook or API response from Stripe (<code>payment_intent.succeeded</code> + <code>payment_method.card</code>), Adyen (<code>AUTHORISATION</code> notification), Square (<code>payment.updated</code>), and Braintree. Implementations MUST capture every field the PSP returns; fields the PSP omits should be set to <code>null</code> rather than missing. &sect;6 Dispute Evidence Export describes the field-by-field mapping to Visa CE 3.0, Mastercard Second Presentment (First Chargeback cycle), and Stripe Evidence API.
+              All 14 card-network fields in this schema are returned in the standard webhook or API response from major PSPs. Implementations MUST capture every field the PSP returns; fields the PSP omits should be set to <code>null</code> rather than missing. &sect;6 Dispute Evidence Export describes the field-by-field mapping to Visa CE 3.0, Mastercard Second Presentment (First Chargeback cycle), and PSP dispute-evidence APIs.
             </div>
           </div>
 
@@ -1951,7 +1951,7 @@
           <pre><code>{
   // Deterministic identifiers
   "fulfillment_id":           "string — UUID (required)",
-  "platform_order_id":        "string — merchant-platform order ID, e.g. Shopify GID (required)",
+  "platform_order_id":        "string — merchant-platform order ID (required)",
 
   // Deterministic shipping data
   "carrier":                  "string — e.g. 'ups', 'fedex', 'usps', 'dhl' (required)",
@@ -2243,7 +2243,7 @@
   "quote_id": "string | null",
   "payment_handler_id": "string | null",
   "delegated_payment_token": {
-    "token": "string — Stripe Shared Payment Token (vt_…)",
+    "token": "string — a PSP shared payment token",
     "expires_at": "string — ISO 8601",
     "max_amount": "integer — minor units",
     "currency": "string — ISO 4217",
@@ -3189,29 +3189,29 @@
         → POST /v1/events/referral (referral tracking script)
         → EHC transaction created; discovery + referral artifacts appended
         → Response includes: { ehc_transaction_id: "txn_..." }
-        → Store: sessionStorage.setItem("acomm_ehc_transaction_id", id)
-                 + cookie: acomm_ehc=txn_...; SameSite=None; Secure
+        → Store the ehc_transaction_id in the browser session
+                 (session storage and/or a Secure, SameSite=None cookie)
 
 2.  Consumer adds product to cart
-        → Shopify Web Pixel: analytics.subscribe("product_added_to_cart", ...)
+        → the commerce platform's client-side cart event fires
         → POST /v1/ehc/artifacts  { artifact_type: "intent", ... }
-          Auth: X-Acomm-Session header (session token, not cookie)
+          Auth: session-token header (not cookie)
         → Intent artifact appended (seq 3)
 
 3.  Consumer proceeds to checkout
-        → Shopify Checkout Extension (purchase.checkout.block.render)
-        → useCartLines() + useTotalAmount() → cart artifact payload
+        → the platform's checkout extension point
+        → reads cart lines + total → cart artifact payload
         → POST /v1/ehc/artifacts  { artifact_type: "cart", confirmed: true, ... }
         → Cart artifact appended (seq 5 or 3)
-        → Sets Shopify order metafield: acomm_ehc_transaction_id = txn_...
+        → the ehc_transaction_id is carried on an order-level metadata field
 
 4.  Consumer pays
-        → Stripe PaymentIntent created with metadata:
-            { acomm_ehc_transaction_id: "txn_...", acomm_account_id: "acc_..." }
-        → payment_intent.succeeded webhook fires
+        → the PSP creates the payment authorization with metadata:
+            { ehc_transaction_id: "txn_..." }
+        → the payment-success webhook fires
         → Authorization artifact appended + chain sealed</code></pre>
 
-          <p>The <code>ehc_transaction_id</code> is the single token that ties all four steps together. Implementations must propagate it from the initial referral response through to the Stripe PaymentIntent metadata. Loss of this token at any step results in an incomplete chain.</p>
+          <p>The <code>ehc_transaction_id</code> is the single token that ties all four steps together. Implementations must propagate it from the initial referral response through to the PSP's payment-authorization metadata. Loss of this token at any step results in an incomplete chain.</p>
         </section>
       </section>
 
@@ -3781,8 +3781,8 @@ interface RequestBinding            { /* per §3.9.19 */ }</code></pre>
       <!-- APPENDIX C: STRIPE EVIDENCE MAPPING -->
       <!-- ══════════════════════════════════════════════ -->
       <section id="appendix-c" class="section-anchor">
-        <h2>Appendix C — Stripe Evidence API Mapping</h2>
-        <p>An AEP <code>DisputeBundle</code> maps directly to Stripe's Dispute Evidence API fields (<a href="https://stripe.com/docs/api/disputes/update#update_dispute-evidence">stripe.com/docs/api/disputes/update</a>). The following mapping is implemented in the reference implementation's <code>stripe-formatter.ts</code>.</p>
+        <h2>Appendix C — PSP Dispute-Evidence Mapping</h2>
+        <p>An AEP <code>DisputeBundle</code> maps directly onto a PSP's dispute-evidence API. The mapping below is worked against one widely used PSP's Dispute Evidence API as a concrete example (Stripe; <a href="https://stripe.com/docs/api/disputes/update#update_dispute-evidence">stripe.com/docs/api/disputes/update</a>); the same artifact-to-field structure applies to other PSP and card-network evidence formats.</p>
 
         <div class="callout callout-warn">
           <div class="callout-icon">&#9888;</div>
@@ -3797,7 +3797,7 @@ interface RequestBinding            { /* per §3.9.19 */ }</code></pre>
           <table>
             <thead>
               <tr>
-                <th>Stripe field</th>
+                <th>PSP evidence field</th>
                 <th>AEP source</th>
                 <th>Rendered content</th>
               </tr>
@@ -3827,7 +3827,7 @@ interface RequestBinding            { /* per §3.9.19 */ }</code></pre>
           <table>
             <thead>
               <tr>
-                <th>Stripe field</th>
+                <th>PSP evidence field</th>
                 <th>AEP source</th>
                 <th>Content</th>
               </tr>

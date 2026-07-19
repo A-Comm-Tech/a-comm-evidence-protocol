@@ -47,7 +47,8 @@ What no wrapped protocol provides — and AEP does — is the **durable outcome 
 
 ## Reading the specification
 
-- **[Draft under review — v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html)** (this repo; single self-contained HTML page — open it in a browser, or read it rendered at [aep.a-comm.ai](https://aep.a-comm.ai/) — the living current draft; the immutable rc.2 snapshot for stable section references is at [aep.a-comm.ai/v1.0.3-rc.2](https://aep.a-comm.ai/v1.0.3-rc.2))
+- **[Draft under review — v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html)** — a single self-contained HTML page in this repo; open it in a browser.
+- Prefer it rendered? The living draft is at [aep.a-comm.ai](https://aep.a-comm.ai/); the immutable rc.2 snapshot, with stable section references, is at [aep.a-comm.ai/v1.0.3-rc.2](https://aep.a-comm.ai/v1.0.3-rc.2).
 - Prior published versions (v1.0.x) will be added as tagged releases.
 
 Suggested reading order for engineers: §2 data model → §4 hash chain & sealing → §3.9 delegation wrappers → §5–6 verification & export → §8.6/§8.7 minimal profiles. Implementer quickstarts live in [`docs/implementers/`](docs/implementers/).
@@ -57,7 +58,7 @@ Suggested reading order for engineers: §2 data model → §4 hash chain & seali
 1. **Protocol-agnostic witness.** Record which protocols carried the transaction and how each envelope verified. Never rank, replace, or adjudicate them.
 2. **Evidence, not liability.** Verification classes and evidence tiers describe cryptographic verifiability and composition — nothing more. No network or scheme rule assigns any outcome to an AEP tier, and the absence of a chain implies nothing about a transaction's legitimacy (spec §3.9.12).
 3. **Two-plane privacy.** The chain carries salted hashes; dispute-usable raw values live encrypted with an **Evidence Custodian** role, disclosed only on documented dispute triggers, with every disclosure logged as a sealed artifact (§8.2.1).
-4. **Implementable by anyone.** Apache-2.0 with an explicit patent grant (spec License §2). Conformance is defined by published test vectors (§6.3), not by any vendor's implementation. No fees, no registration, no permission.
+4. **Implementable by anyone.** Apache-2.0 with an explicit patent grant (see the specification's License.2 section). Conformance is defined by published test vectors (§6.3), not by any vendor's implementation. No fees, no registration, no permission.
 
 ## Versioning & stability
 

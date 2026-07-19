@@ -28,8 +28,7 @@ byte-for-byte is non-conformant, regardless of source-code review.
 
 ## Regeneration
 
-Generated deterministically by the reference implementation:
-`a-comm-vault/acls-core/scripts/generate-aep-vectors.ts`
-(`npx tsx scripts/generate-aep-vectors.ts <out-dir>`). The generator runs on
-the same canonicalization/signing stack locked by that repo's known-answer
-test (`test/artifact-hash-kat.test.ts`).
+Generated deterministically by the reference implementation's vector
+generator. The generator runs on the same canonicalization/signing stack
+locked by the reference implementation's known-answer tests, so these
+vectors and that implementation cannot drift independently.

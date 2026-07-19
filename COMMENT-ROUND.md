@@ -49,4 +49,4 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 
 | # | Issue | Section | Disposition | Rationale / resulting change |
 |---|---|---|---|---|
-| — | *(round not yet open)* | | | |
+| — | *(no comments dispositioned yet)* | | | |

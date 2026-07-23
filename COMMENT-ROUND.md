@@ -50,3 +50,12 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | # | Issue | Section | Disposition | Rationale / resulting change |
 |---|---|---|---|---|
 | — | *(no comments dispositioned yet)* | | | |
+
+### Editor errata (self-logged during the round)
+
+Items the editors identified during the review window. They follow the same disposition process and are batched into v1.0.3-final with the community dispositions above.
+
+| # | Source | Section | Disposition | Rationale / resulting change |
+|---|---|---|---|---|
+| E-1 | Editor review of published AI-referral attribution measurements (Jul 2026) | §7.1 | accept — v1.0.3-final | The "Referrer behavior" column conflates web and native-app surfaces. App → browser transitions pass no `Referer` header on *any* platform (public measurements put 35–70% of AI referral sessions at no-referrer), so `referrer_header` is a minority signal for every platform, not a ChatGPT-specific caveat — e.g. "Perplexity consistently passes referrer" holds only for the web surface, and UTM-style parameters are appended inconsistently and cannot be relied on. Resulting change: annotate the §7.1 table per surface (web vs. native app) and reweight the recommended primary method toward `referral_param` / `merchant_tracked_link` for all four platforms. |
+| E-2 | Editor review (same measurements) | §3.2 | accept — v1.0.3-final | `referrer_domain` is optional, but the spec should state that its absence is the *expected majority case* (native-app traffic carries no `Referer`), so implementers do not treat a missing referrer as an anomaly or a capture failure. Resulting change: add an informative note to §3.2 that absence of `referrer_domain` — or of a Referral/Discovery artifact — MUST NOT be read as evidence that a transaction was not AI-originated, consistent with the §3.9.12 adverse-evidence disclaimer. |

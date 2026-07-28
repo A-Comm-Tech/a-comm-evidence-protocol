@@ -49,4 +49,5 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 
 | # | Issue | Section | Disposition | Rationale / resulting change |
 |---|---|---|---|---|
-| — | *(no comments dispositioned yet)* | | | |
+| 1 | Discussion #4 | §3.9 (proposed §8.2.1) | accept-with-modification | Pre-execution verification attestation accepted as new optional §3.9.N `pre_execution_attestation` sub-wrapper for v1.0.3-final, with required `issuer`, `issuer_relationship`, external `anchor`, transaction `binding`, and `expires_at` per thread review. Relocated from proposed §8.2.1 (PII custody, wrong hook) to §3.9. Tracking issue: #27. |
+| 2 | Discussion #4 | §3.6 / §9.3 | decline (rationale) | Normative settlement-gating MUST on payment rails declined: contradicts §9.2/§9.3 (AEP parallel to the transaction, never gating) and §3.9.12 no-network-consequence disclaimers; would jeopardize §9.4 regulatory classification. Replaced by witnessed-enforcement verification-result fields; settlement-side need routed to open question #4 (network-consumable verification attestation). Backlog issue: #28. |

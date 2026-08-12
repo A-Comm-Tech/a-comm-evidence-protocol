@@ -72,7 +72,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 |---|---|---|---|---|---|---|---|---|
 | [D4-a](#d4-a) | Discussion #4 | @Avouro | §3.9 (proposed §8.2.1) | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [D4-b](#d4-b) | Discussion #4 | @Avouro | §3.6 / §9.3 | decline (rationale) | — | n/a | not recorded | |
-| [I26](#i26) | Issue #26 | @johnhenrypower | §3.9.2 / §2.6 / §3.6 | accept-with-modification | v1.0.3-final | not started | not recorded | |
+| [I26](#i26) | Issue #26 | @johnhenrypower | §3.9.2 / §2.6 / §3.6 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
 | [I30](#i30) | Issue #30 | @ankitshah009 | Cross-cutting | accept | v1.0.3-final | n/a | not recorded | |
 | [I31](#i31) | Issue #31 | @ankitshah009 | §4 | defer (v1.0.4 / v1.1.0) | v1.0.4 / v1.1.0 | n/a | not recorded | |
 | [I32](#i32) | Issue #32 | @ankitshah009 | §2.7 / §8.2.1 / §8 | accept-with-modification | v1.0.3-final | not started | not recorded | |
@@ -111,9 +111,9 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I18](#i18) | Issue #18 | @jyothi-acomm-ai | §6.5 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
 | [I20](#i20) | Issue #20 | @HemmaBo-se | §3.7 / §3.5 / §3.10 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I21](#i21) | Issue #21 | @HemmaBo-se | §3.9.11 / §2.8 | accept-with-modification | v1.0.3-final | not started | accepted | |
-| [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | |
-| [I24](#i24) | Issue #24 | @johnhenrypower | §3.9.15 | accept | v1.0.3-final | not started | not recorded | |
-| [I25](#i25) | Issue #25 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | |
+| [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
+| [I24](#i24) | Issue #24 | @johnhenrypower | §3.9.15 | accept | v1.0.3-final | not started | not recorded | ✱ |
+| [I25](#i25) | Issue #25 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
 | [I42](#i42) | Issue #42 | @rabet | §3.9.N / §2.8 / §3.9.11 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
 | [I43](#i43) | Issue #43 | @rabet | §2.8 / §3.7 / §6.1 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
 | [I44](#i44) | Issue #44 | @Marlonm0987 | §9.4 | decline in part / defer (v1.0.4) | v1.0.3-final | not started | not recorded | |
@@ -144,13 +144,15 @@ Pre-execution verification attestation accepted as new optional §3.9.N `pre_exe
 Normative settlement-gating MUST on payment rails declined: contradicts §9.2/§9.3 (AEP parallel to the transaction, never gating) and §3.9.12 no-network-consequence disclaimers; would jeopardize §9.4 regulatory classification. Replaced by witnessed-enforcement verification-result fields; settlement-side need routed to open question #4 (network-consumable verification attestation).
 
 <a id="i26"></a>
-### I26 · Issue #26 — identity verification in GENERIC chains
+### I26 · Issue #26 — identity verification in GENERIC chains ✱
 
 **§3.9.2 / §2.6 / §3.6** · @johnhenrypower · **accept-with-modification** · target v1.0.3-final
 
 `verified_identity` sub-wrapper under §3.9 accepted for v1.0.3-final (additive MINOR per §0.2): presence makes Delegation present in a GENERIC chain; absence preserves current §3.9.2 behavior. `OIDC_IDV` appended to the §3.9 protocol enum; `third_party_biometric` added to the §3.6 `authentication_method` enum, joined via `session_id_hash` per §2.7.
 
 Editors additionally fix the §2.6/§3.9.2 self-contradiction surfaced by this review: §2.6 fallback text ("MUST omit the delegation artifact entirely" under GENERIC) is aligned to the §3.9.2 rule ("omitted when `protocol = GENERIC` AND no sub-wrapper is populated"), which already anticipates sub-wrapper-bearing GENERIC chains. Resolves the §2.4 `identity_verifier` actor having no artifact to write to in GENERIC chains.
+
+Self-filed by an editor-affiliated implementer; disposition recorded by a second editor.
 
 <a id="i30"></a>
 ### I30 · Issue #30 — cryptographic architecture review, strengths baseline
@@ -445,7 +447,7 @@ Editors record the nuance raised in review: §4.3 requires every implementer to 
 The settlement-role distinction raised in the thread — that merchant identity and settlement role are separate facts, and an on-chain sender may not be the payee in relay flows — is recorded for the v1.0.4 scope rather than dispositioned here.
 
 <a id="i23"></a>
-### I23 · Issue #23 — §3.9.18 `wba_tag` MUST value rejects conformant signatures
+### I23 · Issue #23 — §3.9.18 `wba_tag` MUST value rejects conformant signatures ✱
 
 **§3.9.18 / §3.9.11** · @johnhenrypower · **accept** · target v1.0.3-final
 
@@ -457,8 +459,10 @@ The strongest support is internal rather than external. §3.9.6 already replaced
 
 Lands as a single §3.9.18 edit together with #25.
 
+Self-filed by an editor-affiliated implementer; disposition recorded by a second editor.
+
 <a id="i24"></a>
-### I24 · Issue #24 — §3.9.15 `credential_chain.typ` cannot express Verifiable Intent L1
+### I24 · Issue #24 — §3.9.15 `credential_chain.typ` cannot express Verifiable Intent L1 ✱
 
 **§3.9.15** · @johnhenrypower · **accept** · target v1.0.3-final
 
@@ -470,8 +474,10 @@ Accepted on the internal contradiction alone, without reliance on the external s
 
 Editors additionally note a defect the issue does not raise: `typ` is overloaded, serving as both the JOSE header type and the Immediate-versus-Autonomous mode discriminator, alongside a separate `mode` field that already carries that meaning. Adding `sd+jwt` fixes the contradiction but leaves the overload. Decomposing `typ` to the header type alone is deferred to the v1.0.4 primary-source pass.
 
+Self-filed by an editor-affiliated implementer; disposition recorded by a second editor.
+
 <a id="i25"></a>
-### I25 · Issue #25 — §3.9.18 has no field for the Signature-Input nonce
+### I25 · Issue #25 — §3.9.18 has no field for the Signature-Input nonce ✱
 
 **§3.9.18 / §3.9.11** · @johnhenrypower · **accept** · target v1.0.3-final · *security (replay)*
 
@@ -482,6 +488,8 @@ The companion verification rule is **not** written freestanding. Nonce-not-previ
 Internal support: §3.9.6 records that TAP dropped `tap_session_id` because "TAP is per-request stateless; nonce IS the session identifier" — the specification already treats the nonce as identity-bearing elsewhere.
 
 Lands as a single §3.9.18 edit together with #23.
+
+Self-filed by an editor-affiliated implementer; disposition recorded by a second editor.
 
 <a id="i42"></a>
 ### I42 · Issue #42 — `pre_execution_attestation` binding omits verified surface-state

@@ -792,15 +792,31 @@ The `outcome_binding: false` marker the proposal requests is consistent with §3
 
 Every submission received in the window is listed here until it carries a ref in the Index above. This section is the check behind the "all comment dispositions recorded" release gate.
 
-**Status: 50 submissions received · 50 dispositioned · 0 outstanding.**
+**Status: 60 submissions received · 50 dispositioned · 10 outstanding.**
 
 Dispositions are recorded across 56 refs, because Discussion #4 and Discussion #14 each received two and Discussion #12 received five.
 
+Ten submissions arrived between 13 and 14 August, in the final 48 hours of the window, and are not yet dispositioned. They are in scope: the window ran to end of day 14 August. The release gate stays open until they carry refs.
+
 ### Received, not yet dispositioned
 
-None. Every submission received during the window carries a disposition ref.
+**Issues**
 
-Recording a disposition is not the same as making the change. Eight accepted items still show `Edit: not started` and are tracked by the fourth release gate, not by this section.
+- [ ] **#64** @Avidmock — §3.7 `carrier` and `tracking_number` required, so Fulfillment is unpopulatable for in-person services *(closed as a duplicate of #65; disposition owed on #65)*
+- [ ] **#65** @Avidmock — §3.7 in-person services cannot populate the Fulfillment artifact
+- [ ] **#67** @AgroMoo — evidence completeness, provenance and interoperability considerations
+- [ ] **#68** @shunhe-wang — §§2.6, 3.9.10–3.9.11 x402 payer authorization and facilitator identity are conflated
+- [ ] **#69** @AstraSyncAI — §3.9.16 identity-transport slot is vendor-shaped where the newer §3.9.N attestation primitive is issuer-neutral
+- [ ] **#70** @AstraSyncAI — §3.9.11 rule 2 vs pre-issued mandates; no dispute artifact; §2.2 / Appendix B count mismatch; §4.1 enum
+- [ ] **#71** @Trusteedxyz — §3.4 `policy_version` is a self-asserted label; pair it with a hash-bound rule-set commitment
+- [ ] **#72** @deepakwink — §3.9 enrollment provenance behind a verified identity: a supervised enrollment and a self-enrollment minutes earlier are indistinguishable
+
+**Discussions**
+
+- [ ] **#66** @Avidmock — §3.7 service-fulfillment variant: status-chain commitment and customer counterconfirmation for in-person services
+- [ ] **#73** @The-JKR — organisation-issued commercial authority and external determinations as witnessed references, toward the v1.1.0 B2B profile
+
+Recording a disposition is not the same as making the change. Accepted items still showing `Edit: not started` are tracked by the fourth release gate, not by this section.
 
 ### Out of scope for this round
 

@@ -818,6 +818,12 @@ Ten submissions arrived between 13 and 14 August, in the final 48 hours of the w
 
 Recording a disposition is not the same as making the change. Accepted items still showing `Edit: not started` are tracked by the fourth release gate, not by this section.
 
+### Received after the window, scope ruling pending
+
+Submissions arriving after 14 August are triaged to the v1.0.4 backlog unless the editors take them in scope as a defect in text this round is still editing. Items listed here await that ruling; each moves to the Index once dispositioned, or to the backlog if ruled out of scope.
+
+- [ ] **#77** @jyothi-acomm-ai ✱ — §2.2 / §3.9.2 / Appendix B: `direct_web` forbids the Delegation artifact §3.9.2 requires when a covered protocol is in play, so a storefront checkout by an agent cannot carry the agent's identity; secondary §3.1 `platform` enum item. Filed 22 September as a defect report. Self-filed; scope ruling and disposition to be recorded by a second editor.
+
 ### Out of scope for this round
 
 - **#2** @jyothi-acomm-ai ✱ — §3.1/§7.2 `url_params` and `referral_param`. Filed 8 July, before the comment window opened on 13 July. Closed.

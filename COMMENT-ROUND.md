@@ -823,6 +823,7 @@ Recording a disposition is not the same as making the change. Accepted items sti
 Submissions arriving after 14 August are triaged to the v1.0.4 backlog unless the editors take them in scope as a defect in text this round is still editing. Items listed here await that ruling; each moves to the Index once dispositioned, or to the backlog if ruled out of scope.
 
 - [ ] **#77** @jyothi-acomm-ai ✱ — §2.2 / §3.9.2 / Appendix B: `direct_web` forbids the Delegation artifact §3.9.2 requires when a covered protocol is in play, so a storefront checkout by an agent cannot carry the agent's identity; secondary §3.1 `platform` enum item. Filed 22 September as a defect report. Self-filed; scope ruling and disposition to be recorded by a second editor.
+- [ ] **#79** @jyothi-acomm-ai ✱ — §2.2 / Appendix B: `ai_referral_standard_checkout` is described as "Delegation present" with an expected count of 7, and the artifacts behind that count are never stated. Filed 22 September as a defect report. Self-filed; scope ruling and disposition to be recorded by a second editor.
 
 ### Out of scope for this round
 

@@ -2,7 +2,8 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Spec: v1.0.3-rc.2 draft](https://img.shields.io/badge/spec-v1.0.3--rc.2_draft-orange.svg)](spec/aep-v1.0.3-rc.2.html)
-[![Comment round](https://img.shields.io/badge/comment_round-Jul_13_to_Aug_14_2026-brightgreen.svg)](COMMENT-ROUND.md)
+[![Comment round](https://img.shields.io/badge/comment_round-closed_Aug_14_2026-blue.svg)](COMMENT-ROUND.md)
+[![Dispositions](https://img.shields.io/badge/dispositions-50_of_60_recorded-yellow.svg)](COMMENT-ROUND.md#coverage)
 
 **The open evidence standard for agentic commerce.**
 
@@ -62,11 +63,11 @@ Suggested reading order for engineers: §2 data model → §4 hash chain & seali
 
 ## Versioning & stability
 
-Strict SemVer for the wire format (spec §0.2). Chains are never re-versioned after creation; verifiers advertise the `spec_version` set they support; every published version remains verifiable for at least 24 months after the next MAJOR release. Current draft: **v1.0.3-rc.2** (additive/MINOR over v1.0.2), open for ecosystem comment.
+Strict SemVer for the wire format (spec §0.2). Chains are never re-versioned after creation; verifiers advertise the `spec_version` set they support; every published version remains verifiable for at least 24 months after the next MAJOR release. Current draft: **v1.0.3-rc.2** (additive/MINOR over v1.0.2). Its comment round closed 14 August 2026; the draft is now in disposition and spec-edit phase toward v1.0.3-final.
 
 ## Participate
 
-- **[Comment round](COMMENT-ROUND.md)** — the v1.0.3 review process, the open questions we're explicitly seeking input on, and the public disposition log where every comment gets an answer.
+- **[Comment round](COMMENT-ROUND.md)** — the v1.0.3 review process and the public disposition log where every comment gets an answer. The window closed 14 August 2026; the log records what each submission was answered with, and the release gates track which answers have reached spec text.
 - **[Issues](../../issues)** — section feedback and technical issues (templates provided).
 - **[Discussions](../../discussions)** — normative proposals and design questions.
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — ground rules (Apache 2.0 §5, DCO sign-off, neutrality, primary-source citations).

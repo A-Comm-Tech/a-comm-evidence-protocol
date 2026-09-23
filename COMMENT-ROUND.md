@@ -1,7 +1,7 @@
 # AEP v1.0.3 — Ecosystem Comment Round
 
 **Draft under review:** [v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html) ([rendered — living draft](https://aep.a-comm.ai/) · [frozen rc.2 snapshot](https://aep.a-comm.ai/v1.0.3-rc.2) for stable section references) (2026-07-02)
-**Status: Comment window July 13 – August 14, 2026.** Every comment receives a public disposition in the log below.
+**Status: comment window closed 14 August 2026.** The round is now in its disposition and spec-edit phase toward v1.0.3-final. Every submission received in the window gets a public disposition in the log below, and the [release gates](#release-gates-for-v103-final) track which accepted dispositions have reached spec text. New submissions remain welcome against the living draft and are carried to the v1.0.4 backlog.
 
 ## Scope of this round
 
@@ -24,6 +24,8 @@ Open questions the editors specifically invite comment on:
 
 ## How to comment
 
+The window for this round has closed. These channels stay open; submissions arriving now are triaged to the v1.0.4 backlog unless they report a defect in text this round is still editing, in which case the editors may take them in scope and say so in the Coverage section.
+
 | Channel | Use for |
 |---|---|
 | Issue template: **Section feedback** | Comments tied to a specific section number |
@@ -34,7 +36,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 
 ## Process
 
-- **Review window:** July 13 – August 14, 2026 (30 days).
+- **Review window:** July 13 – August 14, 2026 (30 days). Closed.
 - **Disposition:** every comment receives a public disposition — `accept` / `accept-with-modification` / `defer (versioned)` / `decline (rationale)` — recorded in the log below.
 - **Output:** dispositions are batched into v1.0.3-final (additive edits) and the v1.0.4/v1.1.0 backlog (deferred items). The changelog (spec Appendix D) records what changed and why.
 - **Conduct:** technical arguments only; no vendor endorsements or marketing. The editors apply the same neutrality rules to themselves — see CONTRIBUTING.md.

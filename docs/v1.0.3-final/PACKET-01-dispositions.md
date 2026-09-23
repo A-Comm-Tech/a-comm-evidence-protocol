@@ -10,9 +10,45 @@ the window and needs a scope ruling before it can carry a ref.
 Nothing in this packet changes specification text. Each disposition is a
 decision about what will change and where; the edits themselves are Packets
 02 onward. On grading, the Index rows below are inserted into the
-COMMENT-ROUND.md Index, the Detail entries into Detail, and the Coverage
-section is updated to `60 submissions received · 61 dispositioned · 0
-outstanding` with the received-after-window note.
+COMMENT-ROUND.md Index and the Detail entries into Detail. Coverage then
+reads: **60 in-window submissions received, 60 dispositioned, 0 outstanding**,
+across 69 refs; separately, of three submissions received after the window,
+#74 is taken in scope and dispositioned here while #77 and #79 await a scope
+ruling.
+
+## Not in this packet: #77 and #79
+
+Two further submissions arrived on 22 September and are recorded in Coverage
+under *Received after the window, scope ruling pending*. They are not
+dispositioned here, because they change what a disposition in this packet
+would have to say.
+
+Both report contradictions in `expectedArtifactCount`, and both state that
+they must land in the same edit as #70 item (c) and the I26 count change:
+
+- **#77** — §2.2 gives `direct_web` no Delegation artifact and Appendix B
+  returns 5 regardless of protocol, while §3.9.2 requires Delegation whenever
+  a covered protocol is in play. An agent checking out on a standard
+  storefront is subject to both rules and can satisfy neither, so the only
+  verifiable record of who transacted has nowhere to go.
+- **#79** — the §2.2 row for `ai_referral_standard_checkout` reads "Delegation
+  present" with an expected count of 7, one short of the full eight-layer
+  sequence, and the specification never names the missing layer.
+
+**The consequence for this packet is concrete.** I70-c already disposes the
+§2.2 / Appendix B mismatch and states that it lands together with I26's count
+change. With #77 and #79 added, that is a four-way coupled edit over one
+function, not a two-way one. Landing any subset reintroduces the mismatch the
+others resolve. I70-c's text here does not yet say that.
+
+#77 also bears on I69: resolving the contradiction in §3.9.2's favour is what
+gives the multi-issuer identity slot somewhere to attach on a storefront
+checkout.
+
+Both are self-filed by an editor-affiliated implementer and carry the COI
+mark, so their scope rulings and dispositions are recorded by a second editor.
+Whether they are folded into this packet or dispositioned as Packet 01b is an
+editorial call, not a drafting one.
 
 ---
 
@@ -55,7 +91,7 @@ failed the check and the disposition narrows it. Each is argued in the entry.
 | [I71](#i71) | Issue #71 | @Trusteedxyz | §3.4 / §2.8 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I72](#i72) | Issue #72 | @deepakwink | §3.9 / §2.8 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [D73](#d73) | Discussion #73 | @The-JKR | §2.4 / §3.9 | defer (v1.1.0) | v1.1.0 | n/a | not recorded | |
-| [I74](#i74) | Issue #74 | @rrrodzilla | §4.3 / §5 / §6.2 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
+| [I74](#i74) | Issue #74 | @StevenMih | §4.3 / §5 / §6.2 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
 
 ---
 
@@ -461,7 +497,7 @@ own ref.*
 <a id="i74"></a>
 ### I74 · Issue #74 — transparency-log anchoring has no receipt format
 
-**§4.3 / §5 / §6.2** · @rrrodzilla · **accept-with-modification** · target v1.0.3-final / v1.0.4 · *received after window — taken in scope*
+**§4.3 / §5 / §6.2** · @StevenMih · **accept-with-modification** · target v1.0.3-final / v1.0.4 · *received after window — taken in scope*
 
 **Scope ruling first.** Received 3 September, twenty days after the window
 closed. Taken in scope for v1.0.3-final, on the ground that it reports a
@@ -469,9 +505,10 @@ defect in text this round is still editing rather than proposing a capability:
 §4.3 already ships three anchoring methods and §5 and §6.2 already key
 verification classes off them. Shipping v1.0.3-final with a verification class
 whose meaning is implementation-defined, having been told it is, is not a
-defensible use of the remaining window. Recorded in Coverage as
-received-after-window so the process stays legible; this ruling is not a
-precedent that the window is open.
+defensible use of the remaining window. It moves out of Coverage's *Received
+after the window, scope ruling pending* list and into the Index, which is the
+path that list defines; this ruling is not a precedent that the window is
+open, and #77 and #79 remain in that list awaiting rulings of their own.
 
 The defect is confirmed. Of §4.3's three methods, the first has a defined
 format in RFC 3161 and the third is self-describing; the second names no log

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aep.a-comm.ai/schema/annotation-artifact-v1.1.0.json",
+  "title": "AEP Annotation Artifact payload (§6.5)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["annotation_id","subject_ref","disposition","claims","annotator","asserted_at","captured_at","idempotency_key"],
+  "properties": {
+    "annotation_id": { "type": "string", "format": "uuid" },
+    "subject_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type","sequence_number","artifact_hash"],
+      "properties": {
+        "artifact_type": { "type": "string", "minLength": 1 },
+        "sequence_number": { "type": "integer", "minimum": 1 },
+        "artifact_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "disposition": { "enum": ["disputed","corrected","contextualized","withdrawn"] },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field_path","subject_value","annotated_value","signal_class","basis"],
+        "properties": {
+          "field_path": {
+            "oneOf": [{ "type": "string", "pattern": "^/" }, { "type": "null" }]
+          },
+          "subject_value": {},
+          "annotated_value": {},
+          "signal_class": { "enum": ["deterministic","attested","inferred","asserted"] },
+          "basis": { "type": "string", "minLength": 1 },
+          "source": { "$ref": "#/$defs/actor" }
+        }
+      }
+    },
+    "annotator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_type","actor_id","verification_method"],
+      "properties": {
+        "actor_type": { "$ref": "#/$defs/actorType" },
+        "actor_id": { "type": "string", "minLength": 1 },
+        "verification_method": { "enum": ["party_signature","exporter_relayed","none"] }
+      }
+    },
+    "annotator_signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alg","key_id","signature"],
+      "properties": {
+        "alg": { "const": "ed25519" },
+        "key_id": { "type": "string", "minLength": 1 },
+        "signature": { "type": "string", "contentEncoding": "base64" }
+      }
+    },
+    "asserted_at": { "type": "string", "format": "date-time" },
+    "captured_at": { "type": "string", "format": "date-time" },
+    "idempotency_key": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "actorType": { "enum": ["user","merchant","psp","agent","fulfillment_provider","credentials_provider"] },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_type","actor_id"],
+      "properties": {
+        "actor_type": { "$ref": "#/$defs/actorType" },
+        "actor_id": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "Trust rule 1: unsigned or relayed annotations carry only Asserted claims (§2.8, §6.5).",
+      "if": {
+        "anyOf": [
+          { "required": ["annotator"], "properties": { "annotator": { "properties": { "verification_method": { "enum": ["exporter_relayed","none"] } } } } },
+          { "not": { "required": ["annotator_signature"] } }
+        ]
+      },
+      "then": { "properties": { "claims": { "items": { "properties": { "signal_class": { "const": "asserted" } } } } } }
+    },
+    {
+      "$comment": "verification_method party_signature requires the signature to be present.",
+      "if": { "properties": { "annotator": { "properties": { "verification_method": { "const": "party_signature" } } }, "$comment": {} }, "required": ["annotator"] },
+      "then": { "required": ["annotator_signature"] }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "annotation_id": "a1f4c2e0-8b3d-4c7a-9e21-6f0d5b8c1a33",
+  "subject_ref": {
+    "artifact_type": "fulfillment",
+    "sequence_number": 8,
+    "artifact_hash": "sha256:b54b688fe50dc71229520802fab6aaa8cf95c879e30e1e6d256893f32cc030fe"
+  },
+  "disposition": "disputed",
+  "claims": [
+    {
+      "field_path": "/payload/delivery_address_hash",
+      "subject_value": "sha256:3b6c8d0e2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c4d6e8f0a2b4c6d8e0f2a4b6c",
+      "annotated_value": null,
+      "signal_class": "asserted",
+      "basis": "Records the address on the shipping label, which is the address confirmed at checkout. Merchant states the parcel was physically delivered elsewhere. delivery_address_match is therefore correctly computed and equal to cart.shipping_address_hash — an adjudicator can recompute it — but it evidences label agreement, not the location of physical delivery. No replacement value is supplied: the address that would settle this is held by the Evidence Custodian under the §8.2.1 disclosure path.",
+      "source": {
+        "actor_type": "merchant",
+        "actor_id": "acct_vector_merchant"
+      }
+    },
+    {
+      "field_path": "/payload/signature_captured",
+      "subject_value": null,
+      "annotated_value": false,
+      "signal_class": "asserted",
+      "basis": "Field absent from the sealed payload: the fulfillment artifact records no signature_captured and no proof_of_delivery_url (§3.7). Carrier states no recipient signature or delivery photograph exists for tracking number 1Zvector001. Relayed by the merchant; not signed by UPS. Absent that evidence the chain cannot distinguish delivery to the label address from a scan recorded against it.",
+      "source": {
+        "actor_type": "fulfillment_provider",
+        "actor_id": "ups"
+      }
+    },
+    {
+      "field_path": null,
+      "subject_value": null,
+      "annotated_value": null,
+      "signal_class": "asserted",
+      "basis": "Merchant terms require a full refund where an order is not delivered to the checkout shipping address.",
+      "source": {
+        "actor_type": "merchant",
+        "actor_id": "acct_vector_merchant"
+      }
+    }
+  ],
+  "annotator": {
+    "actor_type": "merchant",
+    "actor_id": "acct_vector_merchant",
+    "verification_method": "exporter_relayed"
+  },
+  "asserted_at": "2026-09-03T14:02:00Z",
+  "captured_at": "2026-09-03T20:18:04Z",
+  "idempotency_key": "cafe-grinder-annotation-001"
+}

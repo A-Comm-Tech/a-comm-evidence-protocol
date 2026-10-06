@@ -2374,7 +2374,7 @@
           <p><strong>Soft-break aliases (one MINOR cycle):</strong> when <code>x402_version == 1</code>, the legacy v1 header names <code>X-PAYMENT</code> and <code>X-PAYMENT-RESPONSE</code> MUST alias to <code>x402_payment_signature</code> and <code>x402_payment_response</code> respectively.</p>
 
           <h4 id="s3-9-11">3.9.11 Verification Requirements</h4>
-          <p>Verification MAY use third-party key material witnessed at capture time per the &sect;4.3 key-witness snapshot rule (e.g., when an upstream key has rotated since capture); when witnessed rather than live keys are used, that fact MUST be recorded in the verification result.</p>
+          <p>Verification MAY use third-party key material witnessed at capture time per the &sect;4.3 key-witness snapshot rule (e.g., when an upstream key has rotated since capture); when witnessed rather than live keys are used, that fact MUST be recorded in the verification result by setting <code>witnessed</code> to <code>true</code> on the envelope's <code>protocol_envelopes_verified</code> entry (&sect;5).</p>
           <ol>
             <li><strong>Signature verification with canonical key discovery.</strong> Every non-null sub-wrapper's signatures MUST verify against keys discovered via that sub-wrapper's canonical key-discovery path:
               <ul>
@@ -2439,6 +2439,7 @@
             <li><code>web_bot_auth</code> only <em>(added in v1.0.3)</em></li>
           </ul>
           <p><strong>D-tier.</strong> GENERIC (no sub-wrappers).</p>
+          <p>A tier criterion that requires an envelope to be verified is satisfied only by an envelope whose &sect;5 <code>status</code> is <code>verified</code>. An <code>unverifiable</code> or <code>failed</code> envelope satisfies no such criterion.</p>
 
           <div class="callout callout-note">
             <div class="callout-icon">&#9432;</div>
@@ -2861,7 +2862,7 @@
           <p>A bundle whose seal is not externally anchored, and whose verification was performed only by the exporting party, carries the <strong>Asserted</strong> verification class as a whole (&sect;2.8, &sect;5); an anchored seal with verification by a party other than the exporter carries a higher class.</p>
 
           <h4>Key-Witness Snapshots <span class="badge badge-blue" style="font-size:11px;margin-left:6px;">NEW in rc.2</span></h4>
-          <p>Disputes arrive months after capture, by which time upstream keys may have rotated. At capture time, implementations SHOULD seal a snapshot of the third-party key material used for envelope verification — JWKS documents, signature-directory entries — into the chain, so that &sect;3.9 envelopes remain verifiable after upstream rotation. Verification against witnessed keys is permitted per the &sect;3.9.11 preamble; the use of witnessed rather than live keys MUST be recorded in the verification result.</p>
+          <p>Disputes arrive months after capture, by which time upstream keys may have rotated. At capture time, implementations SHOULD seal a snapshot of the third-party key material used for envelope verification — JWKS documents, signature-directory entries — into the chain, so that &sect;3.9 envelopes remain verifiable after upstream rotation. Verification against witnessed keys is permitted per the &sect;3.9.11 preamble; the use of witnessed rather than live keys MUST be recorded in the verification result's <code>witnessed</code> member (&sect;5).</p>
 
           <div class="callout callout-danger">
             <div class="callout-icon">&#128683;</div>
@@ -2937,12 +2938,18 @@
   "chain_complete": boolean,      // expected artifact count met
   "artifacts_verified": number,   // count of successfully verified artifacts
   "spec_version": "string",       // NEW in v1.0.2 — echoed from chain
+  "verified_at": "string | null", // NEW in v1.0.3 — ISO 8601 UTC; when the checks in this result ran
+  "verification_mode": "'full' | 'cached' | null",  // NEW in v1.0.3 — see Verification time and mode
   "evidence_tier": "'S' | 'A' | 'B' | 'C' | 'D'",  // NEW in v1.0.2 — per §3.9.12
   "protocol_envelopes_verified": [                 // NEW in v1.0.2
     {
       "envelope": "'TAP' | 'AP2' | 'MASTERCARD_VI' | 'ACP' | 'UCP' | 'MCP' |
                    'x402' | 'A2A' | 'SKYFIRE_KYA' | 'WEB_BOT_AUTH'",
-      "verified": boolean,
+      "verified": boolean,                         // true if and only if status = 'verified'
+      "status": "'verified' | 'failed' | 'unverifiable' | null",  // NEW in v1.0.3 — see Envelope status
+      "unverifiable_reason": "'no_rule' | 'key_unavailable' | 'signature_not_retained' | null",
+                                                   // NEW in v1.0.3 — non-null if and only if status = 'unverifiable'
+      "witnessed": "boolean | null",               // NEW in v1.0.3 — true when witnessed keys (§4.3) were used
       "key_discovery_path": "string"
     }
   ],
@@ -2950,9 +2957,23 @@
   "errors": ["string"]            // human-readable error messages if valid = false
 }</code></pre>
 
+        <p><strong>Verification time and mode (NEW in v1.0.3).</strong> <code>verified_at</code> records when the checks in this result ran. <code>verification_mode</code> records how the result was produced: <code>full</code> when the verifier performed every check at <code>verified_at</code>, and <code>cached</code> when the result was computed earlier (for example, at seal time) and is served again under &sect;6.2. A result with <code>verification_mode = cached</code> MUST carry a non-null <code>verified_at</code>. A verifier asked for a cached result that performs full verification instead MUST report <code>full</code>, with <code>verified_at</code> set to the time of that verification.</p>
+
+        <p><strong>Envelope status (NEW in v1.0.3).</strong> Each entry in <code>protocol_envelopes_verified</code> reports one of three states:</p>
+        <ul>
+          <li><code>verified</code>: every rule this specification defines for the envelope was applied, and all passed.</li>
+          <li><code>failed</code>: a rule this specification defines for the envelope was applied, and the envelope did not satisfy it (for example, a signature that does not verify against the resolved key, a prohibited <code>alg</code>, or an expired credential).</li>
+          <li><code>unverifiable</code>: no check was performed. <code>unverifiable_reason</code> MUST state why: <code>no_rule</code> when this specification defines no verification rule for the envelope as captured (for example, an <code>http_payment</code> envelope outside the scope of &sect;3.9.11 rule 7); <code>key_unavailable</code> when a rule exists but no key could be resolved for it, either live or from witnessed key material (&sect;4.3); <code>signature_not_retained</code> when a rule exists but only a digest of the signature was retained (&sect;3.9.17, &sect;3.9.18), so the signature cannot be re-checked. Any capture-time result recorded under those sections carries the Asserted class (&sect;2.8).</li>
+        </ul>
+        <p>A verifier MUST NOT report an <code>unverifiable</code> envelope as <code>verified</code> or as <code>failed</code>. <code>verified</code> is <code>true</code> if and only if <code>status</code> is <code>verified</code>. A verifier MUST emit one entry for every non-null sub-wrapper present in the Delegation artifact, including envelopes it could not check; omitting an entry is not a conformant way to report <code>unverifiable</code>.</p>
+
+        <p><strong>Key resolution order (NEW in v1.0.3).</strong> For each envelope, a verifier resolves keys through the envelope's canonical key-discovery path (&sect;3.9.11 rule 1) and, when that yields no usable key, from witnessed key material (&sect;4.3). It reports <code>key_unavailable</code> only when neither source yields a key. When the failure may be transient (for example, the key-discovery endpoint is unreachable), the verifier SHOULD retry before reporting <code>key_unavailable</code>.</p>
+
+        <p><strong>Witnessed keys (NEW in v1.0.3).</strong> When an envelope's signatures were verified against witnessed key material (&sect;4.3) instead of keys resolved live, the verifier MUST set <code>witnessed</code> to <code>true</code> on that envelope's entry.</p>
+
         <p><strong>Chain completeness counts.</strong> <code>chain_complete</code> is computed as <code>total_artifacts == expectedArtifactCount(transaction_type)</code> per the v1.0.2 8/7/6/5 counts (Appendix B). A chain MAY be <code>valid: true</code> and <code>chain_complete: false</code> simultaneously when fulfillment has not yet arrived. Post-seal <code>refund</code> artifacts (&sect;3.10) are verified like fulfillment artifacts and do not count toward <code>expectedArtifactCount</code>. Under the Minimal Merchant Profile (&sect;8.6), expected counts apply only to the Full profile.</p>
 
-        <p><strong>Verification class of the result (NEW in rc.2).</strong> A verification result produced by the exporting party over a chain whose seal is not externally anchored (&sect;4.3) carries the Asserted class (&sect;2.8) from the perspective of a bundle recipient. An externally anchored seal verified by a party other than the exporter yields a higher class. When witnessed rather than live keys were used for envelope verification (&sect;4.3), the result MUST record that fact.</p>
+        <p><strong>Verification class of the result (NEW in rc.2).</strong> A verification result produced by the exporting party over a chain whose seal is not externally anchored (&sect;4.3) carries the Asserted class (&sect;2.8) from the perspective of a bundle recipient. An externally anchored seal verified by a party other than the exporter yields a higher class. When witnessed rather than live keys were used for envelope verification (&sect;4.3), the result MUST record that fact in the envelope entry's <code>witnessed</code> member.</p>
 
         <div class="callout callout-note">
           <div class="callout-icon">&#9432;</div>
@@ -2989,9 +3010,12 @@
     "signaturesValid": boolean,
     "chainComplete": boolean,
     "artifactsVerified": number,
+    "verifiedAt": "string | null",                    // NEW in v1.0.3 — §5 verified_at
+    "verificationMode": "'full' | 'cached' | null",   // NEW in v1.0.3 — §5 verification_mode
     "errors": ["string"]
-    // ... matches the §5 v1.0.2 verification result schema, incl.
-    //     spec_version, evidence_tier, protocol_envelopes_verified,
+    // ... matches the §5 verification result schema, incl.
+    //     spec_version, evidence_tier, protocol_envelopes_verified
+    //     (with per-entry status, unverifiable_reason and witnessed),
     //     cart_payment_binding_verified
   },
   "artifacts": [EhcArtifactRecord],  // ordered by sequence_number ASC
@@ -3033,7 +3057,7 @@
 
         <h3>6.2 Chain Re-verification on Export</h3>
         <p>Before generating a dispute bundle for a representment-bound export, implementations MUST re-verify the full chain. Any verification failure MUST be surfaced in the bundle's <code>verification</code> object rather than silently omitted. A bundle whose <code>verification.valid = false</code> MUST NOT be exported for submission.</p>
-        <p><strong>Cached-verification mode (NEW in rc.2).</strong> Inquiry-speed channels (pre-dispute data-sharing programs with sub-second response SLAs) cannot absorb a full re-verification per request. Implementations MAY verify at seal time and serve the cached result — carrying a <code>verified_at</code> timestamp — for inquiry-speed channels; full re-verification remains REQUIRED for representment-bound exports. Implementations MUST index bundles at seal time: settlement and fulfillment records are late-arriving enrichments to an already-indexed bundle, not preconditions for indexing.</p>
+        <p><strong>Cached-verification mode (NEW in rc.2).</strong> Inquiry-speed channels (pre-dispute data-sharing programs with sub-second response SLAs) cannot absorb a full re-verification per request. Implementations MAY verify at seal time and serve the cached result for inquiry-speed channels. A cached result MUST carry <code>verification_mode = cached</code> and the <code>verified_at</code> of the original verification (&sect;5). Full re-verification remains REQUIRED for representment-bound exports: a bundle whose <code>verification.verificationMode</code> is <code>cached</code> MUST NOT be exported for submission. Before a representment-bound export, an envelope reported <code>key_unavailable</code> because of a possibly transient failure SHOULD be re-verified. Implementations MUST index bundles at seal time: settlement and fulfillment records are late-arriving enrichments to an already-indexed bundle, not preconditions for indexing.</p>
         <p>A bundle's verification result also carries a verification class per &sect;5 and &sect;4.3: a self-verified, unanchored bundle is Asserted as a whole; an externally anchored, independently verified bundle carries a higher class.</p>
 
         <h3>6.3 Test Vectors</h3>
@@ -3949,6 +3973,13 @@ Completed: 2026-06-21T14:08:19Z
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td><strong>v1.0.3-final (in progress)</strong></td>
+                <td>&mdash;</td>
+                <td>
+                  <p><strong>Verification result (#15; third state per #60 and #58):</strong> &sect;5 verification result adds <code>verified_at</code>, <code>verification_mode</code> (<code>full | cached</code>), and per-envelope <code>status</code> (<code>verified | failed | unverifiable</code>), <code>unverifiable_reason</code> (<code>no_rule | key_unavailable | signature_not_retained</code>) and <code>witnessed</code>, all nullable and additive. Verifiers emit an entry for every present sub-wrapper, resolve keys live and then from witnessed material, and never report an <code>unverifiable</code> envelope as verified or failed; &sect;3.9.12 tier criteria count only <code>verified</code> envelopes. &sect;6.1 <code>verification</code> echoes <code>verifiedAt</code> and <code>verificationMode</code>. &sect;6.2 cached mode and the &sect;4.3 / &sect;3.9.11 / &sect;5 witnessed-key requirements now name these fields.</p>
+                </td>
+              </tr>
               <tr>
                 <td><strong>v1.0.3-rc.2 (Draft)</strong></td>
                 <td>2026-07-02</td>

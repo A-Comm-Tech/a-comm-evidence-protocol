@@ -105,7 +105,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [D55](#d55) | Discussion #55 | @faulknerwayne73-droid | §4.3 / §3.9.12 / §6.3 | defer (v1.0.4) | v1.0.4 | n/a | not recorded | |
 | [I7](#i7) | Issue #7 | @squishy-ctrl | §0.1 / §6.4 / §8.2.1 / §8.6 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I8](#i8) | Issue #8 | @squishy-ctrl | COMMENT-ROUND.md | accept | — | landed | not recorded | |
-| [I15](#i15) | Issue #15 | @jyothi-acomm-ai | §5 / §6.1 / §6.2 | accept | v1.0.3-final | not started | not recorded | ✱ |
+| [I15](#i15) | Issue #15 | @jyothi-acomm-ai | §5 / §6.1 / §6.2 | accept | v1.0.3-final | landed | not recorded | ✱ |
 | [I16](#i16) | Issue #16 | @jyothi-acomm-ai | §6.1 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
 | [I17](#i17) | Issue #17 | @jyothi-acomm-ai | §4.1 / §6.3 | accept | v1.0.3-final | not started | not recorded | ✱ |
 | [I18](#i18) | Issue #18 | @jyothi-acomm-ai | §6.5 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |

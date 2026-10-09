@@ -2172,6 +2172,8 @@
   "tap_signature_input": "string — RFC 9421 Signature-Input header value",
   "tap_signature_agent": "string — RFC 9421 Signature-Agent header value",
   "tap_algorithm": "'ed25519' | 'rsa-pss-sha256' | 'es256' (required)",
+  "tap_key_id": "string — RFC 9421 keyid of the signing key, as carried in
+                 tap_signature_input (required; NEW in v1.0.3)",
   "tap_authority": "string — RFC 9421 @authority covered by the signature
                     (merchant domain). RENAMED FROM tap_domain.",
   "tap_intent": "'agent-browser-auth' | 'agent-payer-auth' (required) —
@@ -2192,6 +2194,7 @@
 }</pre>
           <p><strong>Removed fields (hard break from v1.0.1):</strong> <code>tap_session_id</code> (TAP has no equivalent — the nonce IS the session identifier), and the implicit JWS-compact-serialization framing of <code>tap_signature</code>.</p>
           <p><strong>Renamed fields (soft break with alias):</strong> <code>tap_domain</code> &rarr; <code>tap_authority</code>. v1.0.2+ verifiers MUST accept <code>tap_domain</code> as an alias for <code>tap_authority</code> for one MINOR cycle (deprecation target: v1.1.0). The legacy <code>tap_operation</code> values <code>"payment"</code> and <code>"checkout"</code> MUST alias to <code>tap_intent</code> values <code>agent-payer-auth</code> and <code>agent-browser-auth</code> respectively for one MINOR cycle.</p>
+          <p><strong>Key id (NEW in v1.0.3).</strong> <code>tap_key_id</code> records the RFC 9421 <code>keyid</code> parameter of the TAP signature and selects the verification key in the JWKS directory or in witnessed key material (&sect;4.3). It is REQUIRED when <code>agent_identity</code> is present in a chain whose <code>spec_version</code> is 1.0.3 or later. For one MINOR cycle (deprecation target: v1.1.0), verifiers MUST accept an <code>agent_identity</code> without <code>tap_key_id</code> when the <code>keyid</code> parameter can be parsed from <code>tap_signature_input</code>, and use the parsed value in its place.</p>
           <p>Verification: &sect;3.9.11 rule 3.</p>
 
           <h5 id="s3-9-7">3.9.7 <code>consumer_authorization</code> — AP2 wrapper</h5>
@@ -2389,7 +2392,7 @@
               </ul>
             </li>
             <li><strong>Timestamp skew.</strong> Sub-wrapper timestamps MUST be within 24 hours of the delegation artifact's top-level <code>captured_at</code>. Per-protocol skew rules apply where the protocol specifies one (TAP <code>expires &minus; created</code> &le; 480 s; AP2 mandate <code>exp</code> rule per SD-JWT-VC; x402 <code>valid_after</code>/<code>valid_before</code>).</li>
-            <li><strong>TAP authority and expiry.</strong> When <code>agent_identity</code> is present, the <code>@authority</code> component covered by the TAP signature MUST match the merchant domain on file for this chain, AND <code>tap_expires &minus; tap_created</code> MUST NOT exceed 480 seconds.</li>
+            <li><strong>TAP authority and expiry.</strong> When <code>agent_identity</code> is present, the <code>@authority</code> component covered by the TAP signature MUST match the merchant domain on file for this chain, AND <code>tap_expires &minus; tap_created</code> MUST NOT exceed 480 seconds, AND, when both <code>tap_key_id</code> and the <code>keyid</code> parameter of <code>tap_signature_input</code> are present, they MUST be equal.</li>
             <li><strong>AP2 cryptographic cart-payment binding (replaces v1.0.1 semantic matching).</strong> When <code>consumer_authorization</code> is present, <code>ap2_checkout_hash</code> MUST equal <code>base64url(sha-256(ap2_checkout_jwt))</code> AND the Cart artifact's <code>cart_payment_binding.binding_value</code> MUST equal that hash. Cryptographic equivalence replaces v1.0.1 rule 4's semantic items+amount matching.</li>
             <li><strong>Opaque raw payload.</strong> The <code>raw_protocol_payload</code> field, when present, is opaque to AEP verification and is preserved for downstream tooling.</li>
             <li><strong>ACP SPT cap.</strong> When <code>session_binding_acp.delegated_payment_token</code> is present, Cart <code>total</code> &le; <code>max_amount</code>, Cart <code>currency</code> == token <code>currency</code>, Cart <code>cart_confirmed_at</code> &le; <code>expires_at</code>.</li>
@@ -3949,6 +3952,13 @@ Completed: 2026-06-21T14:08:19Z
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td><strong>v1.0.3-final (in progress)</strong></td>
+                <td>&mdash;</td>
+                <td>
+                  <p><strong>TAP key id (#46):</strong> &sect;3.9.6 adds <code>tap_key_id</code>, required for chains at <code>spec_version</code> 1.0.3 or later, with parse-from-<code>tap_signature_input</code> accepted as a fallback for one MINOR cycle (deprecation target v1.1.0). &sect;3.9.11 rule 3 requires <code>tap_key_id</code> to equal the <code>keyid</code> in <code>tap_signature_input</code> when both are present.</p>
+                </td>
+              </tr>
               <tr>
                 <td><strong>v1.0.3-rc.2 (Draft)</strong></td>
                 <td>2026-07-02</td>

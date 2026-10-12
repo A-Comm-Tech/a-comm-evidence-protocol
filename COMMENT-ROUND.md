@@ -124,7 +124,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I53](#i53) | Issue #53 | @Trusteedxyz | §3.4 / §3.6 | accept | v1.0.3-final | not started | not recorded | |
 | [I54](#i54) | Issue #54 | @Trusteedxyz | §3.4 | accept | v1.0.3-final | not started | not recorded | |
 | [I58](#i58) | Issue #58 | @shunhe-wang | §2.5 / §3.6 / §3.9.10 / §3.9.11 | defer (v1.0.4) | v1.0.4 / v1.0.3-final | not started | not recorded | |
-| [I59](#i59) | Issue #59 | @shunhe-wang | §3.9.12 / §5 / §6.1 | accept-with-modification | v1.0.3-final / v1.1.0 | not started | not recorded | |
+| [I59](#i59) | Issue #59 | @shunhe-wang | §3.9.12 / §5 / §6.1 | accept-with-modification | v1.0.3-final / v1.1.0 | landed | not recorded | |
 | [I60](#i60) | Issue #60 | @saishav7 | §3.9.11 / §3.9.10 | accept-with-modification | v1.0.3-final | landed | not recorded | |
 
 ## Detail

@@ -2501,6 +2501,15 @@
     "id_token_jwt": "string — scheme-issued JWT carrying obfuscated consumer
                      identifiers (masked phone / email); opaque envelope —
                      §3.9.20 applies",
+    "additional_identifiers": [          // NEW in v1.0.3 — consented supplementary identifiers
+      {
+        "identifier_type": "'loyalty' | 'email' | 'phone' | 'third_party_identity_token' | 'other'",
+        "issuer": "string | null — the party that issued the identifier",
+        "value_hash": "string — 'sha256:...' (chain plane)",
+        "value_ref": "string | null — custodian reference for the raw value",
+        "delivery": "'query_parameter' | 'recognition_object'"
+      }
+    ] | null,
     "contextual_data": {
       "country_code": "string — ISO 3166-1 alpha-2",
       "zip": "string",
@@ -2526,6 +2535,7 @@
   } | null
 }</pre>
           <p>This sub-wrapper is modeled strictly on the two published artifacts of the underlying protocol: a <strong>consumer-recognition object</strong> (a scheme-issued JWT <code>idToken</code> with obfuscated identifiers plus contextual data) and a <strong>payment container</strong> (encrypted/opaque; it MAY carry payment credentials, so implementations retain its digest plus extracted non-sensitive metadata only, per &sect;3.9.20). The consumer-recognition object evidences consumer recognition/identity, not purchase delegation (&sect;3.9.12).</p>
+          <p><strong>Additional identifiers (NEW in v1.0.3).</strong> A verified agent can pass consented consumer identifiers to the merchant at checkout, such as a loyalty number, email address or phone number. <code>additional_identifiers</code> records each one as a digest on the chain plane (<code>value_hash</code>), with <code>value_ref</code> pointing to the raw value held by the custodian. Three constraints apply. (1) Entries are Asserted (&sect;2.8): they carry no attestation from the identifier's issuer, a value delivered as a query parameter is not covered by the recognition object's signature, and entries MUST NOT contribute to Attested-tier attribution; <code>delivery</code> records which case applies. (2) Raw values are restricted to the raw plane by default (&sect;8.2.1), and MUST NOT be disclosed to discovery agents or AI platforms. (3) The presence of these fields does not imply network attestation of their contents, and implementations MUST NOT present a pre-filled checkout field as network-verified identity. Visa's own field names for this set are not yet confirmed (&sect;3.9.13 is PROVISIONAL); the AEP shape does not depend on them.</p>
 
           <h5 id="s3-9-14">3.9.14 <code>agent_coordination</code> — A2A wrapper</h5>
 <pre>{
@@ -4020,6 +4030,7 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>TAP key id (#46):</strong> &sect;3.9.6 adds <code>tap_key_id</code>, required for chains at <code>spec_version</code> 1.0.3 or later, with parse-from-<code>tap_signature_input</code> accepted as a fallback for one MINOR cycle (deprecation target v1.1.0). &sect;3.9.11 rule 3 requires <code>tap_key_id</code> to equal the <code>keyid</code> in <code>tap_signature_input</code> when both are present.</p>
                   <p><strong>Verification result (#15; third state per #60 and #58):</strong> &sect;5 verification result adds <code>verified_at</code>, <code>verification_mode</code> (<code>full | cached</code>), and per-envelope <code>status</code> (<code>verified | failed | unverifiable</code>), <code>unverifiable_reason</code> (<code>no_rule | key_unavailable | signature_not_retained</code>) and <code>witnessed</code>, all nullable and additive. Verifiers emit an entry for every present sub-wrapper, resolve keys live and then from witnessed material, and never report an <code>unverifiable</code> envelope as verified or failed; &sect;3.9.12 tier criteria count only <code>verified</code> envelopes. &sect;6.1 <code>verification</code> echoes <code>verifiedAt</code> and <code>verificationMode</code>. &sect;6.2 cached mode and the &sect;4.3 / &sect;3.9.11 / &sect;5 witnessed-key requirements now name these fields.</p>
                   <p><strong>x402 payer and facilitator (#68, #60, #58):</strong> &sect;2.6 and &sect;3.9.11 rules 1 and 7 identify the EIP-712-recovered signer as the <code>payer</code> (payer authorization), not the facilitator. &sect;3.9.10 adds <code>facilitator_identity_source</code>, <code>transaction_submitter</code> and <code>capture_authorizer</code> with stated signal classes, forbids inferring one rail role from another, recommends CAIP-2 for <code>network</code>, and adds a legacy EVM network alias table. Rule 7 is declared the complete x402 rule for v1.0.x; other schemes and networks report <code>unverifiable</code> / <code>no_rule</code>. &sect;5 envelope entries add <code>claims</code> so payer authorization and facilitator identity are reported separately. &sect;2.1 post-seal sentence aligned with &sect;2.5.</p>
+                  <p><strong>Visa consented supplementary identifiers (#56):</strong> &sect;3.9.13 adds optional <code>consumer_recognition.additional_identifiers[]</code> (<code>identifier_type</code>, <code>issuer</code>, <code>value_hash</code>, <code>value_ref</code>, <code>delivery</code>). Entries are Asserted, never contribute to Attested-tier attribution, keep raw values on the raw plane, and imply no network attestation. &sect;3.9.13 remains PROVISIONAL.</p>
                 </td>
               </tr>
               <tr>

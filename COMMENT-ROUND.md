@@ -110,7 +110,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I17](#i17) | Issue #17 | @jyothi-acomm-ai | §4.1 / §6.3 | accept | v1.0.3-final | not started | not recorded | ✱ |
 | [I18](#i18) | Issue #18 | @jyothi-acomm-ai | §6.5 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
 | [I20](#i20) | Issue #20 | @HemmaBo-se | §3.7 / §3.5 / §3.10 | accept-with-modification | v1.0.3-final | not started | not recorded | |
-| [I21](#i21) | Issue #21 | @HemmaBo-se | §3.9.11 / §2.8 | accept-with-modification | v1.0.3-final | not started | accepted | |
+| [I21](#i21) | Issue #21 | @HemmaBo-se | §3.9.11 / §2.8 | accept-with-modification | v1.0.3-final | landed | accepted | |
 | [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
 | [I24](#i24) | Issue #24 | @johnhenrypower | §3.9.15 | accept | v1.0.3-final | landed | not recorded | ✱ |
 | [I25](#i25) | Issue #25 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |

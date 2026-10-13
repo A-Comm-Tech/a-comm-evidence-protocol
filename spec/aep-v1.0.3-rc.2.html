@@ -2427,6 +2427,7 @@
             <li><strong>Skyfire KYA Pay (NEW in v1.0.3).</strong> When <code>kya_payment</code> is present, verify the payment token's ES256 signature (when only <code>pay_token_sha256</code> is persisted per &sect;3.9.20, signature verification is performed at capture time and its result recorded); assert Cart <code>total</code> &le; token <code>amt</code> (same <code>cur</code>); the <code>charges[].value</code> entries MUST sum to &le; <code>amt</code>; each <code>charges[].charged_at</code> MUST be &le; the token's chargeable-until time — token <code>exp</code> plus the profile's charge grace window — a bound distinct from settlement deferral, which governs only when a charge settles.</li>
             <li><strong>Web Bot Auth (NEW in v1.0.3).</strong> When <code>web_bot_auth</code> is present, verify the RFC 9421 signature against the key discovered via <code>wba_signature_agent</code> / directory; assert <code>wba_tag</code> contains <code>web-bot-auth</code>, the <code>@authority</code> covered component matches the merchant domain, and <code>wba_expires &minus; wba_created</code> is within policy.</li>
             <li><strong>Request binding (when present; NEW in v1.0.3).</strong> Recompute and match <code>request_body_sha256</code> and <code>target_uri</code> against the request the <code>bound_envelope</code> rode on. A mismatch MUST be surfaced as a <code>request_binding_mismatch</code> warning (non-fatal unless the verifier's policy elevates it).</li>
+            <li><strong>Visa Intelligent Commerce objects (NEW in v1.0.3).</strong> When <code>vic_payment_payload</code> is present, for each of <code>consumer_recognition</code>, <code>payment_container</code> and <code>payment_container.browsing_iou</code> that carries a <code>signature</code>: its <code>nonce</code>, where it has one, MUST equal <code>tap_nonce</code> of the message signature (&sect;3.9.6); the signature base is all of the object's fields in the order received, excluding <code>signature</code>; and the key is selected by <code>kid</code> through the TAP key-discovery path (rule 1) or, failing that, from witnessed key material (&sect;4.3).</li>
           </ol>
 
           <h4 id="s3-9-12">3.9.12 Evidence Strength Ranking (Verification Classes; Informative for Adjudication)</h4>
@@ -2492,12 +2493,16 @@
             <div class="callout-icon">&#9888;</div>
             <div class="callout-body">
               <strong>PROVISIONAL (re-marked in v1.0.3)</strong>
-              The field-level shape of this sub-wrapper was derived partly from sources not confirmable at the spec level. Implementers SHOULD treat this schema as subject to change in v1.0.4 and SHOULD NOT gate production behavior on its exact field names until confirmed against primary Visa specifications.
+              The field-level shape of this sub-wrapper was derived partly from sources not confirmable at the spec level. Implementers SHOULD treat this schema as subject to change in v1.0.4 and SHOULD NOT gate production behavior on its exact field names until confirmed against primary Visa specifications. The v1.0.3 corrections below were confirmed against the published Visa TAP Merchant Specifications for the consumer-recognition and payment-container artifacts only; the remaining field sets are access-gated, so the flag stays.
             </div>
           </div>
 <pre>{
   "consumer_recognition": {              // Agentic Consumer Recognition object
     "nonce": "string",
+    "kid": "string | null — equals the message-signature keyid (NEW in v1.0.3)",
+    "alg": "string | null — e.g. 'PS256' (NEW in v1.0.3)",
+    "signature": "string | null — over all fields in the order received, excluding
+                  signature (NEW in v1.0.3)",
     "id_token_jwt": "string — scheme-issued JWT carrying obfuscated consumer
                      identifiers (masked phone / email); opaque envelope —
                      §3.9.20 applies",
@@ -2506,25 +2511,52 @@
       "zip": "string",
       "ip_address_hash": "string — 'sha256:...'",
       "device_data": "object"
-    }
+    },
+    "id_token_claims": {                 // NEW in v1.0.3 — optional extraction; see ID-token claims
+      "iss": "string",
+      "sub": "string | null — locally unique, never-reassigned consumer identifier;
+              raw-plane only by default (§8.2.1)",
+      "sub_hash": "string | null — 'sha256:...' digest of sub (chain plane)",
+      "iat": "integer",
+      "auth_time": "integer | null",
+      "amr": ["string"] | null,
+      "phone_number_verified": "boolean | null",
+      "email_verified": "boolean | null"
+    } | null
   } | null,
   "payment_container": {                 // Agentic Payment Container (encrypted / opaque)
+    "nonce": "string | null — (NEW in v1.0.3)",
+    "kid": "string | null — (NEW in v1.0.3)",
+    "alg": "string | null — (NEW in v1.0.3)",
+    "signature": "string | null — over all fields in the order received, excluding
+                  signature (NEW in v1.0.3)",
     "container_sha256": "string — 'sha256:...' digest of the container as
                          presented; the container value itself MUST NOT be
                          persisted (§3.9.20)",
-    "container_type": "string — e.g. 'encrypted_api_payload' | 'browsing_iou'",
+    "container_type": "'encrypted_api_payload' | 'browsing_iou' | 'credential_hash'
+                       — credential_hash NEW in v1.0.3 (guest-checkout / key-entry flows)",
     "browsing_iou": {
       "invoice_id": "string",
       "amount_atomic": "string — base-units string",
       "card_acceptor_id": "string",
       "acquirer_id": "string",
-      "sequence_counter": "integer"
+      "sequence_counter": "integer",
+      "uri": "string | null — the resource that requested payment (NEW in v1.0.3)",
+      "payment_service": "string | null — (NEW in v1.0.3)",
+      "kid": "string | null — (NEW in v1.0.3)",
+      "alg": "string | null — (NEW in v1.0.3)",
+      "signature": "string | null — the IOU is separately signed (NEW in v1.0.3)"
     } | null,
     "card_metadata": {
-      "payment_account_reference": "string | null — PAR per EMVCo"
+      "payment_account_reference": "string | null — PAR per EMVCo",
+      "last_four": "string | null — (NEW in v1.0.3)",
+      "short_description": "string | null — (NEW in v1.0.3)"
     } | null
   } | null
 }</pre>
+          <p><strong>Object signatures (NEW in v1.0.3).</strong> The consumer-recognition object, the payment container and the browsing IOU each carry their own <code>kid</code>, <code>alg</code> and <code>signature</code>, recorded so that each object can be re-verified independently at dispute time. Verification: &sect;3.9.11 rule 13. Every member added in v1.0.3 is nullable, so a chain captured under rc.2 remains conformant.</p>
+          <p><strong>ID-token claims (NEW in v1.0.3).</strong> <code>id_token_claims</code> optionally extracts claims from the ID token so that they can be read without re-opening the opaque <code>id_token_jwt</code>. The obfuscated identifiers and masks inside the token are not extracted and remain inside <code>id_token_jwt</code> (&sect;3.9.20). <code>sub</code> is restricted to the raw plane by default, and the chain plane carries only <code>sub_hash</code> (&sect;8.2.1).</p>
+          <p><strong>Open item.</strong> <code>browsing_iou.amount_atomic</code> keeps its name and base-units convention pending confirmation of the unit convention against a live HTTP 402 sandbox response.</p>
           <p>This sub-wrapper is modeled strictly on the two published artifacts of the underlying protocol: a <strong>consumer-recognition object</strong> (a scheme-issued JWT <code>idToken</code> with obfuscated identifiers plus contextual data) and a <strong>payment container</strong> (encrypted/opaque; it MAY carry payment credentials, so implementations retain its digest plus extracted non-sensitive metadata only, per &sect;3.9.20). The consumer-recognition object evidences consumer recognition/identity, not purchase delegation (&sect;3.9.12).</p>
 
           <h5 id="s3-9-14">3.9.14 <code>agent_coordination</code> — A2A wrapper</h5>
@@ -4020,6 +4052,7 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>TAP key id (#46):</strong> &sect;3.9.6 adds <code>tap_key_id</code>, required for chains at <code>spec_version</code> 1.0.3 or later, with parse-from-<code>tap_signature_input</code> accepted as a fallback for one MINOR cycle (deprecation target v1.1.0). &sect;3.9.11 rule 3 requires <code>tap_key_id</code> to equal the <code>keyid</code> in <code>tap_signature_input</code> when both are present.</p>
                   <p><strong>Verification result (#15; third state per #60 and #58):</strong> &sect;5 verification result adds <code>verified_at</code>, <code>verification_mode</code> (<code>full | cached</code>), and per-envelope <code>status</code> (<code>verified | failed | unverifiable</code>), <code>unverifiable_reason</code> (<code>no_rule | key_unavailable | signature_not_retained</code>) and <code>witnessed</code>, all nullable and additive. Verifiers emit an entry for every present sub-wrapper, resolve keys live and then from witnessed material, and never report an <code>unverifiable</code> envelope as verified or failed; &sect;3.9.12 tier criteria count only <code>verified</code> envelopes. &sect;6.1 <code>verification</code> echoes <code>verifiedAt</code> and <code>verificationMode</code>. &sect;6.2 cached mode and the &sect;4.3 / &sect;3.9.11 / &sect;5 witnessed-key requirements now name these fields.</p>
                   <p><strong>x402 payer and facilitator (#68, #60, #58):</strong> &sect;2.6 and &sect;3.9.11 rules 1 and 7 identify the EIP-712-recovered signer as the <code>payer</code> (payer authorization), not the facilitator. &sect;3.9.10 adds <code>facilitator_identity_source</code>, <code>transaction_submitter</code> and <code>capture_authorizer</code> with stated signal classes, forbids inferring one rail role from another, recommends CAIP-2 for <code>network</code>, and adds a legacy EVM network alias table. Rule 7 is declared the complete x402 rule for v1.0.x; other schemes and networks report <code>unverifiable</code> / <code>no_rule</code>. &sect;5 envelope entries add <code>claims</code> so payer authorization and facilitator identity are reported separately. &sect;2.1 post-seal sentence aligned with &sect;2.5.</p>
+                  <p><strong>Visa wrapper field corrections (#47):</strong> &sect;3.9.13 adds nullable <code>kid</code> / <code>alg</code> / <code>signature</code> to <code>consumer_recognition</code>, <code>payment_container</code> and <code>browsing_iou</code>; <code>payment_container.nonce</code>; <code>credential_hash</code> in <code>container_type</code>; <code>browsing_iou.uri</code> and <code>payment_service</code>; <code>card_metadata.last_four</code> and <code>short_description</code>; and an optional <code>id_token_claims</code> with <code>sub</code> restricted to the raw plane and a chain-plane digest. &sect;3.9.11 adds rule 13 (nonce equality, signature base, key selection by <code>kid</code>). &sect;3.9.13 remains PROVISIONAL.</p>
                 </td>
               </tr>
               <tr>

@@ -2537,6 +2537,7 @@
             </div>
           </div>
           <p>Mastercard VI issues a layered <strong>SD-JWT / KB-SD-JWT</strong> credential chain (VC integration is roadmap per its spec, not the current envelope class). Key model: L1 verifies against the credential provider's published keys; L2 verifies against the user key bound via L1's <code>cnf</code>; L3 verifies against the agent key bound via L2. ES256 (&sect;3.9.11 rule 8).</p>
+          <p><strong>Layer types (NEW in v1.0.3).</strong> Each <code>credential_chain</code> entry's <code>typ</code> follows from its layer: L1 is issuer-signed and not key-bound, so its <code>typ</code> is <code>sd+jwt</code>; L2 is <code>kb-sd-jwt</code> in Immediate mode and <code>kb-sd-jwt+kb</code> in Autonomous mode; L3a and L3b are <code>kb-sd-jwt</code>. An Immediate-mode chain is therefore L1 (<code>sd+jwt</code>) plus L2 (<code>kb-sd-jwt</code>).</p>
 <pre>{
   "vi_spec_version": "string — e.g., '0.1-draft'",
   "mode": "'immediate' | 'autonomous'",
@@ -2546,7 +2547,7 @@
       "sdjwt_hash": "string — base64url SHA-256 of this layer's SD-JWT / KB-SD-JWT",
       "jwk_thumbprint": "string — RFC 7638 thumbprint",
       "cnf_jwk_ref": "string — reference into the credential chain",
-      "typ": "'kb-sd-jwt' | 'kb-sd-jwt+kb'"
+      "typ": "'sd+jwt' | 'kb-sd-jwt' | 'kb-sd-jwt+kb'"  // sd+jwt NEW in v1.0.3 — see layer types below
     }
   ],
   "cart_payment_binding": {
@@ -3956,6 +3957,7 @@ Completed: 2026-06-21T14:08:19Z
                 <td><strong>v1.0.3-final (in progress)</strong></td>
                 <td>&mdash;</td>
                 <td>
+                  <p><strong>Mastercard VI layer types (#24):</strong> &sect;3.9.15 <code>credential_chain[].typ</code> adds <code>sd+jwt</code> for the issuer-signed L1 root, so Immediate-mode chains (L1 + L2) are representable; the expected <code>typ</code> per layer is stated. &sect;3.9.15 remains PROVISIONAL.</p>
                   <p><strong>TAP key id (#46):</strong> &sect;3.9.6 adds <code>tap_key_id</code>, required for chains at <code>spec_version</code> 1.0.3 or later, with parse-from-<code>tap_signature_input</code> accepted as a fallback for one MINOR cycle (deprecation target v1.1.0). &sect;3.9.11 rule 3 requires <code>tap_key_id</code> to equal the <code>keyid</code> in <code>tap_signature_input</code> when both are present.</p>
                 </td>
               </tr>

@@ -1042,7 +1042,7 @@
               <div class="artifact-card-title">Authorization <span class="badge badge-orange" style="font-size:11px;margin-left:8px;">Seal Point</span></div>
             </div>
             <div class="artifact-card-body">
-              <p>Records the PSP payment authorization result. The <code>current_hash</code> of this artifact becomes the <code>sealed_bundle_hash</code> — the immutable seal of the transaction. Post-seal, only fulfillment artifacts may be appended.</p>
+              <p>Records the PSP payment authorization result. The <code>current_hash</code> of this artifact becomes the <code>sealed_bundle_hash</code> — the immutable seal of the transaction. Post-seal, only the post-seal artifact types listed in &sect;2.5 may be appended.</p>
               <ul>
                 <li>Actor type: <code>psp</code></li>
                 <li>Key payload fields: <code>payment_method_token</code> (never raw card data), <code>psp</code>, <code>authorization_code</code>, <code>amount_authorized</code>, <code>currency</code></li>
@@ -1319,7 +1319,7 @@
                 <tr><td><strong>ACP</strong></td><td>OpenAI + Stripe + Meta (TSC)</td><td>Apache 2.0</td><td>commerce-delegation</td><td>pre-shared HMAC by <code>merchant_id</code></td><td>Agent &harr; Merchant</td><td>Checkout session lifecycle + Stripe SPT</td></tr>
                 <tr><td><strong>UCP</strong></td><td>Google + Shopify (Tech Council)</td><td>Apache 2.0</td><td>commerce-delegation</td><td><code>merchant_public_keys_url</code> (JWKS)</td><td>Agent &harr; Merchant</td><td>Canonical checkout intent + RFC 9421 signed exchanges</td></tr>
                 <tr><td><strong>MCP</strong></td><td>modelcontextprotocol.io (SEP-governed)</td><td>MIT</td><td>tool-invocation</td><td>OAuth <code>iss</code>/<code>kid</code> (RFC 8707)</td><td>Agent &harr; Tool Server</td><td>Tool invocation (call + result + receipt)</td></tr>
-                <tr><td><strong>x402</strong></td><td>Linux Foundation (x402 Foundation TSC)</td><td>Apache 2.0</td><td>settlement</td><td><code>facilitator_signer</code> (EIP-712 recovered)</td><td>Agent &harr; Merchant / PSP</td><td>HTTP-native payment + on-chain settlement proof</td></tr>
+                <tr><td><strong>x402</strong></td><td>Linux Foundation (x402 Foundation TSC)</td><td>Apache 2.0</td><td>settlement</td><td><code>payer</code> (EIP-712 recovered; &sect;3.9.11 rule 7 scope only)</td><td>Agent &harr; Merchant / PSP</td><td>HTTP-native payment + on-chain settlement proof</td></tr>
                 <tr><td><strong>A2A</strong></td><td>Linux Foundation (TSC)</td><td>Apache 2.0</td><td>identity-transport (carrier)</td><td><code>a2a_jwks_url</code> (signed Agent Card)</td><td>Agent &harr; Agent (upstream)</td><td>Agent-to-agent coordination metadata + extension URIs</td></tr>
                 <tr><td><strong>SKYFIRE_KYA</strong> <span class="badge badge-blue" style="font-size:10px;">NEW v1.0.3</span></td><td>Skyfire (centralized issuer)</td><td>Open spec (v1.0 unreleased); IETF I-D</td><td>identity-transport + settlement</td><td>issuer JWKS per the profile's issuer-discovery rules (<code>iss</code>+<code>kid</code>; non-normative example: <code>app.skyfire.xyz/.well-known/jwks.json</code>)</td><td>Agent &harr; Merchant</td><td>ES256 JWT agent-identity credential (<code>kya+jwt</code>) and/or payment token (<code>pay</code>/<code>kya-pay</code>; <code>sti</code> = card token or USDC) — one protocol, two payload facets (&sect;3.9.16 / &sect;3.9.17)</td></tr>
                 <tr><td><strong>WEB_BOT_AUTH</strong> <span class="badge badge-blue" style="font-size:10px;">NEW v1.0.3</span></td><td>Cloudflare + Google (IETF individual I-D)</td><td>Open draft</td><td>identity-transport (wire)</td><td>signature directory (<code>/.well-known/http-message-signatures-directory</code>) / <code>Signature-Agent</code></td><td>Agent &harr; Merchant</td><td>RFC 9421 per-request agent-identity signature</td></tr>
@@ -2355,11 +2355,19 @@
 
   // Scalar projections (extracted from envelopes for indexing / display)
   "scheme": "'exact' | 'upto' | 'auth-capture' | 'batch-settlement'",
-  "network": "string — CAIP-2 (e.g., 'eip155:84532', 'solana:…')",
+  "network": "string — CAIP-2 RECOMMENDED (e.g., 'eip155:84532', 'solana:…');
+               legacy names alias per the network alias table below",
   "facilitator_url": "string",
-  "facilitator_signer": "string — from GET /supported",
+  "facilitator_signer": "string — the facilitator's declared signer (e.g., from
+                         GET /supported); NOT recovered from x402_payment_signature",
+  "facilitator_identity_source": "'supported_endpoint' | 'settlement_response' |
+                                  'merchant_configuration' | null  (NEW in v1.0.3)",
+  "transaction_submitter": "string | null — chain-native address that submitted the
+                            settlement transaction, when observed (NEW in v1.0.3)",
+  "capture_authorizer": "string | null — auth-capture only: the party authorized to
+                         capture held funds; recorded, not verified (NEW in v1.0.3)",
   "transaction_hash": "string — on-chain settlement hash (if finalized)",
-  "payer": "string — chain-native address",
+  "payer": "string — chain-native address; the signer of x402_payment_signature",
   "pay_to": "string",
   "amount_atomic": "string — base-units string (e.g., '5000000' = 5 USDC at 6 dec)",
   "asset": "string — token contract / mint",
@@ -2370,7 +2378,24 @@
   "settlement_finalized": "boolean",
   "partial_settlement": "boolean — true when scheme='upto'"
 }</pre>
-          <p>Verification: &sect;3.9.11 rule 7 — EIP-712 signature recovery when <code>scheme === "exact"</code> AND <code>network</code> starts with <code>"eip155:"</code>.</p>
+          <p>Verification: &sect;3.9.11 rule 7 — payer authorization by EIP-712 signature recovery when <code>scheme === "exact"</code> AND <code>network</code>, after normalization under the alias table below, starts with <code>"eip155:"</code>. No other x402 signature-verification rule is defined in v1.0.x.</p>
+          <p><strong>Rail roles (NEW in v1.0.3).</strong> An x402 payment can involve distinct parties: the <code>payer</code> who signs the payment payload, the facilitator who verifies or submits it, the <code>transaction_submitter</code> who sends the settlement transaction, and, for <code>auth-capture</code>, the <code>capture_authorizer</code>. Each role is recorded under its own field. Two roles MAY be recorded as the same party only where that is demonstrated; verifiers MUST NOT infer one role's identity from another's, and in particular MUST NOT treat the signer recovered under &sect;3.9.11 rule 7 as the facilitator. Signal classes (&sect;2.8): <code>facilitator_signer</code> is Asserted, with <code>facilitator_identity_source</code> recording where the claim came from, because v1.0.x defines no rule that verifies facilitator identity; <code>transaction_submitter</code> is Deterministic when taken from the finalized on-chain transaction identified by <code>transaction_hash</code>, and Asserted otherwise; <code>capture_authorizer</code> is Asserted.</p>
+          <p><strong>Network alias table (NEW in v1.0.3).</strong> <code>network</code> SHOULD carry a CAIP-2 chain identifier. Before applying &sect;3.9.11 rule 7, verifiers MUST normalize a legacy x402 network name listed below to its CAIP-2 identifier. A value that is neither CAIP-2 nor listed is outside rule 7's scope. The table lists the EVM network names of the x402 reference implementation's legacy network set (<code>coinbase/x402</code>, <code>typescript/packages/legacy/x402/src/types/shared/network.ts</code>); non-EVM names fall outside rule 7 whether or not they are normalized, and their normalization is deferred to v1.0.4.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Legacy <code>network</code></th><th>CAIP-2</th><th>Legacy <code>network</code></th><th>CAIP-2</th></tr></thead>
+              <tbody>
+                <tr><td><code>base</code></td><td><code>eip155:8453</code></td><td><code>base-sepolia</code></td><td><code>eip155:84532</code></td></tr>
+                <tr><td><code>polygon</code></td><td><code>eip155:137</code></td><td><code>polygon-amoy</code></td><td><code>eip155:80002</code></td></tr>
+                <tr><td><code>avalanche</code></td><td><code>eip155:43114</code></td><td><code>avalanche-fuji</code></td><td><code>eip155:43113</code></td></tr>
+                <tr><td><code>abstract</code></td><td><code>eip155:2741</code></td><td><code>abstract-testnet</code></td><td><code>eip155:11124</code></td></tr>
+                <tr><td><code>sei</code></td><td><code>eip155:1329</code></td><td><code>sei-testnet</code></td><td><code>eip155:1328</code></td></tr>
+                <tr><td><code>iotex</code></td><td><code>eip155:4689</code></td><td><code>peaq</code></td><td><code>eip155:3338</code></td></tr>
+                <tr><td><code>story</code></td><td><code>eip155:1514</code></td><td><code>educhain</code></td><td><code>eip155:41923</code></td></tr>
+                <tr><td><code>skale-base-sepolia</code></td><td><code>eip155:324705682</code></td><td></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
           <p><strong>Soft-break aliases (one MINOR cycle):</strong> when <code>x402_version == 1</code>, the legacy v1 header names <code>X-PAYMENT</code> and <code>X-PAYMENT-RESPONSE</code> MUST alias to <code>x402_payment_signature</code> and <code>x402_payment_response</code> respectively.</p>
 
           <h4 id="s3-9-11">3.9.11 Verification Requirements</h4>
@@ -2384,7 +2409,7 @@
                 <li><strong>UCP:</strong> <code>merchant_public_keys_url</code> (JWKS at <code>/.well-known/ucp</code>)</li>
                 <li><strong>ACP:</strong> pre-shared HMAC indexed by <code>merchant_id</code></li>
                 <li><strong>MCP:</strong> OAuth <code>iss</code> + <code>kid</code> (RFC 8707 resource binding)</li>
-                <li><strong>x402:</strong> <code>facilitator_signer</code> (recovered from EIP-712 signature)</li>
+                <li><strong>x402:</strong> <code>payer</code>, recovered from the EIP-712 signature over the PaymentPayload in <code>x402_payment_signature</code> (rule 7 scope only; this establishes payer authorization, not facilitator identity)</li>
                 <li><strong>MASTERCARD_VI:</strong> layered key model per rule 8 (L1: credential provider's published keys; L2/L3: keys bound via the preceding layer's <code>cnf</code>); ES256 only</li>
               </ul>
             </li>
@@ -2393,7 +2418,7 @@
             <li><strong>AP2 cryptographic cart-payment binding (replaces v1.0.1 semantic matching).</strong> When <code>consumer_authorization</code> is present, <code>ap2_checkout_hash</code> MUST equal <code>base64url(sha-256(ap2_checkout_jwt))</code> AND the Cart artifact's <code>cart_payment_binding.binding_value</code> MUST equal that hash. Cryptographic equivalence replaces v1.0.1 rule 4's semantic items+amount matching.</li>
             <li><strong>Opaque raw payload.</strong> The <code>raw_protocol_payload</code> field, when present, is opaque to AEP verification and is preserved for downstream tooling.</li>
             <li><strong>ACP SPT cap.</strong> When <code>session_binding_acp.delegated_payment_token</code> is present, Cart <code>total</code> &le; <code>max_amount</code>, Cart <code>currency</code> == token <code>currency</code>, Cart <code>cart_confirmed_at</code> &le; <code>expires_at</code>.</li>
-            <li><strong>x402 EIP-712 signer recovery.</strong> When <code>http_payment.scheme === "exact"</code> AND <code>http_payment.network</code> starts with <code>"eip155:"</code>, verifiers MUST recover the EIP-712 signer from <code>x402_payment_signature</code> and assert that the recovered address equals <code>payer</code>.</li>
+            <li><strong>x402 payer authorization (EIP-712 signer recovery).</strong> When <code>http_payment.scheme === "exact"</code> AND <code>http_payment.network</code>, after normalization under the &sect;3.9.10 network alias table, starts with <code>"eip155:"</code>, verifiers MUST recover the EIP-712 signer from <code>x402_payment_signature</code> and assert that the recovered address equals <code>payer</code>. This establishes payer authorization only; it does not establish facilitator identity or any other rail role (&sect;3.9.10). Rule 7 is the complete x402 signature-verification rule in v1.0.x: for any other scheme (including <code>upto</code>, <code>auth-capture</code> and <code>batch-settlement</code>) or network (including non-EVM chains), no x402 signature-verification rule is defined, and verifiers MUST report the envelope with <code>status</code> <code>unverifiable</code> and <code>unverifiable_reason</code> <code>no_rule</code> (&sect;5), never as <code>verified</code>.</li>
             <li><strong>Mastercard VI SD-JWT / KB-SD-JWT chain.</strong> When <code>mastercard_verifiable_intent</code> is present, the layered credential chain MUST verify per its key model: L1 verifies against the credential provider's published keys; L2 verifies against the user key bound via L1's <code>cnf</code>; L3 verifies against the agent key bound via L2. The <code>sd_hash</code> chain MUST validate, and ES256 MUST be the only accepted <code>alg</code>.</li>
             <li><strong>Skyfire KYA (NEW in v1.0.3).</strong> When <code>kya_identity</code> is present, verify the <code>kya_token</code> ES256 signature against the JWKS at <code>jwks_url</code> selected by <code>kid</code>; assert <code>aud</code> matches the chain's merchant/seller-agent id and <code>exp</code> is unexpired. Record <code>hid.verifier</code>/<code>verified</code> provenance via signal classification (&sect;2.8) — a Skyfire-self-asserted <code>verified=false</code> is <strong>Asserted</strong>; an external <code>identity_verifier</code>-attested <code>verified=true</code> is <strong>Attested</strong>.</li>
             <li><strong>Skyfire KYA Pay (NEW in v1.0.3).</strong> When <code>kya_payment</code> is present, verify the payment token's ES256 signature (when only <code>pay_token_sha256</code> is persisted per &sect;3.9.20, signature verification is performed at capture time and its result recorded); assert Cart <code>total</code> &le; token <code>amt</code> (same <code>cur</code>); the <code>charges[].value</code> entries MUST sum to &le; <code>amt</code>; each <code>charges[].charged_at</code> MUST be &le; the token's chargeable-until time — token <code>exp</code> plus the profile's charge grace window — a bound distinct from settlement deferral, which governs only when a charge settles.</li>
@@ -2950,7 +2975,15 @@
       "unverifiable_reason": "'no_rule' | 'key_unavailable' | 'signature_not_retained' | null",
                                                    // NEW in v1.0.3 — non-null if and only if status = 'unverifiable'
       "witnessed": "boolean | null",               // NEW in v1.0.3 — true when witnessed keys (§4.3) were used
-      "key_discovery_path": "string"
+      "key_discovery_path": "string",
+      "claims": [                                  // NEW in v1.0.3 — see Envelope claims; null when the
+        {                                          //   envelope makes a single actor claim
+          "claim": "string — e.g. 'payer_authorization', 'facilitator_identity'",
+          "status": "'verified' | 'failed' | 'unverifiable'",
+          "unverifiable_reason": "'no_rule' | 'key_unavailable' | 'signature_not_retained' | null",
+          "source": "string | null — where an unverified claim came from"
+        }
+      ] | null
     }
   ],
   "cart_payment_binding_verified": boolean,        // NEW in v1.0.2 — §3.9.11 rule 4
@@ -2968,6 +3001,8 @@
         <p>A verifier MUST NOT report an <code>unverifiable</code> envelope as <code>verified</code> or as <code>failed</code>. <code>verified</code> is <code>true</code> if and only if <code>status</code> is <code>verified</code>. A verifier MUST emit one entry for every non-null sub-wrapper present in the Delegation artifact, including envelopes it could not check; omitting an entry is not a conformant way to report <code>unverifiable</code>.</p>
 
         <p><strong>Key resolution order (NEW in v1.0.3).</strong> For each envelope, a verifier resolves keys through the envelope's canonical key-discovery path (&sect;3.9.11 rule 1) and, when that yields no usable key, from witnessed key material (&sect;4.3). It reports <code>key_unavailable</code> only when neither source yields a key. When the failure may be transient (for example, the key-discovery endpoint is unreachable), the verifier SHOULD retry before reporting <code>key_unavailable</code>.</p>
+
+        <p><strong>Envelope claims (NEW in v1.0.3).</strong> Where one envelope carries more than one actor claim, the verifier MUST report each claim separately in <code>claims</code>, so that one successful check never satisfies more than one claim. The entry's <code>status</code> is that of the claim its signature rule checks. For x402 (&sect;3.9.10) the claims are <code>payer_authorization</code>, checked by &sect;3.9.11 rule 7, and <code>facilitator_identity</code>, which v1.0.x does not verify and which is therefore reported as <code>unverifiable</code> / <code>no_rule</code> with <code>source</code> set from <code>facilitator_identity_source</code>.</p>
 
         <p><strong>Witnessed keys (NEW in v1.0.3).</strong> When an envelope's signatures were verified against witnessed key material (&sect;4.3) instead of keys resolved live, the verifier MUST set <code>witnessed</code> to <code>true</code> on that envelope's entry.</p>
 
@@ -3978,6 +4013,7 @@ Completed: 2026-06-21T14:08:19Z
                 <td>&mdash;</td>
                 <td>
                   <p><strong>Verification result (#15; third state per #60 and #58):</strong> &sect;5 verification result adds <code>verified_at</code>, <code>verification_mode</code> (<code>full | cached</code>), and per-envelope <code>status</code> (<code>verified | failed | unverifiable</code>), <code>unverifiable_reason</code> (<code>no_rule | key_unavailable | signature_not_retained</code>) and <code>witnessed</code>, all nullable and additive. Verifiers emit an entry for every present sub-wrapper, resolve keys live and then from witnessed material, and never report an <code>unverifiable</code> envelope as verified or failed; &sect;3.9.12 tier criteria count only <code>verified</code> envelopes. &sect;6.1 <code>verification</code> echoes <code>verifiedAt</code> and <code>verificationMode</code>. &sect;6.2 cached mode and the &sect;4.3 / &sect;3.9.11 / &sect;5 witnessed-key requirements now name these fields.</p>
+                  <p><strong>x402 payer and facilitator (#68, #60, #58):</strong> &sect;2.6 and &sect;3.9.11 rules 1 and 7 identify the EIP-712-recovered signer as the <code>payer</code> (payer authorization), not the facilitator. &sect;3.9.10 adds <code>facilitator_identity_source</code>, <code>transaction_submitter</code> and <code>capture_authorizer</code> with stated signal classes, forbids inferring one rail role from another, recommends CAIP-2 for <code>network</code>, and adds a legacy EVM network alias table. Rule 7 is declared the complete x402 rule for v1.0.x; other schemes and networks report <code>unverifiable</code> / <code>no_rule</code>. &sect;5 envelope entries add <code>claims</code> so payer authorization and facilitator identity are reported separately. &sect;2.1 post-seal sentence aligned with &sect;2.5.</p>
                 </td>
               </tr>
               <tr>

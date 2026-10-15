@@ -85,7 +85,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I39](#i39) | Issue #39 | @ankitshah009 | §3.4 / §3.9 / §3.9.11 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I40](#i40) | Issue #40 | @ankitshah009 | §5 / §6 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I46](#i46) | Issue #46 | @jyothi-acomm-ai | §3.9.6 / §3.9.11 | accept | v1.0.3-final | landed | not recorded | ✱ |
-| [I47](#i47) | Issue #47 | @jyothi-acomm-ai | §3.9.13 / §3.9.11 / §3.9.20 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
+| [I47](#i47) | Issue #47 | @jyothi-acomm-ai | §3.9.13 / §3.9.11 / §3.9.20 | accept-with-modification | v1.0.3-final | landed | not recorded | ✱ |
 | [I56](#i56) | Issue #56 | @jyothi-acomm-ai | §3.9.13 / §2.8 / §8.3 | accept-with-modification | v1.0.3-final | landed | not recorded | ✱ |
 | [D14-a](#d14-a) | Discussion #14 | @shunhe-wang | §6 / §3.6 / §3.9.10 | defer (v1.0.4) | v1.0.4 | n/a | accepted | |
 | [D14-b](#d14-b) | Discussion #14 | @shunhe-wang | §3.9 / §9.3 / §9.4 | decline (rationale) | — | n/a | accepted | |

@@ -84,7 +84,8 @@ Annotations are never withdrawn by deletion. A retracted claim is itself annotat
     "actor_id":             "string — MUST match an actor_id already in the chain (required)",
     "verification_method":  "'party_signature' | 'exporter_relayed' | 'none' (required)",
     "authentication": {                        // REQUIRED when exporter_relayed; otherwise absent
-      "method":           "string — how the recorder authenticated the submitting actor (required)",
+      "method":           "string — how the recorder authenticated the submitting actor (required);
+                           free text, RECOMMENDED: authenticated_session | signed_request | out_of_band",
       "authenticated_at": "string — ISO 8601 UTC, when it did so (required)",
       "evidence_ref":     "string — 'sha256:...' digest of the recorder's authentication record (required)"
     }
@@ -153,7 +154,9 @@ Normative rules:
    submitting actor, when it did so, and the digest of the recorder's own authentication
    record (`evidence_ref`), so that a reader can ask the recorder for that record.
    `authentication` appears only with `exporter_relayed`. It records the basis and does not
-   raise the class: relayed claims remain Asserted (rules 1 and 3).
+   raise the class: relayed claims remain Asserted (rules 1 and 3). `method` is free text
+   by design. A consumer MUST NOT read the value as a measure of how strong the
+   authentication was.
 
 Rule 2 is the upgrade path. Party-held annotator keys are a cross-cutting problem — key
 registration, rotation and distribution for every actor who might ever annotate — and this
@@ -240,8 +243,10 @@ disputed party rewrite the record.
 
 ## Chain-level indicator
 
-An export (§6.1) SHOULD carry `annotation_summary`: the number of annotation artifacts in
-the chain, by disposition.
+An export (§6.1) MUST carry `annotation_summary`: the number of annotation artifacts in
+the chain, by disposition. When the chain has no annotations, every count is zero. The
+summary is always present, so a reader can tell "no annotations" from "an exporter that does
+not produce the summary".
 
 ```jsonc
 "annotation_summary": { "disputed": 0, "corrected": 1, "contextualized": 0, "withdrawn": 0 }
@@ -257,13 +262,12 @@ opening every artifact, that the record contains responses or corrections.
 
 ## Open items
 
-- Whether `annotation_summary` should be a MUST on export. SHOULD in this draft; the count
-  is neutral either way.
-- The vocabulary of `annotator.authentication.method`. Free text in this draft, as for
-  `basis`; a registry is deferred.
+- A registry for `annotator.authentication.method`. Free text with recommended values in
+  this draft, as for `basis`. Revisit once more than one implementation shows what is used.
 - Whether `basis` should be constrained to an enum for machine consumption. Leaning no for
   v1.1.0; free text is honest about what this field is.
-- Party-held annotator keys, per rule 2 above. Out of scope here; tracked as its own item.
+- Party-held annotator keys, per rule 2 above. Out of scope here and deferred. It is not yet
+  tracked as a separate issue.
 
 ## Files
 

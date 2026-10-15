@@ -111,9 +111,9 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I18](#i18) | Issue #18 | @jyothi-acomm-ai | §6.5 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
 | [I20](#i20) | Issue #20 | @HemmaBo-se | §3.7 / §3.5 / §3.10 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I21](#i21) | Issue #21 | @HemmaBo-se | §3.9.11 / §2.8 | accept-with-modification | v1.0.3-final | landed | accepted | |
-| [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
+| [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | landed | not recorded | ✱ |
 | [I24](#i24) | Issue #24 | @johnhenrypower | §3.9.15 | accept | v1.0.3-final | landed | not recorded | ✱ |
-| [I25](#i25) | Issue #25 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
+| [I25](#i25) | Issue #25 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | landed | not recorded | ✱ |
 | [I42](#i42) | Issue #42 | @rabet | §3.9.N / §2.8 / §3.9.11 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
 | [I43](#i43) | Issue #43 | @rabet | §2.8 / §3.7 / §6.1 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
 | [I44](#i44) | Issue #44 | @Marlonm0987 | §9.4 | decline in part / defer (v1.0.4) | v1.0.3-final | not started | not recorded | |

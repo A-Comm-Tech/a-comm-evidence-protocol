@@ -114,7 +114,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
 | [I24](#i24) | Issue #24 | @johnhenrypower | §3.9.15 | accept | v1.0.3-final | landed | not recorded | ✱ |
 | [I25](#i25) | Issue #25 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
-| [I42](#i42) | Issue #42 | @rabet | §3.9.N / §2.8 / §3.9.11 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
+| [I42](#i42) | Issue #42 | @rabet | §3.9.N / §2.8 / §3.9.11 | accept-with-modification | v1.0.3-final / v1.0.4 | landed | not recorded | |
 | [I43](#i43) | Issue #43 | @rabet | §2.8 / §3.7 / §6.1 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
 | [I44](#i44) | Issue #44 | @Marlonm0987 | §9.4 | decline in part / defer (v1.0.4) | v1.0.3-final | not started | not recorded | |
 | [I49](#i49) | Issue #49 | @Trusteedxyz | §8.6 / §3.4 | accept | v1.0.3-final | not started | not recorded | |

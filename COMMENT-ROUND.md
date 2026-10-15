@@ -70,7 +70,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 
 | Ref | Source | Author | Section | Disposition | Target | Edit | Response | COI |
 |---|---|---|---|---|---|---|---|---|
-| [D4-a](#d4-a) | Discussion #4 | @Avouro | §3.9 (proposed §8.2.1) | accept-with-modification | v1.0.3-final | not started | not recorded | |
+| [D4-a](#d4-a) | Discussion #4 | @Avouro | §3.9 (proposed §8.2.1) | accept-with-modification | v1.0.3-final | landed | not recorded | |
 | [D4-b](#d4-b) | Discussion #4 | @Avouro | §3.6 / §9.3 | decline (rationale) | — | n/a | not recorded | |
 | [I26](#i26) | Issue #26 | @johnhenrypower | §3.9.2 / §2.6 / §3.6 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
 | [I30](#i30) | Issue #30 | @ankitshah009 | Cross-cutting | accept | v1.0.3-final | n/a | not recorded | |

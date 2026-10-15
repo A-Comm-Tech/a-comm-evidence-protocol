@@ -2816,7 +2816,12 @@
   "binding": {
     "mode":      "'closed' | 'open' (required)",
     "chain_id":  "string — &sect;2.7 chain_id (required)",
-    "cart_hash": "string | null — &sect;3.5 cart current_hash (required when mode = 'closed')"
+    "cart_hash": "string | null — &sect;3.5 cart current_hash (required when mode = 'closed')",
+    "surface_binding": {                        // NEW in v1.0.3 — optional; see Surface binding
+      "origin":         "string — RFC 6454 origin of the executed surface",
+      "content_digest": "string — canonical fingerprint of the verified surface or flow state",
+      "method":         "string — how content_digest was computed"
+    } | null
   },
   "issued_at":  "string — ISO 8601 UTC (required)",
   "expires_at": "string — ISO 8601 UTC (required)",
@@ -2828,7 +2833,8 @@
   }
 }</pre>
           <p><strong>Binding modes.</strong> <code>closed</code> binds the approval to the exact cart. <code>open</code> records standing bounds approved before the cart was composed. This mirrors the AP2 closed and open mandate distinction that &sect;3.9.12 already ranks.</p>
-          <p><strong>Anchor.</strong> A chain MUST NOT carry this wrapper without an <code>anchor</code>. <code>anchor.time</code> is the time the anchor attests; for an anchor that batches entries, it is the checkpoint time, and the inclusion proof MAY be delivered later, provided that time precedes <code>authorized_at</code>.</p>
+                    <p><strong>Surface binding (NEW in v1.0.3).</strong> <code>cart_hash</code> pins an attestation to the cart's contents, not to the state of the surface the agent executed against. Live booking and commerce surfaces change, so a validly signed and anchored attestation could be presented for a surface materially different from the one verified at issuance. <code>surface_binding</code> records that surface: its <code>origin</code>, a <code>content_digest</code> of its verified state, and the <code>method</code> by which the digest was computed, so that a recipient can later re-derive it. It is OPTIONAL and is populated when <code>issuer_relationship</code> is <code>independent</code> or <code>psp_operated</code>, the relationships whose issuer claims to have observed the surface. It alters neither <code>mode</code>, the anchor requirement, nor the expiry check. This version defines no re-derivation rule and no registry of <code>method</code> values.</p>
+<p><strong>Anchor.</strong> A chain MUST NOT carry this wrapper without an <code>anchor</code>. <code>anchor.time</code> is the time the anchor attests; for an anchor that batches entries, it is the checkpoint time, and the inclusion proof MAY be delivered later, provided that time precedes <code>authorized_at</code>.</p>
           <p><strong>Expiry and allowlist.</strong> This specification sets no maximum lifetime for <code>expires_at</code>; lifetime is deployment policy. <code>merchant_allowlist</code> entries are exact &sect;2.7 <code>merchant_id</code> values, and a seller-of-record distinction is not defined in v1.0.3.</p>
           <p><strong>Status.</strong> OPTIONAL. A chain without it remains conformant. Verification: &sect;3.9.11 (Pre-execution attestation); classification: &sect;2.8.</p>
         </section>
@@ -4123,6 +4129,7 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>Identity-transport profiles (#69):</strong> &sect;3.9.16 <code>kya_identity</code> gains a nullable <code>identity_profile</code> discriminator (<code>skyfire_kya</code> when absent), so the slot holds multiple issuer profiles on the construction &sect;3.9.N uses; the existing field set is the <code>skyfire_kya</code> profile and chains written before v1.0.3-final stay valid. &sect;3.9.11 rule 9 is profile-dispatched, and an undefined profile reports <code>unverifiable</code> / <code>no_rule</code>.</p>
                   <p><strong>Visa wrapper field corrections (#47):</strong> &sect;3.9.13 adds nullable <code>kid</code> / <code>alg</code> / <code>signature</code> to <code>consumer_recognition</code>, <code>payment_container</code> and <code>browsing_iou</code>; <code>payment_container.nonce</code>; <code>credential_hash</code> in <code>container_type</code>; <code>browsing_iou.uri</code> and <code>payment_service</code>; <code>card_metadata.last_four</code> and <code>short_description</code>; and an optional <code>id_token_claims</code> with <code>sub</code> restricted to the raw plane and a chain-plane digest. &sect;3.9.11 adds rule 13 (nonce equality, signature base, key selection by <code>kid</code>). &sect;3.9.13 remains PROVISIONAL.</p>
                   <p><strong>Settlement-neutral S-tier route (#59):</strong> the &sect;3.9.12 S-tier route through x402 requires a payment authorization verified under &sect;3.9.11 in place of a finalized on-chain <code>transaction_hash</code>, so settlement timing no longer determines the tier. Settlement posture as a separate export-time result, and tier recomputation across the full chain, remain targeted at v1.1.0.</p>
+                  <p><strong>Surface binding (#42):</strong> &sect;3.9.21 <code>binding</code> gains an optional nullable <code>surface_binding</code> (<code>origin</code>, <code>content_digest</code>, <code>method</code>), populated when the issuer is independent or PSP-operated. The &sect;3.9.11 re-derivation rule and the <code>method</code> registry are deferred to v1.0.4.</p>
                   <p><strong>Pre-execution attestation (#27, D4-a):</strong> new optional &sect;3.9.21 <code>pre_execution_attestation</code> sub-wrapper with required <code>issuer</code>, <code>issuer_relationship</code>, external <code>anchor</code>, transaction <code>binding</code> and <code>expires_at</code>; a &sect;3.9.11 rule set (signature, anchor precedence, chain and cart binding, expiry, bounds conformance); &sect;2.8 classification; &sect;5 <code>pre_execution_attestation_checks</code>. Normative settlement gating is declined; AEP witnesses enforcement and never gates it. No tier uplift is defined.</p>
                 </td>
               </tr>

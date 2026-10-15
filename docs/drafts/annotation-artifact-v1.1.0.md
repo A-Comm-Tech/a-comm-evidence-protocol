@@ -82,12 +82,17 @@ Annotations are never withdrawn by deletion. A retracted claim is itself annotat
   "annotator": {
     "actor_type":           "string — §4.1 actor_type enum (required)",
     "actor_id":             "string — MUST match an actor_id already in the chain (required)",
-    "verification_method":  "'party_signature' | 'exporter_relayed' | 'none' (required)"
+    "verification_method":  "'party_signature' | 'exporter_relayed' | 'none' (required)",
+    "authentication": {                        // REQUIRED when exporter_relayed; otherwise absent
+      "method":           "string — how the recorder authenticated the submitting actor (required)",
+      "authenticated_at": "string — ISO 8601 UTC, when it did so (required)",
+      "evidence_ref":     "string — 'sha256:...' digest of the recorder's authentication record (required)"
+    }
   },
   "annotator_signature": {                     // OPTIONAL — see Trust model
     "alg":       "'ed25519'",
     "key_id":    "string",
-    "signature": "string — base64, over the JCS-canonical claims block"
+    "signature": "string — base64, over the signing object in Trust model rule 5"
   },
 
   // Contemporaneity — both required, never conflated
@@ -115,6 +120,14 @@ A wrapper signature (§4.3) establishes **custody**: this implementation receive
 at this time and has not altered it since. It does not establish that the named actor made
 the claim. Those are different assertions and the schema keeps them apart.
 
+An annotation sits at one of three levels, and a reader can tell which from the record:
+
+| Level | `verification_method` | What is established | Claim class | Export label |
+|---|---|---|---|---|
+| Unsigned assertion | `none` | The recorder received a claim attributed to the named actor | Asserted | "not verified by the named actor" |
+| Relayed after authentication | `exporter_relayed`, with `annotator.authentication` | The recorder says it authenticated the actor, and records how | Asserted | The same label, plus the authentication method and time |
+| Signed by the actor | `party_signature` | The actor's key signed the annotation | MAY be Attested | None once the signature verifies |
+
 Normative rules:
 
 1. Where `annotator_signature` is absent, or present and failing verification, every entry
@@ -128,6 +141,19 @@ Normative rules:
    claim as attested.
 4. An annotation MUST NOT raise the signal class of any field in the subject artifact.
    Evidence gets stronger by being signed, never by being contradicted.
+5. `annotator_signature` is computed over the JCS-canonical object
+   `{context, annotation_id, subject_ref, disposition, claims, annotator: {actor_type,
+   actor_id}, asserted_at}`, where `context` is the fixed string `aep-annotation-v1.1.0`.
+   This binds the signature to the specific subject, the actor, the disposition and the
+   time, so a valid signature cannot be reused against a different artifact or with
+   materially different metadata. A signature that verifies only over a narrower object,
+   such as the claims alone, MUST be treated as failing verification (rule 1).
+6. `verification_method: "exporter_relayed"` MUST be accompanied by
+   `annotator.authentication`: the method by which the recorder authenticated the
+   submitting actor, when it did so, and the digest of the recorder's own authentication
+   record (`evidence_ref`), so that a reader can ask the recorder for that record.
+   `authentication` appears only with `exporter_relayed`. It records the basis and does not
+   raise the class: relayed claims remain Asserted (rules 1 and 3).
 
 Rule 2 is the upgrade path. Party-held annotator keys are a cross-cutting problem — key
 registration, rotation and distribution for every actor who might ever annotate — and this
@@ -212,10 +238,29 @@ carrier scan and an Asserted objection to it, and weighs them accordingly.
 That is the intended outcome. The annotation makes the dispute legible without letting the
 disputed party rewrite the record.
 
+## Chain-level indicator
+
+An export (§6.1) SHOULD carry `annotation_summary`: the number of annotation artifacts in
+the chain, by disposition.
+
+```jsonc
+"annotation_summary": { "disputed": 0, "corrected": 1, "contextualized": 0, "withdrawn": 0 }
+```
+
+Counts are by disposition only. This specification does not define an annotation as
+"resolved" or "outstanding", because resolving a claim is the adjudicator's act and
+recording it would originate a finding. A withdrawal is counted under `withdrawn` and the
+annotation it withdraws stays under its own disposition. The summary MUST NOT be used to
+compute an evidence tier (§3.9.12) or to alter `verification.valid`, consistent with the
+constraint that annotations are never weighed. Its purpose is that a reader learns, without
+opening every artifact, that the record contains responses or corrections.
+
 ## Open items
 
-- Whether a chain-level aggregate (§3.9.12) should expose the presence of unresolved
-  annotations without weighing them. Leaning yes, as a count rather than a score.
+- Whether `annotation_summary` should be a MUST on export. SHOULD in this draft; the count
+  is neutral either way.
+- The vocabulary of `annotator.authentication.method`. Free text in this draft, as for
+  `basis`; a registry is deferred.
 - Whether `basis` should be constrained to an enum for machine consumption. Leaning no for
   v1.1.0; free text is honest about what this field is.
 - Party-held annotator keys, per rule 2 above. Out of scope here; tracked as its own item.
@@ -232,4 +277,6 @@ The example validates against the schema. Four negative cases are also checked a
 a relayed annotation carrying `attested` claims, `verification_method: "party_signature"`
 without a signature, a bare (unprefixed) subject hash, and — as the positive control for
 rule 2 — the same annotation with a verifying `annotator_signature` and `attested` claims
-is accepted, which is the upgrade path staying open.
+is accepted, which is the upgrade path staying open. Two further negative cases cover the
+authentication record: a relayed annotation without `annotator.authentication`, and
+`annotator.authentication` present under `party_signature` or `none`.

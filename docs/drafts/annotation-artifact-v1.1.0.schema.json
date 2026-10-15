@@ -44,7 +44,17 @@
       "properties": {
         "actor_type": { "$ref": "#/$defs/actorType" },
         "actor_id": { "type": "string", "minLength": 1 },
-        "verification_method": { "enum": ["party_signature","exporter_relayed","none"] }
+        "verification_method": { "enum": ["party_signature","exporter_relayed","none"] },
+        "authentication": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method","authenticated_at","evidence_ref"],
+          "properties": {
+            "method": { "type": "string", "minLength": 1 },
+            "authenticated_at": { "type": "string", "format": "date-time" },
+            "evidence_ref": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          }
+        }
       }
     },
     "annotator_signature": {
@@ -54,7 +64,7 @@
       "properties": {
         "alg": { "const": "ed25519" },
         "key_id": { "type": "string", "minLength": 1 },
-        "signature": { "type": "string", "contentEncoding": "base64" }
+        "signature": { "type": "string", "contentEncoding": "base64", "description": "base64, over the JCS-canonical signing object defined in the Trust model (rule 5), not over claims alone" }
       }
     },
     "asserted_at": { "type": "string", "format": "date-time" },
@@ -88,6 +98,12 @@
       "$comment": "verification_method party_signature requires the signature to be present.",
       "if": { "properties": { "annotator": { "properties": { "verification_method": { "const": "party_signature" } } }, "$comment": {} }, "required": ["annotator"] },
       "then": { "required": ["annotator_signature"] }
+    },
+    {
+      "$comment": "Relayed annotations carry the recorder's authentication record, and it appears only with exporter_relayed.",
+      "if": { "required": ["annotator"], "properties": { "annotator": { "properties": { "verification_method": { "const": "exporter_relayed" } } } } },
+      "then": { "properties": { "annotator": { "required": ["authentication"] } } },
+      "else": { "properties": { "annotator": { "not": { "required": ["authentication"] } } } }
     }
   ]
 }

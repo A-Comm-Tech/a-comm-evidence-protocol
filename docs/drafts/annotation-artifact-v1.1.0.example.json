@@ -44,7 +44,12 @@
   "annotator": {
     "actor_type": "merchant",
     "actor_id": "acct_vector_merchant",
-    "verification_method": "exporter_relayed"
+    "verification_method": "exporter_relayed",
+    "authentication": {
+      "method": "authenticated_session",
+      "authenticated_at": "2026-09-03T14:01:30Z",
+      "evidence_ref": "sha256:1f1424d6b591121e9b8796f0f0d05b188e9abb71004808be6f1813a65254ff42"
+    }
   },
   "asserted_at": "2026-09-03T14:02:00Z",
   "captured_at": "2026-09-03T20:18:04Z",

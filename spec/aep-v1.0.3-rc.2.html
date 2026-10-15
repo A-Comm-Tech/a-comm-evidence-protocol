@@ -1508,6 +1508,8 @@
 
           <p><strong>Strengthening signals is an implementation goal.</strong> A chain with many Attested and Deterministic fields is evidentiarily stronger than one with many Asserted fields. &sect;3.9.12 defines an evidence strength tier (S/A/B/C/D) derived from the Delegation artifact's signal composition; future AEP revisions MAY extend the tier calculation across the full chain.</p>
 
+          <p><strong>Pre-execution attestation (NEW in v1.0.3).</strong> The class of a &sect;3.9.21 attestation follows who issued it and who anchored it. <code>issuer_relationship</code> <code>self_operated</code> with only a self-controlled anchor is <strong>Asserted</strong>. A verified independent anchor upgrades the temporal-precedence claim to <strong>Attested</strong> even when the issuer is self-operated, because the anchor is the independent party. An <code>independent</code> or <code>psp_operated</code> issuer with a verified anchor is Attested. Any other <code>issuer_relationship</code> is classed as <code>self_operated</code>.</p>
+
           <p>The evidence-strength tier defined in &sect;3.9.12 is a chain-level aggregate of per-field signal classes. A chain whose Delegation artifact carries many Attested fields (cryptographically signed) tiers higher than one whose Delegation artifact relies on Asserted fields (unsigned merchant claims). Tier computation is deterministic and recomputable from any archived chain.</p>
         </section>
       </section>
@@ -2149,6 +2151,7 @@
 
       // Cross-wrapper integrity (NEW in v1.0.3)
       "request_binding":      { ... } | null,          // §3.9.19
+      "pre_execution_attestation": { ... } | null,     // §3.9.21 (NEW in v1.0.3)
 
       "raw_protocol_payload": "string"                 // base64; opaque fallback
     }
@@ -2430,6 +2433,7 @@
             <li><strong>Web Bot Auth (NEW in v1.0.3).</strong> When <code>web_bot_auth</code> is present, verify the RFC 9421 signature against the key discovered via <code>wba_signature_agent</code> / directory; assert <code>wba_tag</code> is present and consistent with the framework identified by <code>wba_signature_agent</code> (&sect;3.9.18), the <code>@authority</code> covered component matches the merchant domain, and <code>wba_expires &minus; wba_created</code> is within policy.</li>
             <li><strong>Request binding (when present; NEW in v1.0.3).</strong> Recompute and match <code>request_body_sha256</code> and <code>target_uri</code> against the request the <code>bound_envelope</code> rode on. A mismatch MUST be surfaced as a <code>request_binding_mismatch</code> warning (non-fatal unless the verifier's policy elevates it).</li>
             <li><strong>Visa Intelligent Commerce objects (NEW in v1.0.3).</strong> When <code>vic_payment_payload</code> is present, for each of <code>consumer_recognition</code>, <code>payment_container</code> and <code>payment_container.browsing_iou</code> that carries a <code>signature</code>: its <code>nonce</code>, where it has one, MUST equal <code>tap_nonce</code> of the message signature (&sect;3.9.6); the signature base is all of the object's fields in the order received, excluding <code>signature</code>; and the key is selected by <code>kid</code> through the TAP key-discovery path (rule 1) or, failing that, from witnessed key material (&sect;4.3).</li>
+            <li><strong>Pre-execution attestation (NEW in v1.0.3).</strong> When <code>pre_execution_attestation</code> is present: (a) <code>signature</code> MUST verify against the issuer's published key via the issuer's canonical key-discovery path; (b) <code>anchor.proof</code> MUST verify independently, and <code>anchor.time</code> MUST precede the &sect;3.6 <code>authorized_at</code> (verifiers SHOULD apply a documented clock-skew tolerance and MUST record the delta in the verification result); (c) <code>binding.chain_id</code> MUST equal the chain's <code>chain_id</code>, and in <code>closed</code> mode <code>binding.cart_hash</code> MUST equal the &sect;3.5 cart artifact's <code>current_hash</code>, so that a token cannot be replayed across chains; (d) <code>authorized_at</code> MUST NOT exceed <code>expires_at</code>; (e) bounds conformance (the amount within <code>max_amount</code>, the merchant in <code>merchant_allowlist</code>) is computed and recorded as a deterministic boolean in the verification result. Incremental authorizations and partial captures can legitimately move the final settled amount after approval, so the boolean attests conformance at authorization time only.</li>
           </ol>
 
           <h4 id="s3-9-12">3.9.12 Evidence Strength Ranking (Verification Classes; Informative for Adjudication)</h4>
@@ -2476,7 +2480,7 @@
             <div class="callout-icon">&#9432;</div>
             <div class="callout-body">
               <strong>Agent-attributable is NOT user-authorized</strong>
-              <code>agent_identity</code> (TAP) alone is <strong style="display:inline;">agent-attributable but NOT user-authorized</strong>. TAP proves <em>which</em> agent operated on the merchant domain; it does NOT prove the consumer delegated purchase authority to that agent. The same caveat applies to <code>kya_identity</code> and <code>web_bot_auth</code>: they prove which agent acted; they do not prove the consumer delegated purchase authority. Consumer authorization comes from <code>consumer_authorization</code> (AP2) or <code>mastercard_verifiable_intent</code>; <code>vic_payment_payload</code> evidences consumer recognition/identity, not purchase delegation, and does not satisfy this requirement. To elevate above B-tier, a commerce-delegation wrapper carrying user authorization MUST be present. A <code>kya_payment</code> spend authorization is a constrained mandate, not a per-transaction consumer signature, and is tier-distinguished from an AP2 closed mandate. A present-and-matching <code>request_binding</code> raises confidence within a tier but does not by itself change the tier.
+              <code>agent_identity</code> (TAP) alone is <strong style="display:inline;">agent-attributable but NOT user-authorized</strong>. TAP proves <em>which</em> agent operated on the merchant domain; it does NOT prove the consumer delegated purchase authority to that agent. The same caveat applies to <code>kya_identity</code> and <code>web_bot_auth</code>: they prove which agent acted; they do not prove the consumer delegated purchase authority. Consumer authorization comes from <code>consumer_authorization</code> (AP2) or <code>mastercard_verifiable_intent</code>; <code>vic_payment_payload</code> evidences consumer recognition/identity, not purchase delegation, and does not satisfy this requirement. To elevate above B-tier, a commerce-delegation wrapper carrying user authorization MUST be present. A <code>kya_payment</code> spend authorization is a constrained mandate, not a per-transaction consumer signature, and is tier-distinguished from an AP2 closed mandate. A present-and-matching <code>request_binding</code> raises confidence within a tier but does not by itself change the tier. The same holds for a verified &sect;3.9.21 <code>pre_execution_attestation</code>; this version defines no tier uplift for it.
             </div>
           </div>
 
@@ -2795,6 +2799,38 @@
             <li>The &sect;8.3 ingestion gate MUST decode envelope-shaped fields and scan the decoded claims before the artifact is created.</li>
           </ol>
           <p>Envelopes that carry no payment credentials by design (e.g., AP2 mandates) SHOULD still be scanned at ingestion rather than assumed clean.</p>
+
+          <h5 id="s3-9-21">3.9.21 <code>pre_execution_attestation</code> &mdash; Pre-execution attestation (optional) <span class="badge badge-blue" style="font-size:11px;margin-left:6px;">NEW in v1.0.3</span></h5>
+          <p>Records independent evidence of <strong>temporal precedence</strong>: that the authorization material for a transaction existed before the transaction executed. &sect;4.3's external anchoring applies to the sealed chain after the fact; this wrapper anchors the authorization material before execution. It records an attestation and does not gate settlement (&sect;9.2, &sect;9.3).</p>
+<pre>{
+  "token_id":            "string — UUID (required)",
+  "agent_did":           "string (required)",
+  "issuer":              "string — key-discovery URL or DID (required)",
+  "issuer_relationship": "'independent' | 'merchant_operated' | 'psp_operated' |
+                          'agent_platform_operated' | 'self_operated' (required)",
+  "policy_bounds": {
+    "max_amount":         "integer, minor units (required)",
+    "currency":           "string — ISO 4217 (required)",
+    "merchant_allowlist": ["string"] | null    // exact &sect;2.7 merchant_id values, not domains
+  },
+  "binding": {
+    "mode":      "'closed' | 'open' (required)",
+    "chain_id":  "string — &sect;2.7 chain_id (required)",
+    "cart_hash": "string | null — &sect;3.5 cart current_hash (required when mode = 'closed')"
+  },
+  "issued_at":  "string — ISO 8601 UTC (required)",
+  "expires_at": "string — ISO 8601 UTC (required)",
+  "signature":  "string — issuer signature over the canonicalized token (required)",
+  "anchor": {                                   // required: no anchor, no wrapper
+    "type":  "'rfc3161' | 'transparency_log' | 'counter_signature'",
+    "proof": "string — TSA token | inclusion proof | counter-signature",
+    "time":  "string — ISO 8601 UTC, the time attested by the anchor"
+  }
+}</pre>
+          <p><strong>Binding modes.</strong> <code>closed</code> binds the approval to the exact cart. <code>open</code> records standing bounds approved before the cart was composed. This mirrors the AP2 closed and open mandate distinction that &sect;3.9.12 already ranks.</p>
+          <p><strong>Anchor.</strong> A chain MUST NOT carry this wrapper without an <code>anchor</code>. <code>anchor.time</code> is the time the anchor attests; for an anchor that batches entries, it is the checkpoint time, and the inclusion proof MAY be delivered later, provided that time precedes <code>authorized_at</code>.</p>
+          <p><strong>Expiry and allowlist.</strong> This specification sets no maximum lifetime for <code>expires_at</code>; lifetime is deployment policy. <code>merchant_allowlist</code> entries are exact &sect;2.7 <code>merchant_id</code> values, and a seller-of-record distinction is not defined in v1.0.3.</p>
+          <p><strong>Status.</strong> OPTIONAL. A chain without it remains conformant. Verification: &sect;3.9.11 (Pre-execution attestation); classification: &sect;2.8.</p>
         </section>
 
         <section id="s3-refund">
@@ -3024,7 +3060,8 @@
   "protocol_envelopes_verified": [                 // NEW in v1.0.2
     {
       "envelope": "'TAP' | 'AP2' | 'MASTERCARD_VI' | 'ACP' | 'UCP' | 'MCP' |
-                   'x402' | 'A2A' | 'SKYFIRE_KYA' | 'WEB_BOT_AUTH'",
+                   'x402' | 'A2A' | 'SKYFIRE_KYA' | 'WEB_BOT_AUTH' |
+                   'PRE_EXECUTION_ATTESTATION'",
       "verified": boolean,                         // true if and only if status = 'verified'
       "status": "'verified' | 'failed' | 'unverifiable' | null",  // NEW in v1.0.3 — see Envelope status
       "unverifiable_reason": "'no_rule' | 'key_unavailable' | 'signature_not_retained' | null",
@@ -3042,6 +3079,10 @@
     }
   ],
   "cart_payment_binding_verified": boolean,        // NEW in v1.0.2 — §3.9.11 rule 4
+  "pre_execution_attestation_checks": {            // NEW in v1.0.3 — null when no attestation is present
+    "anchor_skew_seconds": "integer | null — authorized_at minus anchor.time",
+    "bounds_conformant":   "boolean | null — at authorization time only (§3.9.21)"
+  } | null,
   "errors": ["string"]            // human-readable error messages if valid = false
 }</code></pre>
 
@@ -3060,6 +3101,8 @@
         <p><strong>Envelope claims (NEW in v1.0.3).</strong> Where one envelope carries more than one actor claim, the verifier MUST report each claim separately in <code>claims</code>, so that one successful check never satisfies more than one claim. The entry's <code>status</code> is that of the claim its signature rule checks. For x402 (&sect;3.9.10) the claims are <code>payer_authorization</code>, checked by &sect;3.9.11 rule 7, and <code>facilitator_identity</code>, which v1.0.x does not verify and which is therefore reported as <code>unverifiable</code> / <code>no_rule</code> with <code>source</code> set from <code>facilitator_identity_source</code>.</p>
 
         <p><strong>Witnessed keys (NEW in v1.0.3).</strong> When an envelope's signatures were verified against witnessed key material (&sect;4.3) instead of keys resolved live, the verifier MUST set <code>witnessed</code> to <code>true</code> on that envelope's entry.</p>
+
+        <p><strong>Pre-execution attestation checks (NEW in v1.0.3).</strong> When <code>pre_execution_attestation</code> is present, the verifier records the skew between <code>anchor.time</code> and <code>authorized_at</code> in <code>anchor_skew_seconds</code>, and the result of the bounds check in <code>bounds_conformant</code> (&sect;3.9.11). A <code>false</code> <code>bounds_conformant</code> does not by itself change the envelope's <code>status</code>.</p>
 
         <p><strong>Chain completeness counts.</strong> <code>chain_complete</code> is computed as <code>total_artifacts == expectedArtifactCount(transaction_type)</code> per the v1.0.2 8/7/6/5 counts (Appendix B). A chain MAY be <code>valid: true</code> and <code>chain_complete: false</code> simultaneously when fulfillment has not yet arrived. Post-seal <code>refund</code> artifacts (&sect;3.10) are verified like fulfillment artifacts and do not count toward <code>expectedArtifactCount</code>. Under the Minimal Merchant Profile (&sect;8.6), expected counts apply only to the Full profile.</p>
 
@@ -3860,6 +3903,7 @@ interface DelegationProtocolMetadata {
   tool_invocation: McpToolInvocation | null;
   vic_payment_payload: VicPaymentPayload | null;
   request_binding: RequestBinding | null;                 // NEW in v1.0.3
+  pre_execution_attestation: PreExecutionAttestation | null;  // NEW in v1.0.3
   raw_protocol_payload: string;
 }
 
@@ -3886,7 +3930,8 @@ interface MastercardVerifiableIntent { /* per §3.9.15 */ }
 interface KyaIdentity               { /* per §3.9.16 */ }
 interface KyaPayment                { /* per §3.9.17 */ }
 interface WebBotAuth                { /* per §3.9.18 */ }
-interface RequestBinding            { /* per §3.9.19 */ }</code></pre>
+interface RequestBinding            { /* per §3.9.19 */ }
+interface PreExecutionAttestation   { /* per §3.9.21 */ }</code></pre>
       </section>
 
       <hr class="divider" />
@@ -4078,6 +4123,7 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>Identity-transport profiles (#69):</strong> &sect;3.9.16 <code>kya_identity</code> gains a nullable <code>identity_profile</code> discriminator (<code>skyfire_kya</code> when absent), so the slot holds multiple issuer profiles on the construction &sect;3.9.N uses; the existing field set is the <code>skyfire_kya</code> profile and chains written before v1.0.3-final stay valid. &sect;3.9.11 rule 9 is profile-dispatched, and an undefined profile reports <code>unverifiable</code> / <code>no_rule</code>.</p>
                   <p><strong>Visa wrapper field corrections (#47):</strong> &sect;3.9.13 adds nullable <code>kid</code> / <code>alg</code> / <code>signature</code> to <code>consumer_recognition</code>, <code>payment_container</code> and <code>browsing_iou</code>; <code>payment_container.nonce</code>; <code>credential_hash</code> in <code>container_type</code>; <code>browsing_iou.uri</code> and <code>payment_service</code>; <code>card_metadata.last_four</code> and <code>short_description</code>; and an optional <code>id_token_claims</code> with <code>sub</code> restricted to the raw plane and a chain-plane digest. &sect;3.9.11 adds rule 13 (nonce equality, signature base, key selection by <code>kid</code>). &sect;3.9.13 remains PROVISIONAL.</p>
                   <p><strong>Settlement-neutral S-tier route (#59):</strong> the &sect;3.9.12 S-tier route through x402 requires a payment authorization verified under &sect;3.9.11 in place of a finalized on-chain <code>transaction_hash</code>, so settlement timing no longer determines the tier. Settlement posture as a separate export-time result, and tier recomputation across the full chain, remain targeted at v1.1.0.</p>
+                  <p><strong>Pre-execution attestation (#27, D4-a):</strong> new optional &sect;3.9.21 <code>pre_execution_attestation</code> sub-wrapper with required <code>issuer</code>, <code>issuer_relationship</code>, external <code>anchor</code>, transaction <code>binding</code> and <code>expires_at</code>; a &sect;3.9.11 rule set (signature, anchor precedence, chain and cart binding, expiry, bounds conformance); &sect;2.8 classification; &sect;5 <code>pre_execution_attestation_checks</code>. Normative settlement gating is declined; AEP witnesses enforcement and never gates it. No tier uplift is defined.</p>
                 </td>
               </tr>
               <tr>

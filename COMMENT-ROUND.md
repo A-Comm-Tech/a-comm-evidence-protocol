@@ -85,8 +85,8 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I39](#i39) | Issue #39 | @ankitshah009 | §3.4 / §3.9 / §3.9.11 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I40](#i40) | Issue #40 | @ankitshah009 | §5 / §6 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I46](#i46) | Issue #46 | @jyothi-acomm-ai | §3.9.6 / §3.9.11 | accept | v1.0.3-final | landed | not recorded | ✱ |
-| [I47](#i47) | Issue #47 | @jyothi-acomm-ai | §3.9.13 / §3.9.11 / §3.9.20 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
-| [I56](#i56) | Issue #56 | @jyothi-acomm-ai | §3.9.13 / §2.8 / §8.3 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
+| [I47](#i47) | Issue #47 | @jyothi-acomm-ai | §3.9.13 / §3.9.11 / §3.9.20 | accept-with-modification | v1.0.3-final | landed | not recorded | ✱ |
+| [I56](#i56) | Issue #56 | @jyothi-acomm-ai | §3.9.13 / §2.8 / §8.3 | accept-with-modification | v1.0.3-final | landed | not recorded | ✱ |
 | [D14-a](#d14-a) | Discussion #14 | @shunhe-wang | §6 / §3.6 / §3.9.10 | defer (v1.0.4) | v1.0.4 | n/a | accepted | |
 | [D14-b](#d14-b) | Discussion #14 | @shunhe-wang | §3.9 / §9.3 / §9.4 | decline (rationale) | — | n/a | accepted | |
 | [I3](#i3) | Issue #3 | @rrrodzilla | §2.7 / §4.1 / §4.3 | accept-with-modification | v1.0.3-final | not started | not recorded | |
@@ -110,10 +110,10 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I17](#i17) | Issue #17 | @jyothi-acomm-ai | §4.1 / §6.3 | accept | v1.0.3-final | not started | not recorded | ✱ |
 | [I18](#i18) | Issue #18 | @jyothi-acomm-ai | §6.5 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
 | [I20](#i20) | Issue #20 | @HemmaBo-se | §3.7 / §3.5 / §3.10 | accept-with-modification | v1.0.3-final | not started | not recorded | |
-| [I21](#i21) | Issue #21 | @HemmaBo-se | §3.9.11 / §2.8 | accept-with-modification | v1.0.3-final | not started | accepted | |
-| [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
+| [I21](#i21) | Issue #21 | @HemmaBo-se | §3.9.11 / §2.8 | accept-with-modification | v1.0.3-final | landed | accepted | |
+| [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | landed | not recorded | ✱ |
 | [I24](#i24) | Issue #24 | @johnhenrypower | §3.9.15 | accept | v1.0.3-final | landed | not recorded | ✱ |
-| [I25](#i25) | Issue #25 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | not started | not recorded | ✱ |
+| [I25](#i25) | Issue #25 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | landed | not recorded | ✱ |
 | [I42](#i42) | Issue #42 | @rabet | §3.9.N / §2.8 / §3.9.11 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
 | [I43](#i43) | Issue #43 | @rabet | §2.8 / §3.7 / §6.1 | accept-with-modification | v1.0.3-final / v1.0.4 | not started | not recorded | |
 | [I44](#i44) | Issue #44 | @Marlonm0987 | §9.4 | decline in part / defer (v1.0.4) | v1.0.3-final | not started | not recorded | |
@@ -124,7 +124,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I53](#i53) | Issue #53 | @Trusteedxyz | §3.4 / §3.6 | accept | v1.0.3-final | not started | not recorded | |
 | [I54](#i54) | Issue #54 | @Trusteedxyz | §3.4 | accept | v1.0.3-final | not started | not recorded | |
 | [I58](#i58) | Issue #58 | @shunhe-wang | §2.5 / §3.6 / §3.9.10 / §3.9.11 | defer (v1.0.4) | v1.0.4 / v1.0.3-final | not started | not recorded | |
-| [I59](#i59) | Issue #59 | @shunhe-wang | §3.9.12 / §5 / §6.1 | accept-with-modification | v1.0.3-final / v1.1.0 | not started | not recorded | |
+| [I59](#i59) | Issue #59 | @shunhe-wang | §3.9.12 / §5 / §6.1 | accept-with-modification | v1.0.3-final / v1.1.0 | landed | not recorded | |
 | [I60](#i60) | Issue #60 | @saishav7 | §3.9.11 / §3.9.10 | accept-with-modification | v1.0.3-final | landed | not recorded | |
 
 ## Detail

@@ -1504,6 +1504,8 @@
 
           <p><strong>Verification class is recipient-relative for HMAC-derived fields.</strong> HMAC-derived fields (<code>session_id_hash</code>, <code>consumer_ip_hash</code>, <code>query_hash</code>, address hashes) are Deterministic only for verifiers with access to the relevant &sect;2.7 salt; for any verifier without salt access they carry the Asserted class for that verifier.</p>
 
+          <p><strong>Merchant authenticity (NEW in v1.0.3).</strong> Whether a chain's merchant is the merchant it names is classed by the wrappers present, because only some wrappers resolve to a key the merchant controls. Of the key-discovery paths in &sect;3.9.11 rule 1, only UCP (<code>merchant_public_keys_url</code>) resolves to a merchant-controlled key; ACP uses a pre-shared HMAC, AP2 an inline <code>cnf.jwk</code>, and x402 the payer's signature. Merchant authenticity is therefore <strong>Asserted</strong> in any wrapper composition that carries no merchant-controlled key, and <strong>Attested</strong> only where a wrapper that does is present. The class MUST survive export (&sect;6), as above. Neither the &sect;4.3 server signature nor the &sect;2.7 recipient allowlist binds a chain to the merchant's domain, so neither makes merchant authenticity Attested. A passing verification result therefore does not by itself establish merchant authenticity.</p>
+
           <p><strong>Strengthening signals is an implementation goal.</strong> A chain with many Attested and Deterministic fields is evidentiarily stronger than one with many Asserted fields. &sect;3.9.12 defines an evidence strength tier (S/A/B/C/D) derived from the Delegation artifact's signal composition; future AEP revisions MAY extend the tier calculation across the full chain.</p>
 
           <p><strong>Pre-execution attestation (NEW in v1.0.3).</strong> The class of a &sect;3.9.21 attestation follows who issued it and who anchored it. <code>issuer_relationship</code> <code>self_operated</code> with only a self-controlled anchor is <strong>Asserted</strong>. A verified independent anchor upgrades the temporal-precedence claim to <strong>Attested</strong> even when the issuer is self-operated, because the anchor is the independent party. An <code>independent</code> or <code>psp_operated</code> issuer with a verified anchor is Attested. Any other <code>issuer_relationship</code> is classed as <code>self_operated</code>.</p>
@@ -2419,17 +2421,18 @@
                 <li><strong>MASTERCARD_VI:</strong> layered key model per rule 8 (L1: credential provider's published keys; L2/L3: keys bound via the preceding layer's <code>cnf</code>); ES256 only</li>
               </ul>
             </li>
-            <li><strong>Timestamp skew.</strong> Sub-wrapper timestamps MUST be within 24 hours of the delegation artifact's top-level <code>captured_at</code>. Per-protocol skew rules apply where the protocol specifies one (TAP <code>expires &minus; created</code> &le; 480 s; AP2 mandate <code>exp</code> rule per SD-JWT-VC; x402 <code>valid_after</code>/<code>valid_before</code>).</li>
+            <li><strong>Timestamp skew.</strong> A credential issued in advance of the transaction it authorizes, such as the AP2 Open Checkout Mandate (&sect;3.9.7), is bound by its own <code>exp</code> and not by a skew bound. Every other sub-wrapper timestamp, in particular those of per-request envelopes (TAP, Web Bot Auth, <code>request_binding</code>), where a stale timestamp is evidence of replay, MUST be within 24 hours of the delegation artifact's top-level <code>captured_at</code>. Per-protocol skew rules apply where the protocol specifies one (TAP <code>expires &minus; created</code> &le; 480 s; AP2 mandate <code>exp</code> rule per SD-JWT-VC; x402 <code>valid_after</code>/<code>valid_before</code>).</li>
             <li><strong>TAP authority and expiry.</strong> When <code>agent_identity</code> is present, the <code>@authority</code> component covered by the TAP signature MUST match the merchant domain on file for this chain, AND <code>tap_expires &minus; tap_created</code> MUST NOT exceed 480 seconds, AND, when both <code>tap_key_id</code> and the <code>keyid</code> parameter of <code>tap_signature_input</code> are present, they MUST be equal.</li>
             <li><strong>AP2 cryptographic cart-payment binding (replaces v1.0.1 semantic matching).</strong> When <code>consumer_authorization</code> is present, <code>ap2_checkout_hash</code> MUST equal <code>base64url(sha-256(ap2_checkout_jwt))</code> AND the Cart artifact's <code>cart_payment_binding.binding_value</code> MUST equal that hash. Cryptographic equivalence replaces v1.0.1 rule 4's semantic items+amount matching.</li>
             <li><strong>Opaque raw payload.</strong> The <code>raw_protocol_payload</code> field, when present, is opaque to AEP verification and is preserved for downstream tooling.</li>
             <li><strong>ACP SPT cap.</strong> When <code>session_binding_acp.delegated_payment_token</code> is present, Cart <code>total</code> &le; <code>max_amount</code>, Cart <code>currency</code> == token <code>currency</code>, Cart <code>cart_confirmed_at</code> &le; <code>expires_at</code>.</li>
             <li><strong>x402 payer authorization (EIP-712 signer recovery).</strong> When <code>http_payment.scheme === "exact"</code> AND <code>http_payment.network</code>, after normalization under the &sect;3.9.10 network alias table, starts with <code>"eip155:"</code>, verifiers MUST recover the EIP-712 signer from <code>x402_payment_signature</code> and assert that the recovered address equals <code>payer</code>. This establishes payer authorization only; it does not establish facilitator identity or any other rail role (&sect;3.9.10). Rule 7 is the complete x402 signature-verification rule in v1.0.x: for any other scheme (including <code>upto</code>, <code>auth-capture</code> and <code>batch-settlement</code>) or network (including non-EVM chains), no x402 signature-verification rule is defined, and verifiers MUST report the envelope with <code>status</code> <code>unverifiable</code> and <code>unverifiable_reason</code> <code>no_rule</code> (&sect;5), never as <code>verified</code>.</li>
             <li><strong>Mastercard VI SD-JWT / KB-SD-JWT chain.</strong> When <code>mastercard_verifiable_intent</code> is present, the layered credential chain MUST verify per its key model: L1 verifies against the credential provider's published keys; L2 verifies against the user key bound via L1's <code>cnf</code>; L3 verifies against the agent key bound via L2. The <code>sd_hash</code> chain MUST validate, and ES256 MUST be the only accepted <code>alg</code>.</li>
-            <li><strong>Skyfire KYA (NEW in v1.0.3).</strong> When <code>kya_identity</code> is present, verify the <code>kya_token</code> ES256 signature against the JWKS at <code>jwks_url</code> selected by <code>kid</code>; assert <code>aud</code> matches the chain's merchant/seller-agent id and <code>exp</code> is unexpired. Record <code>hid.verifier</code>/<code>verified</code> provenance via signal classification (&sect;2.8) — a Skyfire-self-asserted <code>verified=false</code> is <strong>Asserted</strong>; an external <code>identity_verifier</code>-attested <code>verified=true</code> is <strong>Attested</strong>.</li>
+            <li><strong>Skyfire KYA (NEW in v1.0.3).</strong> When <code>kya_identity</code> is present, dispatch on <code>identity_profile</code>. For <code>skyfire_kya</code> (the value when it is absent), verify the <code>kya_token</code> ES256 signature against the JWKS at <code>jwks_url</code> selected by <code>kid</code>; assert <code>aud</code> matches the chain's merchant/seller-agent id and <code>exp</code> is unexpired. Record <code>hid.verifier</code>/<code>verified</code> provenance via signal classification (&sect;2.8) — a Skyfire-self-asserted <code>verified=false</code> is <strong>Asserted</strong>; an external <code>identity_verifier</code>-attested <code>verified=true</code> is <strong>Attested</strong>. For any other profile, apply the checks that profile states; a profile this specification does not define is reported with <code>status</code> <code>unverifiable</code> and <code>unverifiable_reason</code> <code>no_rule</code> (&sect;5), never as <code>verified</code>.</li>
             <li><strong>Skyfire KYA Pay (NEW in v1.0.3).</strong> When <code>kya_payment</code> is present, verify the payment token's ES256 signature (when only <code>pay_token_sha256</code> is persisted per &sect;3.9.20, signature verification is performed at capture time and its result recorded); assert Cart <code>total</code> &le; token <code>amt</code> (same <code>cur</code>); the <code>charges[].value</code> entries MUST sum to &le; <code>amt</code>; each <code>charges[].charged_at</code> MUST be &le; the token's chargeable-until time — token <code>exp</code> plus the profile's charge grace window — a bound distinct from settlement deferral, which governs only when a charge settles.</li>
-            <li><strong>Web Bot Auth (NEW in v1.0.3).</strong> When <code>web_bot_auth</code> is present, verify the RFC 9421 signature against the key discovered via <code>wba_signature_agent</code> / directory; assert <code>wba_tag</code> contains <code>web-bot-auth</code>, the <code>@authority</code> covered component matches the merchant domain, and <code>wba_expires &minus; wba_created</code> is within policy.</li>
+            <li><strong>Web Bot Auth (NEW in v1.0.3).</strong> When <code>web_bot_auth</code> is present, verify the RFC 9421 signature against the key discovered via <code>wba_signature_agent</code> / directory; assert <code>wba_tag</code> is present and consistent with the framework identified by <code>wba_signature_agent</code> (&sect;3.9.18), the <code>@authority</code> covered component matches the merchant domain, and <code>wba_expires &minus; wba_created</code> is within policy.</li>
             <li><strong>Request binding (when present; NEW in v1.0.3).</strong> Recompute and match <code>request_body_sha256</code> and <code>target_uri</code> against the request the <code>bound_envelope</code> rode on. A mismatch MUST be surfaced as a <code>request_binding_mismatch</code> warning (non-fatal unless the verifier's policy elevates it).</li>
+            <li><strong>Visa Intelligent Commerce objects (NEW in v1.0.3).</strong> When <code>vic_payment_payload</code> is present, for each of <code>consumer_recognition</code>, <code>payment_container</code> and <code>payment_container.browsing_iou</code> that carries a <code>signature</code>: its <code>nonce</code>, where it has one, MUST equal <code>tap_nonce</code> of the message signature (&sect;3.9.6); the signature base is all of the object's fields in the order received, excluding <code>signature</code>; and the key is selected by <code>kid</code> through the TAP key-discovery path (rule 1) or, failing that, from witnessed key material (&sect;4.3).</li>
             <li><strong>Pre-execution attestation (NEW in v1.0.3).</strong> When <code>pre_execution_attestation</code> is present: (a) <code>signature</code> MUST verify against the issuer's published key via the issuer's canonical key-discovery path; (b) <code>anchor.proof</code> MUST verify independently, and <code>anchor.time</code> MUST precede the &sect;3.6 <code>authorized_at</code> (verifiers SHOULD apply a documented clock-skew tolerance and MUST record the delta in the verification result); (c) <code>binding.chain_id</code> MUST equal the chain's <code>chain_id</code>, and in <code>closed</code> mode <code>binding.cart_hash</code> MUST equal the &sect;3.5 cart artifact's <code>current_hash</code>, so that a token cannot be replayed across chains; (d) <code>authorized_at</code> MUST NOT exceed <code>expires_at</code>; (e) bounds conformance (the amount within <code>max_amount</code>, the merchant in <code>merchant_allowlist</code>) is computed and recorded as a deterministic boolean in the verification result. Incremental authorizations and partial captures can legitimately move the final settled amount after approval, so the boolean attests conformance at authorization time only.</li>
           </ol>
 
@@ -2443,7 +2446,7 @@
           </div>
           <p><strong>S-tier (Strongest).</strong> Any one of:</p>
           <ul>
-            <li>AP2-Direct (<code>ap2_mode = direct</code>, both Closed mandates verify) + <code>session_binding_ucp</code> OR <code>session_binding_acp</code> + on-chain <code>x402.transaction_hash</code> (finalized)</li>
+            <li>AP2-Direct (<code>ap2_mode = direct</code>, both Closed mandates verify) + <code>session_binding_ucp</code> OR <code>session_binding_acp</code> + an <code>http_payment</code> (x402) payment authorization verified under &sect;3.9.11 (envelope <code>status</code> <code>verified</code>, &sect;5); settlement finalization is not required. In v1.0.x, only &sect;3.9.11 rule 7 defines such a verification; a payment under any other scheme or network is reported <code>unverifiable</code> and does not satisfy this route.</li>
             <li><code>mastercard_verifiable_intent</code> (any mode) + AP2 cross-references verified</li>
             <li>TAP with BOTH <code>tap_consumer_recognition</code> AND <code>tap_payment_container</code> populated and verified, alongside any commerce-delegation wrapper</li>
           </ul>
@@ -2496,40 +2499,81 @@
             <div class="callout-icon">&#9888;</div>
             <div class="callout-body">
               <strong>PROVISIONAL (re-marked in v1.0.3)</strong>
-              The field-level shape of this sub-wrapper was derived partly from sources not confirmable at the spec level. Implementers SHOULD treat this schema as subject to change in v1.0.4 and SHOULD NOT gate production behavior on its exact field names until confirmed against primary Visa specifications.
+              The field-level shape of this sub-wrapper was derived partly from sources not confirmable at the spec level. Implementers SHOULD treat this schema as subject to change in v1.0.4 and SHOULD NOT gate production behavior on its exact field names until confirmed against primary Visa specifications. The v1.0.3 corrections below were confirmed against the published Visa TAP Merchant Specifications for the consumer-recognition and payment-container artifacts only; the remaining field sets are access-gated, so the flag stays.
             </div>
           </div>
 <pre>{
   "consumer_recognition": {              // Agentic Consumer Recognition object
     "nonce": "string",
+    "kid": "string | null — equals the message-signature keyid (NEW in v1.0.3)",
+    "alg": "string | null — e.g. 'PS256' (NEW in v1.0.3)",
+    "signature": "string | null — over all fields in the order received, excluding
+                  signature (NEW in v1.0.3)",
     "id_token_jwt": "string — scheme-issued JWT carrying obfuscated consumer
                      identifiers (masked phone / email); opaque envelope —
                      §3.9.20 applies",
+    "additional_identifiers": [          // NEW in v1.0.3 — consented supplementary identifiers
+      {
+        "identifier_type": "'loyalty' | 'email' | 'phone' | 'third_party_identity_token' | 'other'",
+        "issuer": "string | null — the party that issued the identifier",
+        "value_hash": "string — 'sha256:...' (chain plane)",
+        "value_ref": "string | null — custodian reference for the raw value",
+        "delivery": "'query_parameter' | 'recognition_object'"
+      }
+    ] | null,
     "contextual_data": {
       "country_code": "string — ISO 3166-1 alpha-2",
       "zip": "string",
       "ip_address_hash": "string — 'sha256:...'",
       "device_data": "object"
-    }
+    },
+    "id_token_claims": {                 // NEW in v1.0.3 — optional extraction; see ID-token claims
+      "iss": "string",
+      "sub": "string | null — locally unique, never-reassigned consumer identifier;
+              raw-plane only by default (§8.2.1)",
+      "sub_hash": "string | null — 'sha256:...' digest of sub (chain plane)",
+      "iat": "integer",
+      "auth_time": "integer | null",
+      "amr": ["string"] | null,
+      "phone_number_verified": "boolean | null",
+      "email_verified": "boolean | null"
+    } | null
   } | null,
   "payment_container": {                 // Agentic Payment Container (encrypted / opaque)
+    "nonce": "string | null — (NEW in v1.0.3)",
+    "kid": "string | null — (NEW in v1.0.3)",
+    "alg": "string | null — (NEW in v1.0.3)",
+    "signature": "string | null — over all fields in the order received, excluding
+                  signature (NEW in v1.0.3)",
     "container_sha256": "string — 'sha256:...' digest of the container as
                          presented; the container value itself MUST NOT be
                          persisted (§3.9.20)",
-    "container_type": "string — e.g. 'encrypted_api_payload' | 'browsing_iou'",
+    "container_type": "'encrypted_api_payload' | 'browsing_iou' | 'credential_hash'
+                       — credential_hash NEW in v1.0.3 (guest-checkout / key-entry flows)",
     "browsing_iou": {
       "invoice_id": "string",
       "amount_atomic": "string — base-units string",
       "card_acceptor_id": "string",
       "acquirer_id": "string",
-      "sequence_counter": "integer"
+      "sequence_counter": "integer",
+      "uri": "string | null — the resource that requested payment (NEW in v1.0.3)",
+      "payment_service": "string | null — (NEW in v1.0.3)",
+      "kid": "string | null — (NEW in v1.0.3)",
+      "alg": "string | null — (NEW in v1.0.3)",
+      "signature": "string | null — the IOU is separately signed (NEW in v1.0.3)"
     } | null,
     "card_metadata": {
-      "payment_account_reference": "string | null — PAR per EMVCo"
+      "payment_account_reference": "string | null — PAR per EMVCo",
+      "last_four": "string | null — (NEW in v1.0.3)",
+      "short_description": "string | null — (NEW in v1.0.3)"
     } | null
   } | null
 }</pre>
+          <p><strong>Object signatures (NEW in v1.0.3).</strong> The consumer-recognition object, the payment container and the browsing IOU each carry their own <code>kid</code>, <code>alg</code> and <code>signature</code>, recorded so that each object can be re-verified independently at dispute time. Verification: &sect;3.9.11 rule 13. Every member added in v1.0.3 is nullable, so a chain captured under rc.2 remains conformant.</p>
+          <p><strong>ID-token claims (NEW in v1.0.3).</strong> <code>id_token_claims</code> optionally extracts claims from the ID token so that they can be read without re-opening the opaque <code>id_token_jwt</code>. The obfuscated identifiers and masks inside the token are not extracted and remain inside <code>id_token_jwt</code> (&sect;3.9.20). <code>sub</code> is restricted to the raw plane by default, and the chain plane carries only <code>sub_hash</code> (&sect;8.2.1).</p>
+          <p><strong>Open item.</strong> <code>browsing_iou.amount_atomic</code> keeps its name and base-units convention pending confirmation of the unit convention against a live HTTP 402 sandbox response.</p>
           <p>This sub-wrapper is modeled strictly on the two published artifacts of the underlying protocol: a <strong>consumer-recognition object</strong> (a scheme-issued JWT <code>idToken</code> with obfuscated identifiers plus contextual data) and a <strong>payment container</strong> (encrypted/opaque; it MAY carry payment credentials, so implementations retain its digest plus extracted non-sensitive metadata only, per &sect;3.9.20). The consumer-recognition object evidences consumer recognition/identity, not purchase delegation (&sect;3.9.12).</p>
+          <p><strong>Additional identifiers (NEW in v1.0.3).</strong> A verified agent can pass consented consumer identifiers to the merchant at checkout, such as a loyalty number, email address or phone number. <code>additional_identifiers</code> records each one as a digest on the chain plane (<code>value_hash</code>), with <code>value_ref</code> pointing to the raw value held by the custodian. Three constraints apply. (1) Entries are Asserted (&sect;2.8): they carry no attestation from the identifier's issuer, a value delivered as a query parameter is not covered by the recognition object's signature, and entries MUST NOT contribute to Attested-tier attribution; <code>delivery</code> records which case applies. (2) Raw values are restricted to the raw plane by default (&sect;8.2.1), and MUST NOT be disclosed to discovery agents or AI platforms. (3) The presence of these fields does not imply network attestation of their contents, and implementations MUST NOT present a pre-filled checkout field as network-verified identity. Visa's own field names for this set are not yet confirmed (&sect;3.9.13 is PROVISIONAL); the AEP shape does not depend on them.</p>
 
           <h5 id="s3-9-14">3.9.14 <code>agent_coordination</code> — A2A wrapper</h5>
 <pre>{
@@ -2614,6 +2658,8 @@
           <h5 id="s3-9-16">3.9.16 <code>kya_identity</code> — Skyfire KYA wrapper <span class="badge badge-blue" style="font-size:11px;margin-left:6px;">NEW in v1.0.3</span></h5>
           <p>Identity-transport layer. Carries the Skyfire KYA agent-identity JWT and its embedded verification metadata. This is the <strong>identity facet</strong> of the single <code>SKYFIRE_KYA</code> protocol (&sect;3.9.5): populated when the presented token carries identity claims (<code>kya+jwt</code> or the identity portion of <code>kya-pay+jwt</code>). The <code>SKYFIRE_KYA</code> enum value denotes the KYA / KYA Pay protocol family; the token format is multi-issuer by design, and the issuer named below is a non-normative example.</p>
 <pre>{
+  "identity_profile": "string | null — profile discriminator; 'skyfire_kya' when null or
+                       absent (NEW in v1.0.3)",
   "kya_token": "string — compact ES256 JWT, typ=kya+jwt (opaque, retained verbatim;
                 identity tokens carry no payment credentials — §3.9.20 scan still applies)",
   "profile_version": "string — e.g. 'draft-skyfire-kyapayprofile-02' (NEW in rc.2)",
@@ -2652,6 +2698,7 @@
               <code>hid</code> MUST NOT carry raw email/phone in the AEP record; store presence flags + verification metadata, and the opaque <code>kya_token</code> (which a verifier with JWKS access can re-open under its own controls). Raw PII handling follows &sect;8.2.
             </div>
           </div>
+          <p><strong>Identity profiles (NEW in v1.0.3).</strong> The members of this schema, from <code>kya_token</code> through <code>aid</code>, are the fields of the <code>skyfire_kya</code> profile. A credential in another identity-transport format is recorded in the same slot by naming its profile in <code>identity_profile</code>; a profile states its claim members, its issuer-discovery rules and its &sect;3.9.11 checks, and <code>iss</code> identifies the issuer under every profile. A credential recorded under a defined profile satisfies the &sect;3.9.12 criteria that name <code>kya_identity</code> on the same terms as one recorded under <code>skyfire_kya</code>, so a credential's tier does not depend on whose format it is. A chain that omits <code>identity_profile</code> is read as <code>skyfire_kya</code>, so chains written before v1.0.3-final remain valid.</p>
           <p>Verification: &sect;3.9.11 rule 9.</p>
 
           <h5 id="s3-9-17">3.9.17 <code>kya_payment</code> — Skyfire KYA Pay wrapper <span class="badge badge-blue" style="font-size:11px;margin-left:6px;">NEW in v1.0.3</span></h5>
@@ -2719,12 +2766,16 @@
   "wba_signature_agent": "string | null — Signature-Agent header (key discovery)",
   "wba_keyid": "string — JWK SHA-256 thumbprint (RFC 9421 keyid)",
   "wba_alg": "'ed25519' (typical) | string",
-  "wba_tag": "string — MUST include 'web-bot-auth'",
+  "wba_tag": "string — RFC 9421 tag; MUST be present and MUST match the tag value registered
+              by the framework identified in wba_signature_agent (see Tag value)",
   "wba_created": "integer — Unix seconds",
   "wba_expires": "integer — Unix seconds",
+  "wba_nonce": "string | null — Signature-Input nonce (replay protection; NEW in v1.0.3)",
   "wba_covered_components": ["string"],  // e.g. '@authority', '@target-uri'
   "wba_directory_url": "string | null"   // /.well-known/http-message-signatures-directory
 }</pre>
+          <p><strong>Tag value (NEW in v1.0.3).</strong> The RFC 9421 <code>tag</code> parameter identifies the interaction type, and each acceptance framework registers its own value. <code>wba_tag</code> MUST be present and MUST match the tag value registered by the framework identified in <code>wba_signature_agent</code>. The literal <code>web-bot-auth</code> is the expected value only where <code>wba_signature_agent</code> is absent.</p>
+          <p><strong>Nonce (NEW in v1.0.3).</strong> <code>wba_nonce</code> records the <code>nonce</code> parameter of <code>wba_signature_input</code> when one is present, and is null otherwise, so that the nonce can be asserted and queried as a discrete field. This section defines no verifier state for replay checking; any nonce-uniqueness or validity-window rule that applies to a chain is defined in &sect;3.9.11.</p>
           <p><strong>Wire-signature retention (NEW in rc.2).</strong> Persisting a third party's wire signature verbatim — the <code>wba_signature</code> value here, or the <code>tap_signature</code> value in &sect;3.9.6 — requires an opt-in signal from the signer. Absent that signal, implementations MUST store a SHA-256 digest of the signature value rather than the signature value itself; signature verification is then performed at capture time and its result recorded per &sect;2.8.</p>
           <p>Verification: &sect;3.9.11 rule 11.</p>
 
@@ -4065,6 +4116,13 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>TAP key id (#46):</strong> &sect;3.9.6 adds <code>tap_key_id</code>, required for chains at <code>spec_version</code> 1.0.3 or later, with parse-from-<code>tap_signature_input</code> accepted as a fallback for one MINOR cycle (deprecation target v1.1.0). &sect;3.9.11 rule 3 requires <code>tap_key_id</code> to equal the <code>keyid</code> in <code>tap_signature_input</code> when both are present.</p>
                   <p><strong>Verification result (#15; third state per #60 and #58):</strong> &sect;5 verification result adds <code>verified_at</code>, <code>verification_mode</code> (<code>full | cached</code>), and per-envelope <code>status</code> (<code>verified | failed | unverifiable</code>), <code>unverifiable_reason</code> (<code>no_rule | key_unavailable | signature_not_retained</code>) and <code>witnessed</code>, all nullable and additive. Verifiers emit an entry for every present sub-wrapper, resolve keys live and then from witnessed material, and never report an <code>unverifiable</code> envelope as verified or failed; &sect;3.9.12 tier criteria count only <code>verified</code> envelopes. &sect;6.1 <code>verification</code> echoes <code>verifiedAt</code> and <code>verificationMode</code>. &sect;6.2 cached mode and the &sect;4.3 / &sect;3.9.11 / &sect;5 witnessed-key requirements now name these fields.</p>
                   <p><strong>x402 payer and facilitator (#68, #60, #58):</strong> &sect;2.6 and &sect;3.9.11 rules 1 and 7 identify the EIP-712-recovered signer as the <code>payer</code> (payer authorization), not the facilitator. &sect;3.9.10 adds <code>facilitator_identity_source</code>, <code>transaction_submitter</code> and <code>capture_authorizer</code> with stated signal classes, forbids inferring one rail role from another, recommends CAIP-2 for <code>network</code>, and adds a legacy EVM network alias table. Rule 7 is declared the complete x402 rule for v1.0.x; other schemes and networks report <code>unverifiable</code> / <code>no_rule</code>. &sect;5 envelope entries add <code>claims</code> so payer authorization and facilitator identity are reported separately. &sect;2.1 post-seal sentence aligned with &sect;2.5.</p>
+                  <p><strong>Web Bot Auth tag and nonce (#23, #25):</strong> &sect;3.9.18 <code>wba_tag</code> must be present and match the tag value registered by the framework identified in <code>wba_signature_agent</code>, with <code>web-bot-auth</code> expected only where no <code>wba_signature_agent</code> is given; &sect;3.9.11 rule 11 asserts presence and consistency instead of a hardcoded literal. &sect;3.9.18 adds nullable <code>wba_nonce</code>.</p>
+                  <p><strong>Timestamp skew for pre-issued credentials (#70 item a):</strong> &sect;3.9.11 rule 2 states that a credential issued in advance of the transaction it authorizes, such as the AP2 Open Checkout Mandate, is bound by its own <code>exp</code>; the 24-hour bound applies to every other sub-wrapper timestamp, in particular per-request envelopes (TAP, Web Bot Auth, <code>request_binding</code>).</p>
+                  <p><strong>Merchant authenticity class (#21):</strong> &sect;2.8 classes merchant authenticity as Asserted in any wrapper composition carrying no merchant-controlled key (today only UCP resolves to one) and Attested only where such a wrapper is present; the class survives export. A chain-level merchant-domain assertion is deferred to v1.0.4 with the key-discovery registry (#36).</p>
+                  <p><strong>Visa consented supplementary identifiers (#56):</strong> &sect;3.9.13 adds optional <code>consumer_recognition.additional_identifiers[]</code> (<code>identifier_type</code>, <code>issuer</code>, <code>value_hash</code>, <code>value_ref</code>, <code>delivery</code>). Entries are Asserted, never contribute to Attested-tier attribution, keep raw values on the raw plane, and imply no network attestation. &sect;3.9.13 remains PROVISIONAL.</p>
+                  <p><strong>Identity-transport profiles (#69):</strong> &sect;3.9.16 <code>kya_identity</code> gains a nullable <code>identity_profile</code> discriminator (<code>skyfire_kya</code> when absent), so the slot holds multiple issuer profiles on the construction &sect;3.9.N uses; the existing field set is the <code>skyfire_kya</code> profile and chains written before v1.0.3-final stay valid. &sect;3.9.11 rule 9 is profile-dispatched, and an undefined profile reports <code>unverifiable</code> / <code>no_rule</code>.</p>
+                  <p><strong>Visa wrapper field corrections (#47):</strong> &sect;3.9.13 adds nullable <code>kid</code> / <code>alg</code> / <code>signature</code> to <code>consumer_recognition</code>, <code>payment_container</code> and <code>browsing_iou</code>; <code>payment_container.nonce</code>; <code>credential_hash</code> in <code>container_type</code>; <code>browsing_iou.uri</code> and <code>payment_service</code>; <code>card_metadata.last_four</code> and <code>short_description</code>; and an optional <code>id_token_claims</code> with <code>sub</code> restricted to the raw plane and a chain-plane digest. &sect;3.9.11 adds rule 13 (nonce equality, signature base, key selection by <code>kid</code>). &sect;3.9.13 remains PROVISIONAL.</p>
+                  <p><strong>Settlement-neutral S-tier route (#59):</strong> the &sect;3.9.12 S-tier route through x402 requires a payment authorization verified under &sect;3.9.11 in place of a finalized on-chain <code>transaction_hash</code>, so settlement timing no longer determines the tier. Settlement posture as a separate export-time result, and tier recomputation across the full chain, remain targeted at v1.1.0.</p>
                   <p><strong>Pre-execution attestation (#27, D4-a):</strong> new optional &sect;3.9.21 <code>pre_execution_attestation</code> sub-wrapper with required <code>issuer</code>, <code>issuer_relationship</code>, external <code>anchor</code>, transaction <code>binding</code> and <code>expires_at</code>; a &sect;3.9.11 rule set (signature, anchor precedence, chain and cart binding, expiry, bounds conformance); &sect;2.8 classification; &sect;5 <code>pre_execution_attestation_checks</code>. Normative settlement gating is declined; AEP witnesses enforcement and never gates it. No tier uplift is defined.</p>
                 </td>
               </tr>

@@ -1,6 +1,6 @@
 # AEP v1.0.3 — Ecosystem Comment Round
 
-**Draft under review:** [v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html) ([rendered — living draft](https://aep.a-comm.ai/) · [frozen rc.2 snapshot](https://aep.a-comm.ai/v1.0.3-rc.2) for stable section references) (2026-07-02)
+**Draft under review:** [v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html) ([rendered — living draft](https://acommevidenceprotocol.org/spec) · [frozen rc.2 snapshot](https://aep.a-comm.ai/v1.0.3-rc.2) for stable section references) (2026-07-02)
 **Status: Comment window July 13 – August 14, 2026.** Every comment receives a public disposition in the log below.
 
 ## Scope of this round

@@ -48,7 +48,7 @@ What no wrapped protocol provides — and AEP does — is the **durable outcome 
 ## Reading the specification
 
 - **[Draft under review — v1.0.3-rc.2](spec/aep-v1.0.3-rc.2.html)** — a single self-contained HTML page in this repo; open it in a browser.
-- Prefer it rendered? The living draft is at [aep.a-comm.ai](https://aep.a-comm.ai/); the immutable rc.2 snapshot, with stable section references, is at [aep.a-comm.ai/v1.0.3-rc.2](https://aep.a-comm.ai/v1.0.3-rc.2).
+- Prefer it rendered? The living draft is at [acommevidenceprotocol.org/spec](https://acommevidenceprotocol.org/spec); the immutable rc.2 snapshot, with stable section references, is at [aep.a-comm.ai/v1.0.3-rc.2](https://aep.a-comm.ai/v1.0.3-rc.2).
 - Prior published versions (v1.0.x) will be added as tagged releases.
 
 Suggested reading order for engineers: §2 data model → §4 hash chain & sealing → §3.9 delegation wrappers → §5–6 verification & export → §8.6/§8.7 minimal profiles. Implementer quickstarts live in [`docs/implementers/`](docs/implementers/).

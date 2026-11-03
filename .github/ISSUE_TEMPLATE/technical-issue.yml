@@ -40,3 +40,17 @@ body:
       label: "Security"
       options:
         - label: "This issue has security implications (evidence forgery, PII/PAN exposure, replay, key handling)"
+  - type: dropdown
+    id: working-group
+    attributes:
+      label: "Working group (optional)"
+      description: "The group this belongs to, if you know. Maintainers will route it otherwise."
+      options:
+        - "Not sure"
+        - "Core Specification & Schemas"
+        - "Dispute Resolution & Network Rules"
+        - "Identity, Biometrics & Delegation"
+        - "Tokenization, Privacy & Vaulting"
+        - "Reference Implementations & SDKs"
+    validations:
+      required: false

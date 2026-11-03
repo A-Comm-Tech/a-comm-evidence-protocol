@@ -45,3 +45,17 @@ body:
       description: "What breaks, who is blocked, or what risk is created if the draft ships as written?"
     validations:
       required: false
+  - type: dropdown
+    id: working-group
+    attributes:
+      label: "Working group (optional)"
+      description: "The group this belongs to, if you know. Maintainers will route it otherwise."
+      options:
+        - "Not sure"
+        - "Core Specification & Schemas"
+        - "Dispute Resolution & Network Rules"
+        - "Identity, Biometrics & Delegation"
+        - "Tokenization, Privacy & Vaulting"
+        - "Reference Implementations & SDKs"
+    validations:
+      required: false

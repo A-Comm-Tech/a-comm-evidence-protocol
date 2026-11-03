@@ -22,3 +22,7 @@ The stated goal is multi-stakeholder governance. Planned steps, in order:
 3. **Standards-body engagement** — AEP is positioned as the evidence/observability layer complementary to the agentic-payment mandate work now consolidating in industry bodies. Contribution or liaison of the specification to a neutral standards organization is on the roadmap, and the Apache-2.0 + DCO + patent-grant posture was chosen to make that transfer frictionless.
 
 Progress on each step is tracked in public issues labeled `governance`.
+
+## Working groups
+
+Focused drafting and review happens in working groups, organized under [`working-groups/`](working-groups/README.md). Groups feed the single normative specification and do not fork it. The group structure, scopes, and leads are provisional until ratified by a vote of participating members.

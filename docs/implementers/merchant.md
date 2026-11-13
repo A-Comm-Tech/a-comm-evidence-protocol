@@ -12,6 +12,7 @@ The Minimal Merchant Profile is four artifacts you can emit from data you alread
 | `cart` (§3.5) | Checkout session (line items, integer minor-unit totals, `subtotal + shipping + tax − discounts === total`) | Cart confirmed |
 | `authorization` (§3.6) | **Your PSP's webhook** — charge id, auth code, amount, `network_transaction_id`, AVS/CVV/3DS results | Payment authorized → **chain seals** |
 | `fulfillment` / `refund` (§3.7, §3.10) | Carrier webhook / your refund event | Post-seal appends |
+| `service_fulfillment` (§3.11) | Booking or job status: scheduled, started, completed, or did not take place. Use instead of `fulfillment` when nothing ships | Post-seal appends |
 
 Discovery, referral, and delegation artifacts are **not your job** under this profile — they belong to agent platforms and PSPs, and their absence does not penalize your chain's completeness (§8.6).
 

@@ -738,7 +738,6 @@
       <a class="nav-link nav-link-sub" href="#s3-ref">3.8 Reference Table</a>
       <a class="nav-link nav-link-sub" href="#s3-delegation">3.9 Delegation &amp; Protocol Metadata</a>
       <a class="nav-link nav-link-sub" href="#s3-refund">3.10 Refund (Post-Seal)</a>
-      <a class="nav-link nav-link-sub" href="#s3-service-fulfillment">3.11 Service Fulfillment (Post-Seal)</a>
     </div>
 
     <div class="nav-section">
@@ -1282,7 +1281,7 @@
           <ul>
             <li>The <code>current_hash</code> of the authorization artifact is stored as <code>sealed_bundle_hash</code> on the transaction chain record</li>
             <li><code>sealed_bundle_hash</code> is <strong>immutable once set</strong> — no update path exists</li>
-            <li>Only post-seal artifact types — <code>fulfillment</code>, <code>refund</code> (&sect;3.10) and <code>service_fulfillment</code> (&sect;3.11), plus annotation/rebuttal records per &sect;6.5 — may be appended post-seal, via the async late-arrival append path</li>
+            <li>Only post-seal artifact types — <code>fulfillment</code> and <code>refund</code> (&sect;3.10), plus annotation/rebuttal records per &sect;6.5 — may be appended post-seal, via the async late-arrival append path</li>
             <li>The fulfillment artifact includes the sealed authorization hash in its chain, so any post-seal fulfillment record is still cryptographically bound to the sealed chain</li>
           </ul>
           <p>The delegation artifact, when present, is pre-seal. Its <code>current_hash</code> is bound into the chain at position 4 and forms part of the input to authorization's <code>previous_hash</code> (via the intermediate policy and cart artifacts). The seal point remains at authorization.</p>
@@ -1395,7 +1394,7 @@
                 <tr>
                   <td><code>type</code></td>
                   <td>string (enum)</td>
-                  <td>Artifact type (<code>discovery | referral | intent | delegation | policy | cart | authorization | fulfillment | refund | service_fulfillment</code>). <code>refund</code> added in rc.2 (&sect;3.10; post-seal). <code>service_fulfillment</code> added in v1.0.3 (&sect;3.11; post-seal).</td>
+                  <td>Artifact type (<code>discovery | referral | intent | delegation | policy | cart | authorization | fulfillment | refund</code>). <code>refund</code> added in rc.2 (&sect;3.10; post-seal).</td>
                   <td>Per-artifact</td>
                 </tr>
                 <tr>
@@ -1981,8 +1980,6 @@
           <p>Actor type: <code>fulfillment_provider</code>. Signing actors: <code>fulfillment_provider (carrier-attested) + merchant (wrapper)</code>. The merchant's server signs the artifact wrapper. The fulfillment provider contributes attested data — tracking number, delivery confirmation, proof-of-delivery URL, signature-captured boolean — sourced from the carrier's API or, where the carrier exposes signing infrastructure, a direct carrier signature on the data subset. When fulfillment is handled by the merchant's own logistics (no third-party carrier), the merchant signs both wrapper and data; signing_actor is then <code>merchant</code> alone.</p>
 
           <p><code>delivery_address_match: true</code> is the single most valuable representment signal a chargeback reviewer looks for when the dispute reason is "item not received." Its value is deterministic — computed from two already-present hashes — and cannot be forged without breaking the hash chain upstream.</p>
-
-          <p><strong>No shipment (NEW in v1.0.3).</strong> <code>carrier</code>, <code>tracking_number</code> and <code>delivery_address_hash</code> record a shipment. Where fulfillment involves no shipment, a producer MUST NOT emit a fulfillment artifact with placeholder values in those fields, such as <code>"self"</code>, <code>"n/a"</code>, the merchant's own name, or a synthesized tracking number. Those fields are classed Deterministic, and a placeholder would be exported under that class (&sect;2.8, &sect;6). A transaction fulfilled by an in-person service, a stay or a rental emits a <code>service_fulfillment</code> artifact (&sect;3.11) instead. Goods shipped by the merchant's own logistics remain a fulfillment artifact, signed by the merchant alone as described above.</p>
         </section>
 
         <section id="s3-ref">
@@ -2070,14 +2067,6 @@
                   <td>post-seal</td>
                   <td>all</td>
                   <td>merchant, psp</td>
-                  <td>No</td>
-                  <td><strong>Yes</strong></td>
-                </tr>
-                <tr>
-                  <td><code>service_fulfillment</code> <span class="badge badge-blue" style="font-size:10px;">NEW in v1.0.3</span></td>
-                  <td>post-seal</td>
-                  <td>all</td>
-                  <td>merchant, fulfillment_provider</td>
                   <td>No</td>
                   <td><strong>Yes</strong></td>
                 </tr>
@@ -2874,47 +2863,6 @@
 }</code></pre>
           <p>Permitted actor types: <code>merchant</code>, <code>psp</code>. Signing actor: the actor that processed the refund signs the artifact wrapper per &sect;4.3.</p>
         </section>
-
-        <section id="s3-service-fulfillment">
-          <h3>3.11 Service Fulfillment Artifact <span class="badge badge-blue" style="font-size:11px;margin-left:6px;">NEW in v1.0.3</span></h3>
-          <p>Records fulfillment that happens as an event at a time and place rather than as a shipment: an appointment, a home or on-site visit, a mobile trade call, a lodging stay, or a rental. Such fulfillment has no carrier, no tracking number and often no delivery address, so &sect;3.7 cannot carry it. A transaction fulfilled this way emits a <code>service_fulfillment</code> artifact instead of a <code>fulfillment</code> artifact. A transaction that both ships goods and delivers a service MAY carry both types.</p>
-          <p>Like refund (&sect;3.10), the service fulfillment artifact is <strong>post-seal</strong>: it arrives after the chain is sealed and MUST be accepted via the late-arrival append path (&sect;2.5). Service fulfillment artifacts do NOT count toward the expected minimum artifact counts of &sect;2.2. Each status change MAY be recorded as its own artifact with its own <code>idempotency_key</code>, as with shipping events under &sect;3.7.</p>
-
-          <h4>Payload Schema</h4>
-          <pre><code>{
-  // Deterministic identifiers
-  "service_fulfillment_id": "string — UUID (required)",
-  "platform_order_id":      "string — merchant-platform order ID (required)",
-
-  // Service data (Asserted; see Signal classes below)
-  "status":                 "'scheduled' | 'in_progress' | 'completed' | 'not_completed' (required)",
-  "scheduled_start":        "string — ISO 8601 UTC (required)",
-  "scheduled_end":          "string — ISO 8601 UTC (optional)",
-  "started_at":             "string — ISO 8601 UTC (optional)",
-  "completed_at":           "string — ISO 8601 UTC (required when status = completed)",
-
-  // Location evidence
-  "service_location":       "'customer_address' | 'provider_premises' | 'other' (required)",
-  "service_location_hash":  "string — 'sha256:...' of canonical service address (optional)",
-  "service_location_match": "boolean | null — see Location match below (required)",
-
-  // Cross-artifact required fields
-  "captured_at":            "string — ISO 8601 UTC (required)",
-  "idempotency_key":        "string — stable per-service-event key (required)"
-}</code></pre>
-
-          <p><strong>Status.</strong> <code>not_completed</code> records that the service did not take place as scheduled. This version records no cause; cancellation, no-show and provider failure are not distinguished.</p>
-
-          <p><strong>Location match.</strong> When <code>service_location</code> is <code>customer_address</code> and both <code>service_location_hash</code> and <code>cart.shipping_address_hash</code> are present, <code>service_location_match</code> MUST equal <code>(service_location_hash === cart.shipping_address_hash)</code>. In every other case it MUST be <code>null</code>. It MUST NOT be <code>false</code> because a hash is absent: a missing comparison is recorded as absent, not as a mismatch.</p>
-
-          <p><strong>Signal classes.</strong> The identifiers are Deterministic. <code>status</code> and the timestamps are the reporting party's own statement and carry the Asserted class; this version defines no customer or third-party confirmation of them. <code>service_location_match</code> is Deterministic in the &sect;3.7 sense, subject to the &sect;2.8 rule for salted address hashes. It shows that the recorded service address equals the address committed in the cart. It does not show that the service took place there.</p>
-
-          <p>Permitted actor types: <code>merchant</code>, <code>fulfillment_provider</code> (where a party other than the merchant performs the service). Signing actor: the merchant signs the artifact wrapper per &sect;4.3. Where a fulfillment provider performs the service and signs the data subset, both are signing actors, as in &sect;3.7.</p>
-
-          <p>Consistent with &sect;3.9.12, the absence of a service fulfillment artifact implies nothing about whether the service took place.</p>
-
-          <p><strong>Scope in v1.0.3.</strong> This artifact makes service fulfillment recordable. It does not make attendance provable. Customer confirmation of attendance, a commitment over the status sequence, a cart-side commitment to the service location, and cancellation and no-show outcomes are scoped for v1.0.4, together with the Proof-of-Delivery sub-profile.</p>
-        </section>
       </section>
 
       <hr class="divider" />
@@ -3162,9 +3110,7 @@
 
         <p><strong>Pre-execution attestation checks (NEW in v1.0.3).</strong> When <code>pre_execution_attestation</code> is present, the verifier records the skew between <code>anchor.time</code> and <code>authorized_at</code> in <code>anchor_skew_seconds</code>, and the result of the bounds check in <code>bounds_conformant</code> (&sect;3.9.11). A <code>false</code> <code>bounds_conformant</code> does not by itself change the envelope's <code>status</code>.</p>
 
-        <p><strong>Chain completeness counts.</strong> <code>chain_complete</code> is computed as <code>total_artifacts == expectedArtifactCount(transaction_type)</code> per the v1.0.2 8/7/6/5 counts (Appendix B). A chain MAY be <code>valid: true</code> and <code>chain_complete: false</code> simultaneously when fulfillment has not yet arrived. Post-seal <code>refund</code> (&sect;3.10) and <code>service_fulfillment</code> (&sect;3.11) artifacts are verified like fulfillment artifacts and do not count toward <code>expectedArtifactCount</code>. Under the Minimal Merchant Profile (&sect;8.6), expected counts apply only to the Full profile.</p>
-
-        <p><strong>Completeness is not claimed (NEW in v1.0.3).</strong> The hash chain and the seal make a recorded chain tamper-evident: altering any artifact, or removing or reordering an artifact before the seal, fails verification. <code>chain_complete</code> checks only that the expected artifact layers are present. Neither establishes that every event in the transaction was recorded. AEP cannot detect an event that was never submitted, and dropping the most recent post-seal artifacts is not detectable from the chain alone. A valid, sealed and complete chain is therefore a tamper-evident record of what was submitted, not a complete account of the transaction, and MUST NOT be presented as one. External anchoring and verification by a party other than the exporter (&sect;4.3) narrow this gap; they do not close it.</p>
+        <p><strong>Chain completeness counts.</strong> <code>chain_complete</code> is computed as <code>total_artifacts == expectedArtifactCount(transaction_type)</code> per the v1.0.2 8/7/6/5 counts (Appendix B). A chain MAY be <code>valid: true</code> and <code>chain_complete: false</code> simultaneously when fulfillment has not yet arrived. Post-seal <code>refund</code> artifacts (&sect;3.10) are verified like fulfillment artifacts and do not count toward <code>expectedArtifactCount</code>. Under the Minimal Merchant Profile (&sect;8.6), expected counts apply only to the Full profile.</p>
 
         <p><strong>Verification class of the result (NEW in rc.2).</strong> A verification result produced by the exporting party over a chain whose seal is not externally anchored (&sect;4.3) carries the Asserted class (&sect;2.8) from the perspective of a bundle recipient. An externally anchored seal verified by a party other than the exporter yields a higher class. When witnessed rather than live keys were used for envelope verification (&sect;4.3), the result MUST record that fact in the envelope entry's <code>witnessed</code> member.</p>
 
@@ -3591,7 +3537,7 @@ function containsRawPaymentCredentials(payload: Record&lt;string, unknown&gt;): 
           <h3>8.6 Minimal Merchant Profile <span class="badge badge-blue" style="font-size:11px;margin-left:6px;">NEW in rc.2</span></h3>
           <p>A merchant MAY conform to AEP under a reduced profile consisting of the artifacts the merchant can emit from its own systems:</p>
           <ul>
-            <li><code>intent</code>, <code>cart</code>, and <code>authorization</code> artifacts (plus post-seal <code>fulfillment</code> or <code>service_fulfillment</code>, and <code>refund</code>), merchant-signed per &sect;4.3;</li>
+            <li><code>intent</code>, <code>cart</code>, and <code>authorization</code> artifacts (plus post-seal <code>fulfillment</code> and <code>refund</code>), merchant-signed per &sect;4.3;</li>
             <li><code>protocol</code> per &sect;3.9 as observed, or <code>GENERIC</code> when no protocol envelope is observed.</li>
           </ul>
           <p>Discovery, referral, and delegation artifacts are emitted by agent platforms and PSPs when available. Their absence MUST NOT penalize chain completeness for this profile: the expected artifact counts of &sect;2.2 apply only to the Full profile. A Minimal-profile chain is <code>chain_complete: true</code> when its own expected artifacts are present and verify.</p>
@@ -3771,7 +3717,7 @@ function containsRawPaymentCredentials(payload: Record&lt;string, unknown&gt;): 
             <tbody>
               <tr>
                 <td><strong>Artifact</strong></td>
-                <td>An immutable, cryptographically hashed record of a single event in the commerce journey. Ten artifact types are defined: discovery, referral, intent, delegation, policy, cart, authorization, fulfillment, refund (post-seal, added in v1.0.3-rc.2), and service_fulfillment (post-seal, added in v1.0.3).</td>
+                <td>An immutable, cryptographically hashed record of a single event in the commerce journey. Nine artifact types are defined: discovery, referral, intent, delegation, policy, cart, authorization, fulfillment, and refund (post-seal, added in v1.0.3-rc.2).</td>
               </tr>
               <tr>
                 <td><strong>Transaction chain</strong></td>
@@ -3909,8 +3855,7 @@ function containsRawPaymentCredentials(payload: Record&lt;string, unknown&gt;): 
 type ArtifactType =
   | 'discovery' | 'referral' | 'intent' | 'delegation'
   | 'policy' | 'cart' | 'authorization' | 'fulfillment'
-  | 'refund'               // post-seal (v1.0.3-rc.2, §3.10); not counted by expectedArtifactCount
-  | 'service_fulfillment'; // post-seal (v1.0.3, §3.11); not counted by expectedArtifactCount
+  | 'refund';  // post-seal (v1.0.3-rc.2, §3.10); not counted by expectedArtifactCount
 
 type ActorType =
   | 'user' | 'agent' | 'merchant' | 'psp'
@@ -4185,8 +4130,6 @@ Completed: 2026-06-21T14:08:19Z
                   <p><strong>Visa wrapper field corrections (#47):</strong> &sect;3.9.13 adds nullable <code>kid</code> / <code>alg</code> / <code>signature</code> to <code>consumer_recognition</code>, <code>payment_container</code> and <code>browsing_iou</code>; <code>payment_container.nonce</code>; <code>credential_hash</code> in <code>container_type</code>; <code>browsing_iou.uri</code> and <code>payment_service</code>; <code>card_metadata.last_four</code> and <code>short_description</code>; and an optional <code>id_token_claims</code> with <code>sub</code> restricted to the raw plane and a chain-plane digest. &sect;3.9.11 adds rule 13 (nonce equality, signature base, key selection by <code>kid</code>). &sect;3.9.13 remains PROVISIONAL.</p>
                   <p><strong>Settlement-neutral S-tier route (#59):</strong> the &sect;3.9.12 S-tier route through x402 requires a payment authorization verified under &sect;3.9.11 in place of a finalized on-chain <code>transaction_hash</code>, so settlement timing no longer determines the tier. Settlement posture as a separate export-time result, and tier recomputation across the full chain, remain targeted at v1.1.0.</p>
                   <p><strong>Surface binding (#42):</strong> &sect;3.9.21 <code>binding</code> gains an optional nullable <code>surface_binding</code> (<code>origin</code>, <code>content_digest</code>, <code>method</code>), populated when the issuer is independent or PSP-operated. The &sect;3.9.11 re-derivation rule and the <code>method</code> registry are deferred to v1.0.4.</p>
-                  <p><strong>Service fulfillment (#65, #20):</strong> new post-seal <code>service_fulfillment</code> artifact (&sect;3.11) for fulfillment that is an event at a time and place rather than a shipment: services, stays and rentals. It carries its own status vocabulary and a location match that is <code>null</code>, never <code>false</code>, where no comparison is defined; it is not counted by <code>expectedArtifactCount</code>. &sect;3.7 is unchanged except that producers MUST NOT write placeholder values into its shipment fields. Enums in &sect;2.5, &sect;2.7, &sect;3.8 and Appendix B; &sect;8.6 and Appendix A updated. Customer confirmation of attendance, cart-side location commitment, and cancellation and no-show outcomes are deferred to v1.0.4 (#66).</p>
-                  <p><strong>Completeness non-claim (#67):</strong> &sect;5 states that a valid, sealed and complete chain is a tamper-evident record of what was submitted, not a complete account of the transaction, and MUST NOT be presented as one: AEP cannot detect an event that was never submitted, and dropping the most recent post-seal artifacts is not detectable from the chain alone. &sect;5 also adds <code>service_fulfillment</code> to the post-seal types not counted by <code>expectedArtifactCount</code>, which #122 missed.</p>
                   <p><strong>Pre-execution attestation (#27, D4-a):</strong> new optional &sect;3.9.21 <code>pre_execution_attestation</code> sub-wrapper with required <code>issuer</code>, <code>issuer_relationship</code>, external <code>anchor</code>, transaction <code>binding</code> and <code>expires_at</code>; a &sect;3.9.11 rule set (signature, anchor precedence, chain and cart binding, expiry, bounds conformance); &sect;2.8 classification; &sect;5 <code>pre_execution_attestation_checks</code>. Normative settlement gating is declined; AEP witnesses enforcement and never gates it. No tier uplift is defined.</p>
                 </td>
               </tr>

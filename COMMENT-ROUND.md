@@ -109,7 +109,7 @@ One topic per issue. Cite section numbers. Claims about external protocols or ne
 | [I16](#i16) | Issue #16 | @jyothi-acomm-ai | §6.1 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
 | [I17](#i17) | Issue #17 | @jyothi-acomm-ai | §4.1 / §6.3 | accept | v1.0.3-final | not started | not recorded | ✱ |
 | [I18](#i18) | Issue #18 | @jyothi-acomm-ai | §6.5 | accept-with-modification | v1.0.3-final | not started | not recorded | ✱ |
-| [I20](#i20) | Issue #20 | @HemmaBo-se | §3.7 / §3.5 / §3.10 | accept-with-modification | v1.0.3-final | landed | not recorded | |
+| [I20](#i20) | Issue #20 | @HemmaBo-se | §3.7 / §3.5 / §3.10 | accept-with-modification | v1.0.3-final | not started | not recorded | |
 | [I21](#i21) | Issue #21 | @HemmaBo-se | §3.9.11 / §2.8 | accept-with-modification | v1.0.3-final | landed | accepted | |
 | [I23](#i23) | Issue #23 | @johnhenrypower | §3.9.18 / §3.9.11 | accept | v1.0.3-final | landed | not recorded | ✱ |
 | [I24](#i24) | Issue #24 | @johnhenrypower | §3.9.15 | accept | v1.0.3-final | landed | not recorded | ✱ |
@@ -430,8 +430,6 @@ Corroborated, and the problem is wider than the issue states. §3.7 hard-require
 **Deferred to v1.0.4:** the full variant keyed off a cart field, with `location_hash` compared against a cart-committed location and a consumption-window status. Editors note the shipping assumption begins one artifact earlier than the issue identifies — §3.5 Cart also requires `shipping_address_hash` — so the v1.0.4 variant must cover Cart and Fulfillment together. §3.10's `reason` enum likewise has no cancellation or no-show member and is scoped into the same work. This lands with the Proof-of-Delivery sub-profile deferred under #35.
 
 Minor citation slips noted for the record: the issue cites §3.5 as Policy (it is Cart; Policy is §3.4).
-
-**Amended with I65.** The v1.0.3-final part of this disposition, which made the §3.7 fields nullable and added a `consumed` status member, is superseded by I65. The defect lands as a separate post-seal `service_fulfillment` type (§3.11), because both changes reach required fields of an existing type, which §0.2 lists as MAJOR. The rule against placeholder values and the null-not-false location rule carry over to §3.11. The v1.0.4 part of this disposition is unchanged.
 
 <a id="i21"></a>
 ### I21 · Issue #21 — merchant-domain authentication is wrapper-dependent, not chain-level

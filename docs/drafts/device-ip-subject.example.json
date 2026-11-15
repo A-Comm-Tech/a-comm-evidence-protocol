@@ -1,0 +1,22 @@
+{
+  "referral": {
+    "referral_event_id": "4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f",
+    "consumer_ip_hash": "sha256:9f2c4b6d8e0a1c3e5f7a9b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a",
+    "consumer_ip_hash_subject": "agent_runtime",
+    "consumer_ip_country": "US",
+    "user_agent_hash": "sha256:1a7e3c5b7d9f1a3c5e7b9d1f3a5c7e9b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c",
+    "user_agent_hash_subject": "agent_runtime",
+    "consent_gpc": false,
+    "consent_cookie": "unset",
+    "captured_at": "2026-11-02T15:06:40Z",
+    "idempotency_key": "ref-91b0c4"
+  },
+  "identity_keys": {
+    "account_login_id_ref": "raw:acct/7731",
+    "ip_ref": "hash:ip/9f2c4b6d",
+    "ip_ref_subject": "agent_runtime",
+    "device_id_ref": null,
+    "device_fingerprint": null,
+    "shipping_address_ref": "raw:addr/5520"
+  }
+}

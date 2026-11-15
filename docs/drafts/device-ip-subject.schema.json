@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aep.a-comm.ai/schema/device-ip-subject.json",
+  "title": "AEP device and IP subject labels (Sections 3.1, 3.2, 6.1)",
+  "description": "Optional <field>_subject labels. Other payload fields are governed by their own section schemas and are not constrained here, except that no other field may end in _subject.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "discovery": {
+      "$ref": "#/$defs/discovery"
+    },
+    "referral": {
+      "$ref": "#/$defs/referral"
+    },
+    "identity_keys": {
+      "$ref": "#/$defs/identity_keys"
+    }
+  },
+  "$defs": {
+    "subject": {
+      "description": "Whose device or network the value identifies. Absent means unknown.",
+      "enum": [
+        "cardholder_device",
+        "agent_runtime",
+        "merchant_session",
+        "unknown"
+      ]
+    },
+    "discovery": {
+      "title": "Section 3.1 Discovery payload, label fields",
+      "type": "object",
+      "properties": {
+        "customer_device_id_subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "customer_device_fingerprint_subject": {
+          "$ref": "#/$defs/subject"
+        }
+      },
+      "dependentRequired": {
+        "customer_device_id_subject": [
+          "customer_device_id"
+        ],
+        "customer_device_fingerprint_subject": [
+          "customer_device_fingerprint"
+        ]
+      },
+      "dependentSchemas": {
+        "customer_device_id_subject": {
+          "properties": {
+            "customer_device_id": {
+              "type": "string"
+            }
+          }
+        },
+        "customer_device_fingerprint_subject": {
+          "properties": {
+            "customer_device_fingerprint": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "propertyNames": {
+        "anyOf": [
+          {
+            "not": {
+              "pattern": "_subject$"
+            }
+          },
+          {
+            "enum": [
+              "customer_device_id_subject",
+              "customer_device_fingerprint_subject"
+            ]
+          }
+        ]
+      }
+    },
+    "referral": {
+      "title": "Section 3.2 Referral payload, label fields",
+      "type": "object",
+      "properties": {
+        "consumer_ip_hash_subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "user_agent_hash_subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "customer_device_id_subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "customer_device_fingerprint_subject": {
+          "$ref": "#/$defs/subject"
+        }
+      },
+      "dependentRequired": {
+        "consumer_ip_hash_subject": [
+          "consumer_ip_hash"
+        ],
+        "user_agent_hash_subject": [
+          "user_agent_hash"
+        ],
+        "customer_device_id_subject": [
+          "customer_device_id"
+        ],
+        "customer_device_fingerprint_subject": [
+          "customer_device_fingerprint"
+        ]
+      },
+      "dependentSchemas": {
+        "consumer_ip_hash_subject": {
+          "properties": {
+            "consumer_ip_hash": {
+              "type": "string"
+            }
+          }
+        },
+        "user_agent_hash_subject": {
+          "properties": {
+            "user_agent_hash": {
+              "type": "string"
+            }
+          }
+        },
+        "customer_device_id_subject": {
+          "properties": {
+            "customer_device_id": {
+              "type": "string"
+            }
+          }
+        },
+        "customer_device_fingerprint_subject": {
+          "properties": {
+            "customer_device_fingerprint": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "propertyNames": {
+        "anyOf": [
+          {
+            "not": {
+              "pattern": "_subject$"
+            }
+          },
+          {
+            "enum": [
+              "consumer_ip_hash_subject",
+              "user_agent_hash_subject",
+              "customer_device_id_subject",
+              "customer_device_fingerprint_subject"
+            ]
+          }
+        ]
+      }
+    },
+    "identity_keys": {
+      "title": "Section 6.1 customerHistory.identity_keys, label fields",
+      "type": "object",
+      "properties": {
+        "ip_ref_subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "device_id_ref_subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "device_fingerprint_subject": {
+          "$ref": "#/$defs/subject"
+        }
+      },
+      "dependentRequired": {
+        "ip_ref_subject": [
+          "ip_ref"
+        ],
+        "device_id_ref_subject": [
+          "device_id_ref"
+        ],
+        "device_fingerprint_subject": [
+          "device_fingerprint"
+        ]
+      },
+      "dependentSchemas": {
+        "ip_ref_subject": {
+          "properties": {
+            "ip_ref": {
+              "type": "string"
+            }
+          }
+        },
+        "device_id_ref_subject": {
+          "properties": {
+            "device_id_ref": {
+              "type": "string"
+            }
+          }
+        },
+        "device_fingerprint_subject": {
+          "properties": {
+            "device_fingerprint": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "propertyNames": {
+        "anyOf": [
+          {
+            "not": {
+              "pattern": "_subject$"
+            }
+          },
+          {
+            "enum": [
+              "ip_ref_subject",
+              "device_id_ref_subject",
+              "device_fingerprint_subject"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

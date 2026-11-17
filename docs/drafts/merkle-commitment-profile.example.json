@@ -1,0 +1,78 @@
+{
+  "chain_id": "6f1c2b7e-4d3a-4e8b-9c51-2a7d0e9b3f46",
+  "protocol_metadata": {
+    "protocol": "x402",
+    "protocol_version": "2",
+    "captured_at": "2026-11-17T09:30:06Z",
+    "tool_invocation": null,
+    "http_payment": null,
+    "call_commitment": {
+      "tree_alg": "rfc9162-sha256",
+      "root": "sha256:82054f6349af3653ddf20a2dda115a5426b7eec75bc019fd8d568f0f159ff6d0",
+      "leaf_count": 3,
+      "network": "eip155:84532",
+      "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "amount_total_atomic": "3000"
+    }
+  },
+  "commitmentDisclosures": [
+    {
+      "kind": "call",
+      "index": 1,
+      "record": {
+        "completed_at": "2026-11-17T09:30:02Z",
+        "amount_atomic": "1000",
+        "tool_invocation": {
+          "mcp_server": {
+            "name": "example-search",
+            "version": "1.2.0",
+            "title": "Example Search",
+            "description": "Paid web search"
+          },
+          "mcp_server_canonical_uri": "https://tools.example.com/mcp",
+          "mcp_tool_name": "search",
+          "mcp_arguments": {
+            "query": "ergonomic office chair warranty"
+          },
+          "mcp_arguments_canonicalisation": "rfc8785",
+          "mcp_invocation_id": "inv_9a41",
+          "mcp_jsonrpc_id": 2,
+          "mcp_result": {
+            "hash": "sha256:fe4c6ebe56131e141b73cf9a87b651efdb51e719a7967016a2e46613431af681",
+            "hash_alg": "sha256",
+            "canonicalisation": "rfc8785",
+            "is_error": false,
+            "has_structured_content": false,
+            "output_schema_ref": null
+          }
+        },
+        "http_payment": {
+          "x402_version": 2,
+          "scheme": "batch-settlement",
+          "network": "eip155:84532",
+          "payer": "0x1111111111111111111111111111111111111111",
+          "pay_to": "0x2222222222222222222222222222222222222222",
+          "amount_atomic": "1000",
+          "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+          "transaction_hash": null,
+          "settlement_finalized": false,
+          "partial_settlement": false
+        }
+      },
+      "inclusion_path": [
+        "sha256:675fdf77455c2fc782289f859195fe5560c7f0c61d9a4f61b44144a22a6abaf4",
+        "sha256:6bebf1d4e4778231871620819d6c6ec9a7969dcb01dd9a882c13b9875d219434"
+      ]
+    }
+  ],
+  "commitment_checks": [
+    {
+      "kind": "call",
+      "leaf_count": 3,
+      "leaves_disclosed": 1,
+      "leaves_verified": 1,
+      "amount_sum_checked": false,
+      "amount_sum_matches": null
+    }
+  ]
+}
